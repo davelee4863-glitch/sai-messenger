@@ -139,6 +139,21 @@ test('complete inventory must resolve every supplied resource link and reject wi
   }
 });
 
+test('wildcard identities fail even when permissions reference a wildcard resource present in inventory', () => {
+  for (const id of ['*', 'prefix*', 'resource?']) {
+    const fixture = inventory(); fixture.resources.workers[0].id = id;
+    for (const kind of ['secrets', 'environmentVariables']) fixture.resources[kind][0].workerId = id;
+    fixture.resources.permissions[0].targetIds = [id];
+    assert.ok(validate(LOCAL_PLAN, fixture).includes('ISOLATION_INVENTORY_WILDCARD_IDENTIFIER:permissions'));
+  }
+});
+
+test('generic references cannot resolve ambiguous IDs shared between different resource categories', () => {
+  const fixture = inventory(); fixture.resources.d1[0].id = fixture.resources.workers[0].id;
+  fixture.resources.permissions[0].targetIds = [fixture.resources.workers[0].id];
+  assert.ok(validate(LOCAL_PLAN, fixture).includes('ISOLATION_INVENTORY_AMBIGUOUS_RESOURCE_ID'));
+});
+
 test('environment override, preview IDs, unknown bindings and broad permissions cannot relax immutable plan', () => {
   for (const change of [plan => plan.environment = 'production', plan => plan.execution = 'deployment', plan => plan.deploymentAuthorized = true, plan => plan.liveInventoryVerified = true, plan => plan.env = {preview: {}}, plan => plan.resources.d1[0].previewId = 'foreign-preview-id', plan => plan.bindings.push({name: 'OTHER', kind: 'kv', targetId: 'foreign-kv'}), plan => plan.resources.permissions.push({scope: '*'}), plan => plan.rollback.targetIds.push('*')]) {
     const plan = clone(LOCAL_PLAN); change(plan); assert.ok(validate(plan, inventory()).length);

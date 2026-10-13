@@ -58,6 +58,7 @@ export function validateLocalPlan(plan) {
 
 const RECORD_KEYS = ['id', 'name', 'owner', 'namespace', 'binding', 'workerId', 'targetId', 'targetIds', 'className', 'scriptName'];
 const scoped = new Set(['secrets', 'environmentVariables']);
+const exactIdentifier = value => label(value) && !/[*?]/.test(value);
 function inspectInventory(inventory, now) {
   const errors = [];
   if (!strictData(inventory)) return ['ISOLATION_INVENTORY_NON_JSON_DATA'];
@@ -74,6 +75,7 @@ function inspectInventory(inventory, now) {
     const ids = new Set(), names = new Set();
     for (const row of rows) {
       if (!exactKeys(row, RECORD_KEYS) || !['id', 'name', 'owner', 'namespace'].every(key => label(row[key])) || !Object.entries(row).every(([key, value]) => key === 'targetIds' ? Array.isArray(value) && value.length > 0 && value.every(label) && new Set(value).size === value.length : label(value))) { errors.push(`ISOLATION_INVENTORY_INVALID_RECORD:${kind}`); continue; }
+      if (['id', 'owner', 'namespace', 'workerId', 'targetId'].filter(key => Object.hasOwn(row, key)).some(key => !exactIdentifier(row[key])) || row.targetIds?.some(id => !exactIdentifier(id))) errors.push(`ISOLATION_INVENTORY_WILDCARD_IDENTIFIER:${kind}`);
       if (scoped.has(kind) && !label(row.workerId)) errors.push(`ISOLATION_INVENTORY_SCOPE_MISSING:${kind}`);
       const name = `${scoped.has(kind) ? row.workerId : ''}\0${row.name.toLowerCase()}`;
       if (ids.has(row.id) || names.has(name)) errors.push(`ISOLATION_INVENTORY_DUPLICATE:${kind}`);
@@ -81,7 +83,9 @@ function inspectInventory(inventory, now) {
     }
   }
   if (!errors.length) {
-    const ids = new Set(KINDS.flatMap(kind => inventory.resources[kind].map(row => row.id)));
+    const allIds = KINDS.flatMap(kind => inventory.resources[kind].map(row => row.id));
+    const ids = new Set(allIds);
+    if (ids.size !== allIds.length) errors.push('ISOLATION_INVENTORY_AMBIGUOUS_RESOURCE_ID');
     const workerIds = new Set(inventory.resources.workers.map(row => row.id));
     const workerNames = new Set(inventory.resources.workers.map(row => row.name));
     for (const kind of KINDS) for (const row of inventory.resources[kind]) {
