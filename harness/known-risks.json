@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "date": "2026-10-13",
+    "mainCommit": "10aef073da73193c0e43d298537795b22b06d6af",
+    "scope": "Read-only source audit; no production or browser execution"
+  },
+  "risks": [
+    {
+      "id": "SAI-R001",
+      "priority": "P0",
+      "status": "OPEN",
+      "title": "No durable chat storage",
+      "evidence": "server.js: const rooms = new Map(); public/index.html uses localStorage",
+      "prevention": "Add durable storage, migration and restore test before restart",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R002",
+      "priority": "P0",
+      "status": "OPEN",
+      "title": "Reset/unagree APIs have no authorization",
+      "evidence": "server.js: POST /api/room/:room/reset and /unagree",
+      "prevention": "Require user identity and room membership for all room mutations",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R003",
+      "priority": "P0",
+      "status": "OPEN",
+      "title": "WebSocket trusts name and room query strings",
+      "evidence": "server.js: wss.on connection; name/room are query parameters",
+      "prevention": "Authenticate WS and enforce membership server-side",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R004",
+      "priority": "P0",
+      "status": "OPEN",
+      "title": "Messages and AI calls unbounded",
+      "evidence": "server.js: detectAgreement invoked on messages after third",
+      "prevention": "Set per-user rate, size, concurrency and daily spend limits",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R005",
+      "priority": "P1",
+      "status": "OPEN",
+      "title": "Date hardcoded and ICS time validation missing",
+      "evidence": "server.js: 오늘은 2026-10-13; fallback 2026-10-18",
+      "prevention": "Use current clock, explicit timezone, robust calendar date validation",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R006",
+      "priority": "P1",
+      "status": "OPEN",
+      "title": "Client-side room names and group state may diverge across users",
+      "evidence": "public/index.html: openChat(name), friends/rooms in localStorage",
+      "prevention": "Server-issued conversation IDs and verified invitations",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R007",
+      "priority": "P0",
+      "status": "OPEN",
+      "title": "Main has unsafe dynamic innerHTML rendering",
+      "evidence": "public/index.html: renderFriends, renderChats, addBubble, groupFriendList; PR #1 draft",
+      "prevention": "Use textContent and add synthetic XSS regressions before merge",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R008",
+      "priority": "P1",
+      "status": "OPEN",
+      "title": "Stale WebSocket reconnect on room change",
+      "evidence": "public/index.html: ws.onclose; PR #1 draft",
+      "prevention": "Guard reconnect with active socket and room and test switches",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R009",
+      "priority": "P1",
+      "status": "OPEN",
+      "title": "Client deliberately ignores server history",
+      "evidence": "public/index.html: history handler ignores server history",
+      "prevention": "Reconcile authoritative message IDs without duplicates",
+      "regressionTest": "PENDING"
+    },
+    {
+      "id": "SAI-R010",
+      "priority": "P1",
+      "status": "OPEN",
+      "title": "No browser integration test or existing CI baseline",
+      "evidence": "GitHub main has no .github/workflows on 2026-10-13",
+      "prevention": "Add read-only CI plus synthetic browser and server tests",
+      "regressionTest": "PENDING"
+    }
+  ]
+}
