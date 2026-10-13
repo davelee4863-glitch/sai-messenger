@@ -50,6 +50,21 @@
       "id": "CF-FREE-GATE",
       "rule": "Local app guards do not guarantee a bill cap on Paid accounts; realFree plan and deployment authorization must be verified before cloud creation.",
       "test": "cloudflare/tests/transport.test.mjs"
+    },
+    {
+      "id": "CF-CONFIG-STRICT",
+      "rule": "Malformed budget/session values fail closed before runtime/storage startup.",
+      "test": "cloudflare/tests/config.test.mjs"
+    },
+    {
+      "id": "CF-ONE-LOCAL-OWNER",
+      "rule": "A persistence directory belongs to one live emulator; dispose before restart.",
+      "test": "cloudflare/tests/config.test.mjs"
+    },
+    {
+      "id": "CF-IMMUTABLE-BUILD",
+      "rule": "Parallel runtime builds return immutable complete Worker sources, no shared partial output.",
+      "test": "cloudflare/tests/config.test.mjs"
     }
   ]
 }
