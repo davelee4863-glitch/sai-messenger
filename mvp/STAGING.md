@@ -22,7 +22,7 @@ Sources: https://render.com/articles/render-vs-railway ; https://render.com/pric
 
 ## Runtime and gates
 
-- Node 22.23.2, pinned ws 8.22.0, one server process and one replica. `Dockerfile.staging` is a preparation template: Docker execution and real hosted Linux mount checks are NOT_RUN locally. Pin the built image digest before hosting; the base image tag alone is not an immutable artifact.
+- Node 22.23.3, pinned ws 8.22.0, one server process and one replica. `Dockerfile.staging` is a preparation template: Docker execution and real hosted Linux mount checks are NOT_RUN locally. Pin the built image digest before hosting; the base image tag alone is not an immutable artifact.
 - Explicit `MVP_SQLITE_FILE=/var/data/<new-test-db>.sqlite`, `MVP_EXTERNAL_API=off`, `MVP_STAGING_CONFIG_FILE=<private-manifest>`. Never expose the manifest, certificates, backups or account file as web assets. Plaintext synthetic account output must be in a separate private directory and excluded from Git/image context.
 - Bind 127.0.0.1 by default. 0.0.0.0 requires private-staging mode, explicit exposureApproved:true after user approval, a canonical separate HTTPS origin, exact UUID allowlist/admin, a pinned SHA, a DB inside the volume root and an actual dedicated ext4/xfs/btrfs/zfs mount. Root overlay/tmpfs/network storage is refused. A mount proves admission policy, not provider durability; verify preservation with a real hosted restart.
 - Direct TLS: supply both MVP_TLS_CERT_FILE and MVP_TLS_KEY_FILE, minimum TLS1.2. For a TLS-terminating gateway, configure only independently reviewed exact IPv4 peer addresses; plaintext and forged HTTPS hints fail closed. Browser URLs use HTTPS and WSS. No OS certificate trust or browser warning bypass is part of local tests.

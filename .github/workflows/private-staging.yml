@@ -18,7 +18,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.23.2'
+          node-version: '22.23.3'
       - run: npm ci --prefix mvp --ignore-scripts --no-fund --no-audit
       - run: node harness/check.mjs
       - run: node --test harness/check.test.mjs tests/ui-state.test.mjs tests/ui-static.test.mjs tests/ui-qr.test.mjs tests/ui-build.test.mjs tests/ui-pages-environment.test.mjs mvp/tests/*.test.mjs

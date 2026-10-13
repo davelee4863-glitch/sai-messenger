@@ -4,7 +4,7 @@ This is a separate synthetic-user application. The legacy `server.js`, `public/`
 
 ## Run on this PC
 
-Use Node **22.23.2**. Its built-in SQLite API is experimental; this MVP is not an operating release. From this worktree:
+Use Node **22.23.3**. Its built-in SQLite API is experimental; this MVP is not an operating release. From this worktree:
 
 ```powershell
 npm ci --prefix mvp --ignore-scripts --no-fund --no-audit
