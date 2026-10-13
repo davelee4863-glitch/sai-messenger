@@ -982,6 +982,25 @@
       "regressionResult": "PASS",
       "regressionEvidence": "PM007 evidence: exactbase243; extracted243; cf20candidate + sourcepreflight2 pass. Final pinned Fresh Review pending.",
       "independentReviewResult": "NOT_RUN"
+    },
+    {
+      "id": "SAI-INC-20261013-44",
+      "recordType": "REAL",
+      "severity": "LOW",
+      "status": "MITIGATING",
+      "occurredAt": "2026-10-13T13:57:11.862Z",
+      "occurredAtAccuracy": "APPROXIMATE_EVIDENCE_CAPTURE",
+      "loggedAt": "2026-10-13T13:57:53.835Z",
+      "symptom": "A reused scratch journal script rewrote the supplementary prevention index from13rules to10, dropping three independently validated rules.",
+      "rootCause": "The scratch generator replaced the rule array instead of preserving existing appended entries.",
+      "resolution": "Restore the committed13rule index; add executed preflight asserting strictconfig/singleowner/immutablebuild rules remain; stop reusing replacement generator for final attestation.",
+      "prevention": "Supplementary rule updates preserve existing IDs and are covered by index-preservation regression.",
+      "regressionTest": "cloudflare/tests/source.test.mjs",
+      "evidence": "cf-rule-index-first.tap",
+      "resolvedBy": "codex-root",
+      "regressionResult": "PASS",
+      "regressionEvidence": "cf-rule-index-first.tap1/2PASS+1FAIL, cf-rule-index-fixed.tap2/2PASS; source/runtime final review pending.",
+      "independentReviewResult": "NOT_RUN"
     }
   ]
 }

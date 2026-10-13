@@ -9,6 +9,7 @@ test('migration test preflight resolves pinned dependencies and syntax checks ev
  assert.equal(JSON.parse(readFileSync(new URL('../node_modules/miniflare/package.json',import.meta.url))).version,'4.20260730.0');
  assert.ok(createRequire(new URL('../../mvp/package.json',import.meta.url)).resolve('ws').includes('node_modules'));
  assert.match(execFileSync('git',['-c','user.name=Codex Workspace','-c','user.email=codex@local.invalid','var','GIT_AUTHOR_IDENT'],{encoding:'utf8'}),/^Codex Workspace <codex@local.invalid>/);
+ const rules=JSON.parse(readFileSync(new URL('../../harness/cloudflare-rules.json',import.meta.url)));const ids=new Set(rules.rules.map(r=>r.id));for(const id of ['CF-CONFIG-STRICT','CF-ONE-LOCAL-OWNER','CF-IMMUTABLE-BUILD'])assert.ok(ids.has(id),'Prevention index lost '+id);
  for(const folder of [new URL('../',import.meta.url),new URL('./',import.meta.url)])for(const name of readdirSync(folder).filter(n=>n.endsWith('.mjs')))execFileSync(process.execPath,['--check',fileURLToPath(new URL(name,folder))],{stdio:'pipe'});
 });
 test('UI assets are reused; Worker bundle excludes file SQLite/listen/ws dependencies and has no paid bindings',async()=>{
