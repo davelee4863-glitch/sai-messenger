@@ -45,6 +45,8 @@ Record browser results for small and large phones, tablet and desktop; all ten r
 
 ## Incident and rollback loop
 
+Before publication, inspect the actual `github-pages` environment as well as Pages Source and the workflow branch. It must allow only `ui/promise-box-v1-preview-20261013` in Selected branches and tags mode, with zero tags and no environment secrets or variables. A freshly created Pages environment can default to `main` and reject an otherwise passing UI workflow. Save the settings observation and run `node scripts/check-pages-environment.mjs <snapshot.txt>`; the offline guard checks that observation, and actual Actions deployment plus a live visit remain separate mandatory evidence. `tests/ui-pages-environment.test.mjs` exercises missing/mismatched/widened settings. Do not disable protection rules or change the Production environment to make publication pass.
+
 Preserve redacted failing evidence before fixes. Record actual defects in the existing real incident journal, add a targeted regression test, rerun it, and obtain independent review. Test-only invented incidents must remain in temporary fixtures and must not pollute the real journal.
 
 Rollback the static preview by republishing the prior reviewed UI commit through the same isolated Pages source. This requires no Production rollback. Verify the visible version after publication. Branch history is the rollback source; no application database or browser persistence is involved.

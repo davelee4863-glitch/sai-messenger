@@ -53,23 +53,61 @@
       "id": "PB-UI-R010",
       "requirement": "Preserve real incidents and redacted reproduction evidence. Invented incidents belong only in isolated test fixtures. Mark resolved incidents VERIFIED only after regression PASS and an independent review.",
       "evidence": "Existing harness validation and incident journal review"
+    },
+    {
+      "id": "PB-UI-R011",
+      "requirement": "Before publication verify the actual Pages-only environment allows only the exact UI branch in Selected branches and tags mode with zero tags and no secrets or variables. Do not infer the environment policy from the workflow branch or bypass protection. Preserve initial deployment failures and verify actual successful deployment plus the live metadata SHA.",
+      "evidence": "Actual before/after Pages settings snapshots, scripts/check-pages-environment.mjs, eight guard tests and remote deployment/live visit"
     }
   ],
   "paletteContract": {
     "normalText": [
-      ["--ink", "--paper"],
-      ["--ink", "--cream"],
-      ["--ink", "--peach"],
-      ["--ink", "--apricot"],
-      ["--muted", "--paper"],
-      ["--muted", "--cream"],
-      ["#ffffff", "--deep"]
+      [
+        "--ink",
+        "--paper"
+      ],
+      [
+        "--ink",
+        "--cream"
+      ],
+      [
+        "--ink",
+        "--peach"
+      ],
+      [
+        "--ink",
+        "--apricot"
+      ],
+      [
+        "--muted",
+        "--paper"
+      ],
+      [
+        "--muted",
+        "--cream"
+      ],
+      [
+        "#ffffff",
+        "--deep"
+      ]
     ],
     "focus": [
-      ["--deep", "--paper"],
-      ["--deep", "--cream"],
-      ["--deep", "--peach"],
-      ["--deep", "--apricot"]
+      [
+        "--deep",
+        "--paper"
+      ],
+      [
+        "--deep",
+        "--cream"
+      ],
+      [
+        "--deep",
+        "--peach"
+      ],
+      [
+        "--deep",
+        "--apricot"
+      ]
     ],
     "constraint": "Use ink for normal text on peach and apricot. Muted on these backgrounds, and deep on apricot, fail the normal-text AA threshold. Palette arithmetic alone does not prove every rendered element's contrast."
   }

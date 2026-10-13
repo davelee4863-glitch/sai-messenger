@@ -281,6 +281,24 @@
       "verifiedAt": "2026-10-13T08:06:20.061Z",
       "verificationCommit": "c5952e142bb71c2aec789463a1e6d0c7d998e0e2",
       "verificationEvidence": "Independent Fresh Reviewer did not implement or edit repository files. Initial eb885a66 review FAIL found two P2 test/keyboard defects, preserved separately. Corrected c5952e review independently reran 166/166 Node tests, 22/22 actual Cua interactions and 22/22 small-phone layouts, including native Space/Tab focus and exact RSVP pill/pressed states. Actual journal/preflight PASS; release correctly blocked by existing P0 risks plus pending HIGH incidents before this journal-only completion. First five baseline incident objects unchanged, product and baseline harness files unchanged, original syntax/build/journal failures reviewed. Evidence fresh-ui-review-c5952e-node-166.txt, fresh-ui-review-c5952e-browser-functional.json, fresh-ui-review-c5952e-keyboard-retest.json, fresh-ui-review-c5952e-browser-layout.json and fresh-ui-review-c5952e-scope-build.json in the evidence bundle."
+    },
+    {
+      "id": "SAI-INC-20261013-14",
+      "occurredAt": "2026-10-13T08:11:06.000Z",
+      "loggedAt": "2026-10-13T08:25:21.995Z",
+      "recordType": "REAL",
+      "severity": "MEDIUM",
+      "status": "MITIGATING",
+      "symptom": "First UI push passed all 166 remote tests but the Pages publish job was rejected before runner execution: the UI branch was not allowed by github-pages environment protection rules.",
+      "rootCause": "The new Pages-only environment defaulted to a selected main branch rule. Preflight inspected Pages Source and workflow branch but did not verify the actual environment deployment branch rule.",
+      "resolution": "Changed the existing Pages-only selected branch rule from main to the exact UI preview branch, keeping one branch and zero tags, with no environment secrets or variables and no Production change. Failed job rerun succeeded and the real public site opened with b82c400 metadata. Added an offline observation guard and eight negative/positive tests; corrected its initial nested-button-label parsing failure against the real snapshot.",
+      "prevention": "Before publication inspect actual Pages Source, workflow source branch and Pages-only environment allowed branch. Keep Selected branches mode and reject widened or mismatched rules, credentials and tags. Treat saved-observation tests, actual remote deployment and live-site visits as separate evidence.",
+      "regressionTest": "tests/ui-pages-environment.test.mjs",
+      "resolvedBy": "codex-root",
+      "evidence": "pages-first-deploy-failure.json preserves run 38367512875 attempt 1: verify 166 PASS and publish rejected. pages-environment-before.txt shows main-only, after.txt shows exact UI branch only. No operating endpoint, production environment, user data or secret value was accessed; the Pages environment explicitly had no secrets or variables. Initial local observation parser incorrectly included nested Edit/Remove labels; actual first rejection and corrected eight-case regression are preserved separately.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Eight Pages guard tests PASS in ui-pages-guard-tests-final.tap. Actual saved before settings exit 1 and after exit 0; failed-job rerun succeeded at publish job 115199839359, sourceCommit b82c400; github-first-publish-success.log. Root actually visited https://davelee4863-glitch.github.io/sai-messenger/ and saw the synthetic UI and version footer. Independent delta review pending.",
+      "independentReviewResult": "NOT_RUN"
     }
   ]
 }

@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: '22'
       - run: node harness/check.mjs
-      - run: node --test harness/check.test.mjs tests/ui-state.test.mjs tests/ui-static.test.mjs tests/ui-qr.test.mjs tests/ui-build.test.mjs
+      - run: node --test harness/check.test.mjs tests/ui-state.test.mjs tests/ui-static.test.mjs tests/ui-qr.test.mjs tests/ui-build.test.mjs tests/ui-pages-environment.test.mjs
   publish:
     if: github.ref == 'refs/heads/ui/promise-box-v1-preview-20261013'
     needs: verify
