@@ -1,0 +1,8 @@
+**
+!mvp/
+!mvp/*.mjs
+!mvp/*.sql
+!mvp/package.json
+!mvp/package-lock.json
+!mvp/client/
+!mvp/client/**

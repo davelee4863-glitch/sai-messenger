@@ -1,0 +1,1 @@
+export function socketURL(origin,roomId){const url=new URL(origin);if(!['http:','https:'].includes(url.protocol))throw new Error('Unsupported application protocol');url.protocol=url.protocol==='https:'?'wss:':'ws:';url.pathname='/ws';url.search='';url.hash='';url.searchParams.set('roomId',roomId);return url.href;}

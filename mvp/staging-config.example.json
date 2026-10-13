@@ -1,0 +1,10 @@
+{
+  "mode": "private-staging",
+  "origin": "https://stage.test.invalid",
+  "allowedUserIds": [],
+  "adminUserId": "REPLACE_WITH_PROVISIONED_SYNTHETIC_USER_ID",
+  "releaseSHA": "REPLACE_WITH_REVIEWED_40_CHARACTER_COMMIT",
+  "volumeRoot": "/var/data",
+  "trustedProxyAddresses": [],
+  "exposureApproved": false
+}

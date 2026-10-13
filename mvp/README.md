@@ -4,7 +4,7 @@ This is a separate synthetic-user application. The legacy `server.js`, `public/`
 
 ## Run on this PC
 
-Use Node **22.23.2**. Its built-in SQLite API is experimental; this MVP is not an operating release. From this worktree:
+Use Node **22.23.3**. Its built-in SQLite API is experimental; this MVP is not an operating release. From this worktree:
 
 ```powershell
 npm ci --prefix mvp --ignore-scripts --no-fund --no-audit
@@ -30,7 +30,7 @@ Passwords use salted scrypt (N=32768, r=8, p=1). Opaque random session tokens ar
 
 Default limits: 2,000 Unicode code points/message; 16 KiB JSON body; 8 KiB headers; 30 message requests/minute/user; 120 authenticated requests/minute/user; 5 login attempts/minute/local IP; four concurrent scrypt jobs; 10 upgrades/minute/user; three sockets/user and 24 total; 4 KiB frames; 10 incoming ping frames/minute. No arbitrary WebSocket writes are accepted. Authorized `room.changed` hints trigger REST resynchronization, cursor pagination and recipient acknowledgements. Delivery means an authenticated client acknowledged receipt, not that a person read the text. Refresh recovers the authoritative history; drafts remain in memory across room switches and clear on logout.
 
-Groups require owner invitations/removals. Invited users can read past room history; the UI states this. Promise attendees are a snapshot at confirmation. Later invitees do not acquire an old attendee's RSVP, and removed people cannot access or respond. Re-inviting an original attendee restores access to their own previously recorded response.
+Groups require owner invitations/removals. New and rejoining users see only post-join messages, proposals and promises, using sequence boundaries rather than timestamps. Original records and RSVP are retained in the private archive, without giving rejoining users historical access. Historical sharing is unimplemented. Promise attendees are a snapshot at confirmation; new invitees enter the next candidate.
 
 Synthetic candidates are persisted separately from confirmed promises. The UI asks **“이대로 확정할까요?”**; only the authenticated host's explicit CONFIRM creates a promise. Modify/ignore does not create one. Everyone, including the host, begins with RSVP pending and may answer only for themselves. Change/cancel first creates a host-bound, versioned, five-minute review; only explicit single-use approval applies it. A change resets responses to pending and preserves previous responses in history. Cancellation preserves records. No AI can confirm or RSVP for anyone.
 
@@ -48,10 +48,12 @@ node harness/check.mjs --release
 Release failure is expected while the five legacy P0 risks remain OPEN; a structural PASS does not approve release. Browser evidence is separate from Node tests. Tests use disposable synthetic databases outside source control, real HTTP/WebSockets, separate server processes, forced crash/restart and backup restoration. Initial failures, fixes and fresh review belong in the incident journal and PM005 evidence bundle.
 
 ```powershell
-node mvp/backup.mjs --db ../pm005/data/core.sqlite --output ../pm005/backups/core-backup.sqlite
-node mvp/restore.mjs --backup ../pm005/backups/core-backup.sqlite --output ../pm005/restored/core.sqlite
+node mvp/backup.mjs --db <existing-V2-test-db> --output <new-private-backup>
+node mvp/restore.mjs --backup <V2-backup> --output <new-V2-test-db>
 ```
 
-Backups use `VACUUM INTO`; restore checks integrity/schema, refuses overwrite, and revokes restored sessions while retaining accounts, messages, promises, RSVP and history. Stop the server before switching its explicitly configured database. Keep originals until the restored data is verified. No rollback/deletion API is exposed.
+The online backup CLI uses the native read-only SQLite backup API (including committed WAL); an owner-process `Store.backup` uses `VACUUM INTO`. V2 restore checks integrity/schema, refuses overwrite, and revokes restored sessions while retaining accounts, messages, promises, RSVP and history. Stop the server before switching its explicitly configured database. Keep originals until the restored data is verified. No rollback/deletion API is exposed.
 
 The new workflow runs tests only, with contents-read permissions and no deployment environment/secrets/artifacts. Existing Pages source branch and workflow stay unchanged. Publishing a real backend, adding TLS/access controls, storage quotas, disk encryption, Windows ACL checks, operational monitoring, paid infrastructure or physical-device testing are separate work requiring approval. Current incremental hosting/API cost is **0**.
+
+PM006 adds a fail-closed private staging mode and schema V2. Local defaults remain loopback HTTP. Staging uses Secure cookies and verified HTTPS/WSS; see STAGING.md for approval, migration, persistent volume, single-writer and mobile gates. Do not point this V2 code at the existing PM005 V1 demo database.

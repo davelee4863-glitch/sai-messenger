@@ -60,3 +60,9 @@ CREATE TABLE IF NOT EXISTS history (
  kind TEXT NOT NULL, payload TEXT NOT NULL, created_at INTEGER NOT NULL
 ) STRICT;
 PRAGMA user_version = 1;
+
+ALTER TABLE room_members ADD COLUMN visible_after_message_seq INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE room_members ADD COLUMN visible_after_history_seq INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE proposals ADD COLUMN visibility_seq INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE promises ADD COLUMN visibility_seq INTEGER NOT NULL DEFAULT 0;
+PRAGMA user_version=2;

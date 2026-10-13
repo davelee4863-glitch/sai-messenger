@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "scope": "PM006 private staging preparation; hosting exposure remains UNAPPROVED",
+  "baselineCommit": "c02704e16e170d52593ee74d57b1aa7348b11e5c",
+  "baselineRisks": "UNCHANGED; no Production, Pages, main or existing PR changes",
+  "rules": [
+    {"id":"PB-STAGE-R001","requirement":"External binding requires explicit approved staging policy, a separate HTTPS origin, exact allowed user IDs and a dedicated persistent local filesystem mount. Templates remain unapproved."},
+    {"id":"PB-STAGE-R002","requirement":"Require Secure/HttpOnly/host-only SameSite cookies, matching Host/Origin and CSRF. Trust HTTPS proxy headers only from an explicitly reviewed exact peer IP."},
+    {"id":"PB-STAGE-R003","requirement":"New and rejoining members see only later message/history sequence IDs. Apply the boundary to receipts, idempotency retries, proposal and promise detail/list/snapshot paths. Do not enable historical sharing implicitly."},
+    {"id":"PB-STAGE-R004","requirement":"All promise serializers require the authenticated reader, including the HTTP detail endpoint. Keep real first failures and rerun evidence."},
+    {"id":"PB-STAGE-R005","requirement":"Run one database writer and one hosted replica. Refuse an existing writer lock; offline unlock requires proof the same-host old process is dead. Never automatically reclaim an ambiguous lock."},
+    {"id":"PB-STAGE-R006","requirement":"Use native SQLite read-only online backups; restore/migrate into a new file, check exact schema/integrity/foreign keys, revoke sessions, preserve original files. V1 migration conservatively hides ambiguous legacy history."},
+    {"id":"PB-STAGE-R007","requirement":"Browser HTTPS uses WSS. Keep room drafts, focus/caret and scroll position during live updates; verify actual viewport dimensions. Real Android/iPhone and provider TLS/volume/restore remain NOT_RUN until executed."},
+    {"id":"PB-STAGE-R008","requirement":"Only the configured operator can forcibly revoke allowed test accounts. Close existing sockets immediately. Logs contain bounded event/code/request ID/status metadata, never credentials, message bodies, keys or database paths."},
+    {"id":"PB-STAGE-R009","requirement":"Keep explicit host CONFIRM and independent personal RSVP; change/cancel require approved single-use reviews. No public registration, upload API or paid AI calls."},
+    {"id":"PB-STAGE-R010","requirement":"Obtain user approval before any paid service connection or infrastructure exposure. Pin reviewed releases, manual deploy only, preserve compatible database backups and a previous verified V2 release for rollback."}
+  ]
+}
