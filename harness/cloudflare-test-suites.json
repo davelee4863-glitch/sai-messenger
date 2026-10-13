@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "baselineSha": "74bac08885c83740a87f6731d6b6de1230e8f3ba",
+  "baselineExpectedCases": 348,
+  "baselineFiles": [
+    "cloudflare/tests/config.test.mjs",
+    "cloudflare/tests/core.test.mjs",
+    "cloudflare/tests/local-isolation.test.mjs",
+    "cloudflare/tests/projection.test.mjs",
+    "cloudflare/tests/recovery.test.mjs",
+    "cloudflare/tests/security.test.mjs",
+    "cloudflare/tests/source.test.mjs",
+    "cloudflare/tests/transport.test.mjs",
+    "harness/check.test.mjs",
+    "harness/cloudflare-isolation.test.mjs",
+    "mvp/tests/browser-assertions.test.mjs",
+    "mvp/tests/core.test.mjs",
+    "mvp/tests/hardening.test.mjs",
+    "mvp/tests/history-policy.test.mjs",
+    "mvp/tests/https.test.mjs",
+    "mvp/tests/policy.test.mjs",
+    "mvp/tests/recovery-safety.test.mjs",
+    "mvp/tests/recovery.test.mjs",
+    "mvp/tests/security.test.mjs",
+    "mvp/tests/staging-bypass.test.mjs",
+    "mvp/tests/staging-policy.test.mjs",
+    "mvp/tests/staging-storage.test.mjs",
+    "tests/ui-build.test.mjs",
+    "tests/ui-pages-environment.test.mjs",
+    "tests/ui-qr.test.mjs",
+    "tests/ui-state.test.mjs",
+    "tests/ui-static.test.mjs"
+  ],
+  "manualSuites": [
+    {
+      "path": "tests/ui-browser-regression.test.mjs",
+      "status": "NOT_RUN",
+      "reason": "Exports a CUA browser procedure, no Node tests. Physical browser/mobile execution is outside this harness correction CI.",
+      "sha256": "443ecf7438c3274c60046f197e7904dd6e3f0f69828ecedff1190875cd683694"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
-name: PROMISE BOX Cloudflare isolation (local only)
+name: PROMISE BOX Cloudflare isolation (tests only)
 on:
+  push:
+    branches: [feat/promise-box-cloudflare-harness-fix-20261014]
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,16 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.23.2'
-      - run: npm ci --prefix mvp --ignore-scripts
-      - run: npm ci --prefix cloudflare --ignore-scripts
+          node-version: '22.23.3'
+      - run: npm ci --prefix mvp --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix cloudflare --ignore-scripts --no-audit --no-fund
       - run: node harness/check.mjs
-      - run: node --test harness/check.test.mjs harness/cloudflare-isolation.test.mjs
-      - run: npm test --prefix cloudflare
-      # No Cloudflare credentials, deploy command, remote inventory collection,
-      # resource mutation, production test, or automatic push/PR trigger.
-      # Synthetic PASS never authorizes deployment. Dispatch requires its own
-      # authorization; this local task does not dispatch the workflow.
+      # Full UI and mvp/tests/*.test.mjs baseline; new tests automatically discovered.
+      - run: node harness/cloudflare-ci.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-test-evidence
+          path: cloudflare/.local/ci/
+          if-no-files-found: error
+      # Tests only: no cloud credentials, deployment commands or production requests.

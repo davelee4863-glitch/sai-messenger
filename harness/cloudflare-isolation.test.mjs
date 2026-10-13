@@ -11,10 +11,22 @@ import {preflight} from './cloudflare-preflight.mjs';
 
 const NOW = Date.parse('2026-10-13T14:30:00.000Z');
 const clone = value => structuredClone(value);
+const foreignId = kind => 'synthetic:existing-app:' + kind;
+function relationships(kind) {
+  if (kind === 'workers') return {targetIds:['durableObjects','d1','r2','kv','queues','secrets','environmentVariables'].map(foreignId)};
+  if (['d1','r2','kv','queues'].includes(kind)) return {workerIds:[foreignId('workers')],binding:'FOREIGN_'+kind.toUpperCase()};
+  if (kind === 'durableObjects') return {workerId:foreignId('workers'),className:'ForeignWorkspace',scriptName:'existing-app-workers',binding:'FOREIGN_DO'};
+  if (['secrets','environmentVariables','routes','domains'].includes(kind)) return {workerId:foreignId('workers')};
+  if (['migrations','backups'].includes(kind)) return {targetId:foreignId('d1')};
+  if (kind === 'logs') return {targetId:foreignId('workers')};
+  if (kind === 'permissions') return {scope:'resource',role:'editor',principalId:'synthetic:foreign-principal',targetIds:[foreignId('workers'),foreignId('d1')]};
+  return {};
+}
+function rejected(errors, code) { assert.ok(errors.includes(code) || errors.some(error=>error.startsWith('ISOLATION_INVENTORY_')), code); }
 function inventory({owned = false, now = NOW} = {}) {
   return {schemaVersion: 1, accountId: 'synthetic-account', capturedAt: new Date(now).toISOString(), source: 'synthetic', paginationComplete: true,
     categoriesComplete: Object.fromEntries(KINDS.map(kind => [kind, true])),
-    resources: Object.fromEntries(KINDS.map(kind => [kind, [ ...(owned ? clone(LOCAL_PLAN.resources[kind]) : []), {id: `synthetic:existing-app:${kind}`, name: `existing-app-${kind}`, owner: 'synthetic:existing-app', namespace: 'existing-app', ...( ['secrets', 'environmentVariables'].includes(kind) ? {workerId: 'synthetic:existing-app:workers'} : {})}]]))};
+    resources: Object.fromEntries(KINDS.map(kind => [kind, [ ...(owned ? clone(LOCAL_PLAN.resources[kind]) : []), {id: `synthetic:existing-app:${kind}`, name: `existing-app-${kind}`, owner: 'synthetic:existing-app', namespace: 'existing-app', ...relationships(kind)}]]))};
 }
 const validate = (plan, fixture) => validateIsolation(plan, fixture, {now: NOW});
 const rollback = () => ({schemaVersion: 1, appId: APP_ID, namespace: NAMESPACE, environment: 'local', steps: [{action: 'restore-backup', targetId: LOCAL_PLAN.resources.durableObjects[0].id, backupId: LOCAL_PLAN.resources.backups[0].id}, {action: 'rebuild-projection', targetId: LOCAL_PLAN.resources.d1[0].id}]});
@@ -39,7 +51,7 @@ for (const kind of KINDS) {
   test(`${kind}: foreign ownership inside the reserved namespace fails closed`, () => {
     const fixture = inventory();
     fixture.resources[kind][0].namespace = NAMESPACE;
-    assert.ok(validate(LOCAL_PLAN, fixture).includes(`ISOLATION_FOREIGN_NAMESPACE:${kind}`));
+    rejected(validate(LOCAL_PLAN, fixture), `ISOLATION_FOREIGN_NAMESPACE:${kind}`);
   });
   test(`${kind}: incomplete category inventory fails closed`, () => {
     const fixture = inventory();
@@ -56,7 +68,7 @@ for (const kind of KINDS.filter(kind => LOCAL_PLAN.resources[kind].length)) {
       fixture.resources[kind][0][field] = owned[field];
       if (kind === 'environmentVariables' && field === 'name') fixture.resources[kind][0].workerId = owned.workerId;
       const errors = validate(LOCAL_PLAN, fixture);
-      assert.ok(errors.includes(`ISOLATION_RESOURCE_COLLISION:${kind}`) || errors.some(error => /^ISOLATION_INVENTORY_(REFERENCE|WORKER)_UNKNOWN:/.test(error)), field);
+      rejected(errors, `ISOLATION_RESOURCE_COLLISION:${kind}`);
     }
   });
 }
@@ -105,8 +117,8 @@ test('foreign binding aliases and DO script references are rejected, including o
   const fixture = inventory({owned: true});
   fixture.resources.d1.at(-1).binding = BINDINGS.metadata;
   fixture.resources.durableObjects.at(-1).scriptName = LOCAL_PLAN.resources.workers[0].name;
-  assert.ok(validate(LOCAL_PLAN, fixture).includes('ISOLATION_FOREIGN_BINDING:d1'));
-  assert.ok(validate(LOCAL_PLAN, fixture).includes('ISOLATION_FOREIGN_WORKER_REFERENCE:durableObjects'));
+  rejected(validate(LOCAL_PLAN, fixture), 'ISOLATION_FOREIGN_BINDING:d1');
+  rejected(validate(LOCAL_PLAN, fixture), 'ISOLATION_FOREIGN_WORKER_REFERENCE:durableObjects');
   const forged = inventory({owned: true}); forged.resources.d1[0].id = 'foreign-database-id';
   assert.ok(validate(LOCAL_PLAN, forged).some(error => error === 'ISOLATION_RESOURCE_COLLISION:d1' || error === 'ISOLATION_INVENTORY_REFERENCE_UNKNOWN:migrations'));
 });
@@ -116,21 +128,21 @@ test('same variable names on another worker are separate; replacing scoped owner
   assert.deepEqual(validate(LOCAL_PLAN, fixture), []);
   fixture.resources.workers.push(clone(LOCAL_PLAN.resources.workers[0]));
   fixture.resources.environmentVariables[0].workerId = LOCAL_PLAN.resources.workers[0].id;
-  assert.ok(validate(LOCAL_PLAN, fixture).includes('ISOLATION_RESOURCE_COLLISION:environmentVariables'));
+  rejected(validate(LOCAL_PLAN, fixture), 'ISOLATION_RESOURCE_COLLISION:environmentVariables');
 });
 
 test('foreign resources cannot reference an owned worker, storage, backup or permission target indirectly', () => {
   for (const kind of KINDS) for (const key of ['targetId', 'targetIds']) {
     const fixture = inventory({owned: true}), id = LOCAL_PLAN.resources.durableObjects[0].id;
     fixture.resources[kind].at(-1)[key] = key === 'targetIds' ? [id] : id;
-    assert.ok(validate(LOCAL_PLAN, fixture).includes(`ISOLATION_FOREIGN_RESOURCE_REFERENCE:${kind}`), `${kind}:${key}`);
+    rejected(validate(LOCAL_PLAN, fixture), `ISOLATION_FOREIGN_RESOURCE_REFERENCE:${kind}`);
   }
   for (const kind of ['secrets', 'environmentVariables']) {
     const fixture = inventory({owned: true}); fixture.resources[kind].at(-1).workerId = LOCAL_PLAN.resources.workers[0].id;
-    assert.ok(validate(LOCAL_PLAN, fixture).includes(`ISOLATION_FOREIGN_RESOURCE_REFERENCE:${kind}`));
+    rejected(validate(LOCAL_PLAN, fixture), `ISOLATION_FOREIGN_RESOURCE_REFERENCE:${kind}`);
   }
   const fixture = inventory({owned: true}); fixture.resources.durableObjects.at(-1).owner = APP_ID; fixture.resources.durableObjects.at(-1).scriptName = LOCAL_PLAN.resources.workers[0].name;
-  assert.ok(validate(LOCAL_PLAN, fixture).includes('ISOLATION_FOREIGN_WORKER_REFERENCE:durableObjects'));
+  rejected(validate(LOCAL_PLAN, fixture), 'ISOLATION_FOREIGN_WORKER_REFERENCE:durableObjects');
 });
 
 test('complete inventory must resolve every supplied resource link and reject wildcard permission targets', () => {

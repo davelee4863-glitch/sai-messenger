@@ -85,6 +85,21 @@
       "id": "CF-IMMUTABLE-BUILD",
       "rule": "Parallel runtime builds return immutable complete Worker sources, no shared partial output.",
       "test": "cloudflare/tests/config.test.mjs"
+    },
+    {
+      "id": "CF-PERMISSION-EXPLICIT",
+      "rule": "Mandatory exact resource scope, known role, principal ID and unique nonempty allowed target IDs; forbid mixed apps or broad/unknown scopes. Metadata never proves effective IAM isolation.",
+      "test": "harness/cloudflare-isolation-policy.test.mjs"
+    },
+    {
+      "id": "CF-RELATION-COMPLETE",
+      "rule": "Require typed same-owner/same-namespace relationships, reciprocal Worker storage/DO/variable bindings, worker-scoped routes/domains and owned backup/log/migration targets; distinguish explicit unbound from unknown.",
+      "test": "harness/cloudflare-isolation-policy.test.mjs"
+    },
+    {
+      "id": "CF-CI-COMPLETE",
+      "rule": "Auto-discover new tests, retain 27 baseline files/348 cases, fail omissions/launch errors/zero totals/skips/cancellations/todo, separate counts and preserve failure evidence. Browser-only procedures remain explicit NOT_RUN.",
+      "test": "harness/cloudflare-ci.test.mjs"
     }
   ]
 }

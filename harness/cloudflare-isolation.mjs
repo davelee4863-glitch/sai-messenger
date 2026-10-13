@@ -11,9 +11,10 @@ const settings = ['MODE', 'ORIGIN', 'PBX_CF_APP_ID', 'PBX_CF_NAMESPACE', 'REQUES
 const owned = (id, name, extra = {}) => ({id, name, owner: APP_ID, namespace: NAMESPACE, ...extra});
 const resources = Object.fromEntries(KINDS.map(kind => [kind, []]));
 resources.workers = [owned(WORKER_ID, WORKER_NAME)];
-resources.d1 = [owned(D1_ID, `${NAMESPACE}-meta`, {binding: BINDINGS.metadata})];
-resources.durableObjects = [owned(DO_ID, WORKSPACE_NAME, {binding: BINDINGS.workspace, className: DO_CLASS, scriptName: WORKER_NAME})];
+resources.d1 = [owned(D1_ID, `${NAMESPACE}-meta`, {binding: BINDINGS.metadata, workerIds: [WORKER_ID]})];
+resources.durableObjects = [owned(DO_ID, WORKSPACE_NAME, {binding: BINDINGS.workspace, className: DO_CLASS, scriptName: WORKER_NAME, workerId: WORKER_ID})];
 resources.environmentVariables = settings.map(name => owned(`local:${NAMESPACE}:var:${name}`, name, {workerId: WORKER_ID}));
+resources.workers[0].targetIds = [DO_ID, D1_ID, ...resources.environmentVariables.map(row => row.id)];
 resources.migrations = [owned(`local:${NAMESPACE}:migration:cf-v1`, `${NAMESPACE}-schema-cf-v1`, {targetId: DO_ID}), owned(`local:${NAMESPACE}:migration:projection`, `${NAMESPACE}-projection-v1`, {targetId: D1_ID})];
 resources.backups = [owned(BACKUP_ID, `${NAMESPACE}-logical-backup`, {targetId: DO_ID})];
 resources.logs = [owned(`local:${NAMESPACE}:logs`, `${NAMESPACE}-local-log`, {targetId: WORKER_ID})];
@@ -56,9 +57,22 @@ export function validateLocalPlan(plan) {
   return errors;
 }
 
-const RECORD_KEYS = ['id', 'name', 'owner', 'namespace', 'binding', 'workerId', 'targetId', 'targetIds', 'className', 'scriptName'];
+const IDENTITY_KEYS = ['id', 'name', 'owner', 'namespace'];
+const RECORD_FIELDS = {
+  workers: ['targetIds'],
+  d1: ['workerIds', 'binding'], r2: ['workerIds', 'binding'], kv: ['workerIds', 'binding'], queues: ['workerIds', 'binding'],
+  durableObjects: ['workerId', 'className', 'scriptName', 'binding'],
+  secrets: ['workerId'], environmentVariables: ['workerId'],
+  routes: ['workerId'], domains: ['workerId'],
+  migrations: ['targetId'], backups: ['targetId'], logs: ['targetId'],
+  permissions: ['scope', 'role', 'principalId', 'targetIds'],
+};
+const STORAGE = new Set(['d1', 'r2', 'kv', 'queues']);
+const BOUND = new Set(['durableObjects', ...STORAGE, 'secrets', 'environmentVariables']);
+const PERMISSION_ROLES = new Set(['metadata-read-only', 'content-read-only', 'editor', 'admin']);
 const scoped = new Set(['secrets', 'environmentVariables']);
-const exactIdentifier = value => label(value) && !/[*?]/.test(value);
+const exactIdentifier = value => label(value) && !/[*?]/.test(value) && !/^(UNKNOWN|UNVERIFIED|UNCONFIRMED|PENDING|NOT_RUN|NONE|N\/A)$/i.test(value);
+const identifiers = value => Array.isArray(value) && value.every(exactIdentifier) && new Set(value).size === value.length;
 function inspectInventory(inventory, now) {
   const errors = [];
   if (!strictData(inventory)) return ['ISOLATION_INVENTORY_NON_JSON_DATA'];
@@ -74,9 +88,16 @@ function inspectInventory(inventory, now) {
     if (!Array.isArray(rows)) { errors.push(`ISOLATION_INVENTORY_NOT_ARRAY:${kind}`); continue; }
     const ids = new Set(), names = new Set();
     for (const row of rows) {
-      if (!exactKeys(row, RECORD_KEYS) || !['id', 'name', 'owner', 'namespace'].every(key => label(row[key])) || !Object.entries(row).every(([key, value]) => key === 'targetIds' ? Array.isArray(value) && value.length > 0 && value.every(label) && new Set(value).size === value.length : label(value))) { errors.push(`ISOLATION_INVENTORY_INVALID_RECORD:${kind}`); continue; }
+      if (!exactKeys(row, [...IDENTITY_KEYS, ...RECORD_FIELDS[kind]]) || !IDENTITY_KEYS.every(key => label(row[key])) || !Object.entries(row).every(([key, value]) => ['targetIds', 'workerIds'].includes(key) ? Array.isArray(value) && value.every(label) && new Set(value).size === value.length : label(value))) { errors.push(`ISOLATION_INVENTORY_INVALID_RECORD:${kind}`); continue; }
       if (['id', 'owner', 'namespace', 'workerId', 'targetId'].filter(key => Object.hasOwn(row, key)).some(key => !exactIdentifier(row[key])) || row.targetIds?.some(id => !exactIdentifier(id))) errors.push(`ISOLATION_INVENTORY_WILDCARD_IDENTIFIER:${kind}`);
       if (scoped.has(kind) && !label(row.workerId)) errors.push(`ISOLATION_INVENTORY_SCOPE_MISSING:${kind}`);
+      if (['id', 'owner', 'namespace', 'workerId', 'targetId', 'principalId'].filter(key => Object.hasOwn(row, key)).some(key => !exactIdentifier(row[key])) || row.workerIds?.some(id => !exactIdentifier(id))) errors.push(`ISOLATION_INVENTORY_IDENTITY_UNVERIFIED:${kind}`);
+      if (kind === 'workers' && !identifiers(row.targetIds)) errors.push('ISOLATION_INVENTORY_RELATION_MISSING:workers');
+      if (STORAGE.has(kind) && (!identifiers(row.workerIds) || (row.workerIds.length > 0 && !exactIdentifier(row.binding)) || (row.workerIds.length === 0 && Object.hasOwn(row, 'binding')))) errors.push(`ISOLATION_INVENTORY_RELATION_MISSING:${kind}`);
+      if (['durableObjects', 'secrets', 'environmentVariables', 'routes', 'domains'].includes(kind) && !exactIdentifier(row.workerId)) errors.push(`ISOLATION_INVENTORY_RELATION_MISSING:${kind}`);
+      if (kind === 'durableObjects' && !['className', 'scriptName', 'binding'].every(key => exactIdentifier(row[key]))) errors.push('ISOLATION_INVENTORY_RELATION_MISSING:durableObjects');
+      if (['migrations', 'backups', 'logs'].includes(kind) && !exactIdentifier(row.targetId)) errors.push(`ISOLATION_INVENTORY_RELATION_MISSING:${kind}`);
+      if (kind === 'permissions' && (row.scope !== 'resource' || !PERMISSION_ROLES.has(row.role) || !exactIdentifier(row.principalId) || !identifiers(row.targetIds) || row.targetIds.length === 0)) errors.push('ISOLATION_INVENTORY_PERMISSION_SCOPE');
       const name = `${scoped.has(kind) ? row.workerId : ''}\0${row.name.toLowerCase()}`;
       if (ids.has(row.id) || names.has(name)) errors.push(`ISOLATION_INVENTORY_DUPLICATE:${kind}`);
       ids.add(row.id); names.add(name);
@@ -86,12 +107,47 @@ function inspectInventory(inventory, now) {
     const allIds = KINDS.flatMap(kind => inventory.resources[kind].map(row => row.id));
     const ids = new Set(allIds);
     if (ids.size !== allIds.length) errors.push('ISOLATION_INVENTORY_AMBIGUOUS_RESOURCE_ID');
+    const lookup = new Map(KINDS.flatMap(kind => inventory.resources[kind].map(row => [row.id, {kind, row}])));
     const workerIds = new Set(inventory.resources.workers.map(row => row.id));
     const workerNames = new Set(inventory.resources.workers.map(row => row.name));
+    const sameApp = (a, b) => a.owner === b.owner && a.namespace === b.namespace;
+    const permissionPrincipals = new Map();
     for (const kind of KINDS) for (const row of inventory.resources[kind]) {
-      if ([row.targetId, ...(row.targetIds ?? [])].filter(Boolean).some(id => !ids.has(id))) errors.push(`ISOLATION_INVENTORY_REFERENCE_UNKNOWN:${kind}`);
+      const references = [row.workerId, row.targetId, ...(row.targetIds ?? []), ...(row.workerIds ?? [])].filter(Boolean);
+      if (references.some(id => !ids.has(id))) errors.push(`ISOLATION_INVENTORY_REFERENCE_UNKNOWN:${kind}`);
       if (row.workerId && !workerIds.has(row.workerId)) errors.push(`ISOLATION_INVENTORY_WORKER_UNKNOWN:${kind}`);
       if (row.scriptName && !workerNames.has(row.scriptName)) errors.push(`ISOLATION_INVENTORY_SCRIPT_UNKNOWN:${kind}`);
+      if (references.some(id => lookup.has(id) && !sameApp(row, lookup.get(id).row))) errors.push(`ISOLATION_INVENTORY_REFERENCE_FOREIGN:${kind}`);
+      if (row.workerIds?.some(id => !workerIds.has(id))) errors.push(`ISOLATION_INVENTORY_WORKER_UNKNOWN:${kind}`);
+      if (kind === 'workers') for (const id of row.targetIds) {
+        const target = lookup.get(id);
+        if (target && (!BOUND.has(target.kind) || !(STORAGE.has(target.kind) ? target.row.workerIds.includes(row.id) : target.row.workerId === row.id))) errors.push('ISOLATION_INVENTORY_RELATION_MISMATCH:workers');
+      }
+      if (BOUND.has(kind)) for (const id of STORAGE.has(kind) ? row.workerIds : [row.workerId]) {
+        const worker = lookup.get(id);
+        if (worker?.kind === 'workers' && !worker.row.targetIds.includes(row.id)) errors.push(`ISOLATION_INVENTORY_RELATION_MISMATCH:${kind}`);
+      }
+      if (kind === 'durableObjects' && lookup.get(row.workerId)?.row.name !== row.scriptName) errors.push('ISOLATION_INVENTORY_RELATION_MISMATCH:durableObjects');
+      if (['migrations', 'backups', 'logs'].includes(kind)) {
+        const allowed = kind === 'logs' ? ['workers', ...BOUND] : ['d1', 'durableObjects', 'r2', 'kv'];
+        if (lookup.has(row.targetId) && !allowed.includes(lookup.get(row.targetId).kind)) errors.push(`ISOLATION_INVENTORY_TARGET_KIND:${kind}`);
+      }
+      if (kind === 'permissions') {
+        if (row.targetIds.some(id => lookup.has(id) && !['workers', 'durableObjects', ...STORAGE].includes(lookup.get(id).kind))) errors.push('ISOLATION_INVENTORY_PERMISSION_TARGET_KIND');
+        const principalApp = `${row.owner}\0${row.namespace}`;
+        if (permissionPrincipals.has(row.principalId) && permissionPrincipals.get(row.principalId) !== principalApp) errors.push('ISOLATION_INVENTORY_PERMISSION_MIXED_PRINCIPAL');
+        permissionPrincipals.set(row.principalId, principalApp);
+      }
+    }
+    // Binding aliases are scoped to a Worker, never evidence of actual cloud ownership.
+    for (const worker of inventory.resources.workers) {
+      const names = new Set();
+      for (const id of worker.targetIds) {
+        const target = lookup.get(id); if (!target) continue;
+        const name = scoped.has(target.kind) ? target.row.name : target.row.binding;
+        if (!name || names.has(name)) errors.push('ISOLATION_INVENTORY_BINDING_COLLISION');
+        names.add(name);
+      }
     }
   }
   return errors;
@@ -99,6 +155,9 @@ function inspectInventory(inventory, now) {
 
 export function validateIsolation(plan, inventory, {mode = 'local', now = Date.now()} = {}) {
   const errors = [...validateLocalPlan(plan), ...inspectInventory(inventory, now)];
+  if (object(inventory) && strictData(inventory) && object(inventory.resources)) for (const kind of KINDS) for (const row of Array.isArray(inventory.resources[kind]) ? inventory.resources[kind] : []) {
+    if (object(row) && row.namespace === NAMESPACE && row.owner !== APP_ID) errors.push(`ISOLATION_FOREIGN_NAMESPACE:${kind}`);
+  }
   if (!['local', 'deployment'].includes(mode)) errors.push('ISOLATION_UNKNOWN_MODE');
   if (mode === 'deployment') {
     // The human approval scope for this candidate is harness/local verification only.

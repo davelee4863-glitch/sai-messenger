@@ -12,7 +12,22 @@
         "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker",
         "name": "promise-box-sai-cf-dev-80f5fa37c2e8-worker",
         "owner": "davelee4863-glitch/sai-messenger:promise-box",
-        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8"
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "targetIds": [
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:workspace",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:meta",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:MODE",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:ORIGIN",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:PBX_CF_APP_ID",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:PBX_CF_NAMESPACE",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:REQUEST_BUDGET",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:READ_BUDGET",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:WRITE_BUDGET",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:SESSION_IDLE_MS",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:SESSION_ABSOLUTE_MS",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:QUOTA_PAUSED",
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:D1_FAILURE"
+        ]
       }
     ],
     "d1": [
@@ -21,7 +36,10 @@
         "name": "promise-box-sai-cf-dev-80f5fa37c2e8-meta",
         "owner": "davelee4863-glitch/sai-messenger:promise-box",
         "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
-        "binding": "PBX_CF_META"
+        "binding": "PBX_CF_META",
+        "workerIds": [
+          "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+        ]
       }
     ],
     "durableObjects": [
@@ -32,7 +50,8 @@
         "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
         "binding": "PBX_CF_WORKSPACE",
         "className": "PBXWorkspace",
-        "scriptName": "promise-box-sai-cf-dev-80f5fa37c2e8-worker"
+        "scriptName": "promise-box-sai-cf-dev-80f5fa37c2e8-worker",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
       }
     ],
     "r2": [],

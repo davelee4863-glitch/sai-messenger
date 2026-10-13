@@ -26,7 +26,16 @@
         "id": "synthetic:existing-app:workers",
         "name": "existing-app-workers",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "targetIds": [
+          "synthetic:existing-app:durableObjects",
+          "synthetic:existing-app:d1",
+          "synthetic:existing-app:r2",
+          "synthetic:existing-app:kv",
+          "synthetic:existing-app:queues",
+          "synthetic:existing-app:secrets",
+          "synthetic:existing-app:environmentVariables"
+        ]
       }
     ],
     "d1": [
@@ -34,7 +43,11 @@
         "id": "synthetic:existing-app:d1",
         "name": "existing-app-d1",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "workerIds": [
+          "synthetic:existing-app:workers"
+        ],
+        "binding": "FOREIGN_D1"
       }
     ],
     "durableObjects": [
@@ -42,7 +55,11 @@
         "id": "synthetic:existing-app:durableObjects",
         "name": "existing-app-durableObjects",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "workerId": "synthetic:existing-app:workers",
+        "className": "ForeignWorkspace",
+        "scriptName": "existing-app-workers",
+        "binding": "FOREIGN_DO"
       }
     ],
     "r2": [
@@ -50,7 +67,11 @@
         "id": "synthetic:existing-app:r2",
         "name": "existing-app-r2",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "workerIds": [
+          "synthetic:existing-app:workers"
+        ],
+        "binding": "FOREIGN_R2"
       }
     ],
     "kv": [
@@ -58,7 +79,11 @@
         "id": "synthetic:existing-app:kv",
         "name": "existing-app-kv",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "workerIds": [
+          "synthetic:existing-app:workers"
+        ],
+        "binding": "FOREIGN_KV"
       }
     ],
     "queues": [
@@ -66,7 +91,11 @@
         "id": "synthetic:existing-app:queues",
         "name": "existing-app-queues",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "workerIds": [
+          "synthetic:existing-app:workers"
+        ],
+        "binding": "FOREIGN_QUEUES"
       }
     ],
     "secrets": [
@@ -83,7 +112,8 @@
         "id": "synthetic:existing-app:routes",
         "name": "existing-app-routes",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "workerId": "synthetic:existing-app:workers"
       }
     ],
     "domains": [
@@ -91,7 +121,8 @@
         "id": "synthetic:existing-app:domains",
         "name": "existing-app-domains",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "workerId": "synthetic:existing-app:workers"
       }
     ],
     "environmentVariables": [
@@ -108,7 +139,8 @@
         "id": "synthetic:existing-app:migrations",
         "name": "existing-app-migrations",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "targetId": "synthetic:existing-app:d1"
       }
     ],
     "backups": [
@@ -116,7 +148,8 @@
         "id": "synthetic:existing-app:backups",
         "name": "existing-app-backups",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "targetId": "synthetic:existing-app:d1"
       }
     ],
     "logs": [
@@ -124,7 +157,8 @@
         "id": "synthetic:existing-app:logs",
         "name": "existing-app-logs",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "targetId": "synthetic:existing-app:workers"
       }
     ],
     "permissions": [
@@ -132,7 +166,14 @@
         "id": "synthetic:existing-app:permissions",
         "name": "existing-app-permissions",
         "owner": "synthetic:existing-app",
-        "namespace": "existing-app"
+        "namespace": "existing-app",
+        "scope": "resource",
+        "role": "editor",
+        "principalId": "synthetic:foreign-principal",
+        "targetIds": [
+          "synthetic:existing-app:workers",
+          "synthetic:existing-app:d1"
+        ]
       }
     ]
   }
