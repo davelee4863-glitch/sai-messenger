@@ -1,5 +1,5 @@
 import {createServer} from 'node:http';
-import {readFileSync} from 'node:fs';
+import {readFileSync,existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {randomUUID} from 'node:crypto';
@@ -103,7 +103,7 @@ export function createMVP({dbFile,port=0,host='127.0.0.1',now=Date.now,limits={}
  return {store,server,wss,async listen(){await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});return {port:currentPort(),url:'http://127.0.0.1:'+currentPort()};},async close(){clearInterval(heartbeat);for(const ws of wss.clients)ws.terminate();await new Promise(resolve=>wss.close(resolve));await new Promise(resolve=>server.close(resolve));store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
- const dbFile=process.env.MVP_SQLITE_FILE;if(!dbFile)throw new Error('MVP_SQLITE_FILE must explicitly name the isolated test database');
+ const dbFile=process.env.MVP_SQLITE_FILE;if(!dbFile||!existsSync(dbFile))throw new Error('MVP_SQLITE_FILE must explicitly name an existing provisioned isolated test database');
  if(process.env.MVP_EXTERNAL_API&&process.env.MVP_EXTERNAL_API!=='off')throw new Error('External API mode must remain off');
  const app=createMVP({dbFile,port:Number(process.env.MVP_PORT||4174),host:process.env.MVP_HOST||'127.0.0.1'});
  await app.listen();console.log(JSON.stringify({event:'mvp.ready',port:app.server.address().port,mode:'isolated-synthetic',externalApiEnabled:false}));

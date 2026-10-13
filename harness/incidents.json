@@ -354,8 +354,26 @@
       "regressionTest": "mvp/tests/policy.test.mjs",
       "resolvedBy": "codex-root",
       "evidence": "core-tests-33.tap preserves the CRLF versus LF mismatch and unchanged workflow path; no legacy source was modified.",
-      "regressionResult": "NOT_RUN",
-      "regressionEvidence": "Corrected policy rerun pending; no PASS claimed.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Actual core-tests-33-fixed.tap: 33/33 PASS; updated core-tests-37-fixed.tap: 37/37 PASS, including normalized Git source preservation. First CRLF failure retained separately.",
+      "independentReviewResult": "NOT_RUN"
+    },
+    {
+      "id": "SAI-INC-20261013-18",
+      "occurredAt": "2026-10-13T09:43:01.342Z",
+      "loggedAt": "2026-10-13T09:45:23.863Z",
+      "recordType": "REAL",
+      "severity": "MEDIUM",
+      "status": "MITIGATING",
+      "symptom": "Fresh Reviewer rejected ff2e38b on three recovery utility failures: missing backup source produced an empty successful backup; marker-only or altered schema was accepted at startup/restore; private credential output failure left four inaccessible committed users. Root reproduced all three: 0/3 PASS.",
+      "rootCause": "Recovery trusted a schema revision marker instead of the full schema, used a create-capable Store for backup paths, and committed seed accounts before writing their private credentials.",
+      "resolution": "Reject missing backup/CLI server sources; validate complete tables, constraints, indexes, integrity and foreign keys before opening an existing database or creating a restore target; preflight and exclusively reserve private output and commit all account rows only after the credential write is synced, cleaning failed output and rolling back inserts.",
+      "prevention": "Test wrong paths and corrupt/incomplete schema before reporting recovery success. Provisioning errors must leave a retryable database. Never silently repair an incompatible backup or claim an empty replacement is successful recovery.",
+      "regressionTest": "mvp/tests/recovery-safety.test.mjs",
+      "resolvedBy": "codex-root",
+      "evidence": "Independent first review FAIL: fresh-core-review.json/fresh-core-recovery.json on ff2e38b; actual root reproduction recovery-safety-first.tap 0 PASS/3 FAIL. Existing source and private test values were never published.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "core-tests-37-fixed.tap: 37/37 PASS, including all three recovery failures, platform-newline recovery, real crash/restart and backup restore. Original independent failure remains preserved; corrected exact-candidate independent review pending.",
       "independentReviewResult": "NOT_RUN"
     }
   ]
