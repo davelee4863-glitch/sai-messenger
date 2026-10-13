@@ -288,17 +288,21 @@
       "loggedAt": "2026-10-13T08:25:21.995Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "First UI push passed all 166 remote tests but the Pages publish job was rejected before runner execution: the UI branch was not allowed by github-pages environment protection rules.",
       "rootCause": "The new Pages-only environment defaulted to a selected main branch rule. Preflight inspected Pages Source and workflow branch but did not verify the actual environment deployment branch rule.",
       "resolution": "Changed the existing Pages-only selected branch rule from main to the exact UI preview branch, keeping one branch and zero tags, with no environment secrets or variables and no Production change. Failed job rerun succeeded and the real public site opened with b82c400 metadata. Added an offline observation guard and eight negative/positive tests; corrected its initial nested-button-label parsing failure against the real snapshot.",
       "prevention": "Before publication inspect actual Pages Source, workflow source branch and Pages-only environment allowed branch. Keep Selected branches mode and reject widened or mismatched rules, credentials and tags. Treat saved-observation tests, actual remote deployment and live-site visits as separate evidence.",
       "regressionTest": "tests/ui-pages-environment.test.mjs",
       "resolvedBy": "codex-root",
-      "evidence": "pages-first-deploy-failure.json preserves run 38367512875 attempt 1: verify 166 PASS and publish rejected. pages-environment-before.txt shows main-only, after.txt shows exact UI branch only. No operating endpoint, production environment, user data or secret value was accessed; the Pages environment explicitly had no secrets or variables. Initial local observation parser incorrectly included nested Edit/Remove labels; actual first rejection and corrected eight-case regression are preserved separately.",
+      "evidence": "pages-first-deploy-failure.json preserves run 38367512875 attempt 1: verify 166 PASS and publish rejected. pages-environment-before.txt shows main-only, after.txt shows exact UI branch only. No operating endpoint, production environment, user data or secret value was accessed; the Pages environment explicitly had no secrets or variables. Initial local observation parser incorrectly included nested Edit/Remove labels; pages-guard-initial-parser-failure.json explicitly transcribes root tool history because original stderr was not saved. The initial seven-test synthetic PASS and corrected eight-case test evidence are preserved separately.",
       "regressionResult": "PASS",
-      "regressionEvidence": "Eight Pages guard tests PASS in ui-pages-guard-tests-final.tap. Actual saved before settings exit 1 and after exit 0; failed-job rerun succeeded at publish job 115199839359, sourceCommit b82c400; github-first-publish-success.log. Root actually visited https://davelee4863-glitch.github.io/sai-messenger/ and saw the synthetic UI and version footer. Independent delta review pending.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Eight Pages guard tests PASS in ui-pages-guard-tests-final.tap. Actual saved before settings exit 1 and after exit 0; failed-job rerun succeeded at publish job 115199839359, sourceCommit b82c400; github-first-publish-success.log. Root actually visited https://davelee4863-glitch.github.io/sai-messenger/ and saw the synthetic UI and version footer. Independent exact-candidate delta review PASS: fresh-pages-review.json.",
+      "independentReviewResult": "PASS",
+      "reviewedBy": "codex-fresh-pages-reviewer /root/pages_gate_review",
+      "verifiedAt": "2026-10-13T08:32:58.589Z",
+      "verificationCommit": "6e18a925f0be81e4dde1527cf88c7a3664488c88",
+      "verificationEvidence": "Independent fresh Pages reviewer made no implementation edits. Exact 6e18 six-file delta reviewed, all prior 13 incident objects/core UI/product/baseline files preserved, full 174/174 Node tests independently PASS, actual saved before/after policy guards exit 1/0. Protection states remain unchanged except one selected exact UI branch rule, zero tags and no secrets/variables. Remote successful publish and verify jobs independently queried; public b82 metadata independently read. Reviewer browser/Production/billing access NOT_RUN. Evidence fresh-pages-review.json; root live UI 22/22 and seven-size layout77/77 PASS separately preserved."
     }
   ]
 }
