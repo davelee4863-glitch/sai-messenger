@@ -100,6 +100,11 @@
       "id": "CF-CI-COMPLETE",
       "rule": "Auto-discover new tests, retain 27 baseline files/348 cases, fail omissions/launch errors/zero totals/skips/cancellations/todo, separate counts and preserve failure evidence. Browser-only procedures remain explicit NOT_RUN.",
       "test": "harness/cloudflare-ci.test.mjs"
+    },
+    {
+      "id": "CF-DEPENDENCY-PATCHES",
+      "rule": "Scope exact patched overrides to the pinned Miniflare; verify installed/locked leaf versions and loaded native patch floors, retain full401 regression coverage, audit failures blockCI. Host dependency patches never constitute actualCloud IAM/deployment approval.",
+      "test": "cloudflare/tests/dependency-security.test.mjs"
     }
   ]
 }

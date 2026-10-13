@@ -16,7 +16,7 @@ test('policy: Cloudflare remote validation includes all UI and Node MVP regressi
  assert.match(workflow,/run: node harness\/cloudflare-ci\.mjs/);
  for(const path of ['tests/ui-state.test.mjs','tests/ui-static.test.mjs','tests/ui-qr.test.mjs','tests/ui-build.test.mjs','tests/ui-pages-environment.test.mjs'])assert.ok(contract.files.includes(path),path);
  assert.equal(contract.files.filter(path=>path.startsWith('mvp/tests/')).length,12);
- assert.equal(contract.baselineFiles.length,27);assert.deepEqual(contract.errors,[]);
+ assert.equal(contract.baselineFiles.length,29);assert.equal(manifest.baselineExpectedCases,401);assert.deepEqual(contract.errors,[]);
  assert.match(workflow,/branches: \[feat\/promise-box-cloudflare-harness-fix-20261014\]/);assert.match(workflow,/contents: read/);assert.doesNotMatch(workflow,/secrets\.|wrangler\s+deploy|pages\s+deploy|railway\s+up/);
 });
 test('new nested isolation test files are automatically included',t=>{const {dir,manifest}=fixture(t);mkdirSync(resolve(dir,'harness/new'),{recursive:true});writeFileSync(resolve(dir,'harness/new/guard.test.mjs'),'// synthetic test source');assert.ok(validateCoverage(dir,manifest).files.includes('harness/new/guard.test.mjs'));});

@@ -14,5 +14,11 @@
   "devDependencies": {
     "miniflare": "4.20260730.0",
     "esbuild": "0.28.2"
+  },
+  "overrides": {
+    "miniflare@4.20260730.0": {
+      "sharp": "0.35.5",
+      "undici": "7.29.1"
+    }
   }
 }

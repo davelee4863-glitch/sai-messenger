@@ -1122,9 +1122,9 @@
       "severity": "HIGH",
       "symptom": "Pinned existing Cloudflare emulator dependencies produce three HIGH npm audit entries.",
       "rootCause": "Inherited unchanged miniflare dependency tree includes advisories for sharp and undici. Applicability to deployed Worker and exploitability have not been reproduced.",
-      "prevention": "Triage official advisories, upgrade pinned local-tool dependencies in a separate authorized branch, and rerun runtime/security/transport/recovery tests. Do not automatically apply npm audit fix --force.",
-      "regressionTest": "cloudflare/tests/source.test.mjs",
-      "regressionResult": "NOT_RUN",
+      "prevention": "Require pinned fixed package versions, loaded libheif/librsvg patch floors, Worker bundle exclusion, adversarial primitive tests and exact-head complete CI. Scope overrides to the fixed Miniflare; audit outages/errors/high advisories fail CI. Preserve actualCloud UNVERIFIED/BLOCKED and never apply npm audit fix --force.",
+      "regressionTest": "cloudflare/tests/dependency-security.test.mjs",
+      "regressionResult": "PASS",
       "evidence": "npm-audit-cloudflare.json metadata: high3, critical0, packages miniflare/sharp/undici. Security advisory audit performed; vulnerability exploit reproduction NOT_RUN.",
       "loggedAt": "2026-10-13T15:54:27.024Z",
       "occurrenceAccuracy": "APPROXIMATE_EVIDENCE_CAPTURE",
@@ -1132,10 +1132,10 @@
       "status": "OPEN",
       "verificationCommit": "74bac08885c83740a87f6731d6b6de1230e8f3ba",
       "reviewedBy": "fresh_pm009_review",
-      "resolution": "UNRESOLVED: inherited dependency audit HIGH3; no dependency change authorized in the minimal harness correction.",
-      "resolvedBy": "codex-root-pm010",
-      "regressionEvidence": "Remote CI or vulnerability exploitation NOT_RUN.",
-      "verificationEvidence": "Independent review NOT_RUN. Do not mark VERIFIED yet.",
+      "resolution": "IMPLEMENTED_PENDING_INDEPENDENT_REVIEW: Exact scoped overrides replace only sharp0.35.2→0.35.5 and undici7.28.0→7.29.1 plus sharp native dependencies. Miniflare/workerd/esbuild remain pinned. Full regression/independent/remote evidence pending; real-cloud isolation not claimed.",
+      "resolvedBy": "codex-root-pm011",
+      "regressionEvidence": "Baseline npm auditHIGH3; independent9expected safety failures; corrected new security13PASS and npm audit0 after scoped update. Final frozen-SHA full/independent/remote verification pending. RCE exploit execution NOT_RUN.",
+      "verificationEvidence": "PM011 independent baseline observed affected library primitives; candidate independent verification NOT_RUN.",
       "initialFailureEvidence": "npm-audit-cloudflare.json metadata: high3, critical0, packages miniflare/sharp/undici. Security advisory audit performed; vulnerability exploit reproduction NOT_RUN."
     },
     {
@@ -1257,6 +1257,25 @@
       "verificationEvidence": "Fresh independent code review119PASS plus46fresh/adversarialPASS at exact3e72, full401 TAP audit and successful exact-head remote CI audit. See fresh-review-final.json, full-final-independent-audit.json and remote-first-independent-audit.json. Initial549/c417 FAIL evidence preserved. https://github.com/davelee4863-glitch/sai-messenger/actions/runs/38433739493",
       "independentReviewResult": "PASS_HARNESS_AND_REMOTE_CI_ONLY",
       "cloudIsolationVerification": "UNVERIFIED; no real account inventory/IAM queried; deployment remains BLOCKED"
+    },
+    {
+      "id": "SAI-INC-20261014-11",
+      "recordType": "REAL",
+      "status": "OPEN",
+      "severity": "MEDIUM",
+      "occurredAt": "2026-10-13T17:37:00.214Z",
+      "loggedAt": "2026-10-13T17:37:00.214Z",
+      "occurrenceAccuracy": "APPROXIMATE_EVIDENCE_CAPTURE",
+      "symptom": "Two initial new security regression cases failed after patched dependencies installed and npm audit became0. A later bundle fingerprint check also failed when the test was launched from the parent workspace.",
+      "rootCause": "sharp0.35.5 no longer exports its package.json subpath; the first cache test incorrectly required an explicitly public body with qualified private headers to be uncacheable. Qualified private names limit header storage, not the whole body (RFC9111). esbuild source comments depend on its working directory; comparing a parent-cwd output to a repository-cwd byte hash creates false drift without changing Worker behavior.",
+      "resolution": "Read installed sharp package metadata from its explicit local path and confirm actual loaded sharp version. Use an empty qualified private directive for whole-body rejection; preserve a positive control for permitted public-body caching with private-header stripping. Compute the security graph with explicit repository absWorkingDir and compare against the unchanged bundle builder launched in a child with that canonical cwd. Product build source remains unchanged.",
+      "prevention": "Separate package export compatibility from product API compatibility. Match cache tests to RFC9111 semantics and include positive controls; never weaken safety assertions solely to make a patched package pass. Byte-identity evidence must fix build cwd and retain native-source fingerprints; avoid treating changed relative comment paths as a deployed dependency change.",
+      "regressionTest": "cloudflare/tests/dependency-security.test.mjs",
+      "regressionResult": "PASS",
+      "regressionEvidence": "security-after-first.tap10PASS/2FAIL retained; security-after-corrected.tap13PASS/0FAIL. Final full suite, frozen-SHA independent review and remote CI pending. security-candidate-final.tap13PASS/1FAIL preserved for initial cwd-dependent fingerprint; corrected canonical test rerun pending.",
+      "resolvedBy": "codex-root-pm011",
+      "evidence": "security-after-first.tap tests1/10 FAIL; initial security-before.tap retained, with original qualified-header body expectation explicitly not used as vulnerability proof.",
+      "verificationEvidence": "NOT_RUN until frozen-SHA independent review"
     }
   ]
 }
