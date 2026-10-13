@@ -174,26 +174,62 @@ function save() {
 }
 
 function renderFriends() {
-  const el = document.getElementById('friendsScreen');
-  el.innerHTML = friends.map((f, i) => `
-    <div class="friend" onclick="openChat('${f}')">
-      <div class="avatar">${f[0]}</div>
-      <div class="info"><h3>${f}</h3><p>탭해서 대화하기</p></div>
-    </div>
-  `).join('') || '<p style="padding:20px;color:#999">+ 버튼으로 친구를 추가하세요</p>';
+  const root = document.getElementById('friendsScreen');
+  root.replaceChildren();
+  if (!friends.length) {
+    const p = document.createElement('p');
+    p.style.cssText = 'padding:20px;color:#999';
+    p.textContent = '+ 버튼으로 친구를 추가하세요';
+    root.append(p);
+  }
+  friends.forEach(f => {
+    const item = document.createElement('div');
+    item.className = 'friend';
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = String(f).charAt(0);
+    const info = document.createElement('div');
+    info.className = 'info';
+    const title = document.createElement('h3');
+    title.textContent = String(f);
+    const hint = document.createElement('p');
+    hint.textContent = '탭해서 대화하기';
+    info.append(title, hint);
+    item.append(avatar, info);
+    item.addEventListener('click', () => openChat(f));
+    root.append(item);
+  });
 }
 
 function renderChats() {
-  const el = document.getElementById('chatsScreen');
+  const root = document.getElementById('chatsScreen');
+  root.replaceChildren();
   const ids = Object.keys(rooms);
-  el.innerHTML = ids.map(id => {
-    const r = rooms[id];
-    const last = r.messages[r.messages.length - 1];
-    return `<div class="room" onclick="openChat('${id}')">
-      <div class="avatar">${id[0]}</div>
-      <div class="info"><h3>${id}</h3><p>${last ? last.text.slice(0, 30) : ''}</p></div>
-    </div>`;
-  }).join('') || '<p style="padding:20px;color:#999">채팅방이 없어요</p>';
+  if (!ids.length) {
+    const p = document.createElement('p');
+    p.style.cssText = 'padding:20px;color:#999';
+    p.textContent = '채팅방이 없어요';
+    root.append(p);
+  }
+  ids.forEach(id => {
+    const entries = Array.isArray(rooms[id]?.messages) ? rooms[id].messages : [];
+    const last = entries[entries.length - 1];
+    const item = document.createElement('div');
+    item.className = 'room';
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = id.charAt(0);
+    const info = document.createElement('div');
+    info.className = 'info';
+    const title = document.createElement('h3');
+    title.textContent = id;
+    const preview = document.createElement('p');
+    preview.textContent = last ? String(last.text || '').slice(0, 30) : '';
+    info.append(title, preview);
+    item.append(avatar, info);
+    item.addEventListener('click', () => openChat(id));
+    root.append(item);
+  });
 }
 
 function openChat(name) {
@@ -217,19 +253,45 @@ function renderChatMessages() {
 function addBubble(text, who, sender) {
   const body = document.getElementById('chatBody');
   if (who === 'saved') {
-    const d = document.createElement('div');
-    d.className = 'saved-card';
-    d.innerHTML = `<b>📝 약속 저장됨</b><br>${text}<br>
-      <a href="/api/memo/${currentRoom}/ics">캘린더</a>
-      <a href="/api/memo/${currentRoom}/md" download>메모</a>`;
-    body.appendChild(d);
+    const card = document.createElement('div');
+    card.className = 'saved-card';
+    const heading = document.createElement('b');
+    heading.textContent = '📝 약속 저장됨';
+    const detail = document.createElement('div');
+    detail.style.whiteSpace = 'pre-line';
+    detail.textContent = String(text);
+    const calendar = document.createElement('a');
+    calendar.href = '/api/memo/' + encodeURIComponent(currentRoom) + '/ics';
+    calendar.textContent = '캘린더';
+    const memo = document.createElement('a');
+    memo.href = '/api/memo/' + encodeURIComponent(currentRoom) + '/md';
+    memo.download = '약속.md';
+    memo.textContent = '메모';
+    card.append(heading, detail, calendar, memo);
+    body.append(card);
   } else {
     const row = document.createElement('div');
-    row.className = 'bubble-row ' + who;
-    let html = who !== 'me' ? `<div class="pavatar">${(sender || '?')[0]}</div>` : '';
-    html += `<div><${who !== 'me' ? `div class="pname">${sender}</div>` : 'div'}<div class="bubble">${text.replace(/\n/g, '<br>')}</div></div>`;
-    row.innerHTML = html;
-    body.appendChild(row);
+    row.className = 'bubble-row ' + (who === 'me' ? 'me' : who === 'ai' ? 'ai' : 'other');
+    if (who !== 'me') {
+      const avatar = document.createElement('div');
+      avatar.className = 'pavatar';
+      avatar.textContent = String(sender || '?').charAt(0);
+      row.append(avatar);
+    }
+    const content = document.createElement('div');
+    if (who !== 'me') {
+      const name = document.createElement('div');
+      name.className = 'pname';
+      name.textContent = String(sender || '');
+      content.append(name);
+    }
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = String(text);
+    bubble.style.whiteSpace = 'pre-wrap';
+    content.append(bubble);
+    row.append(content);
+    body.append(row);
   }
   body.scrollTop = body.scrollHeight;
 }
@@ -238,7 +300,10 @@ function connectWS() {
   if (ws) ws.close();
   const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
   ws = new WebSocket(`${proto}//${location.host}/ws?room=${encodeURIComponent(currentRoom)}&name=${encodeURIComponent(myName)}`);
+  const activeRoom = currentRoom;
+  const activeWs = ws;
   ws.onmessage = (ev) => {
+    if (ws !== activeWs || currentRoom !== activeRoom) return;
     const d = JSON.parse(ev.data);
     if (d.type === 'chat') {
       const who = d.name === myName ? 'me' : (d.name === 'AI' ? 'ai' : 'other');
@@ -254,7 +319,9 @@ function connectWS() {
       // 서버 히스토리는 무시 (로컬 사용)
     }
   };
-  ws.onclose = () => setTimeout(() => { if (currentRoom) connectWS(); }, 3000);
+  ws.onclose = () => setTimeout(() => {
+    if (currentRoom === activeRoom && ws === activeWs) connectWS();
+  }, 3000);
 }
 
 function sendMsg() {
@@ -301,14 +368,28 @@ document.getElementById('confirmAdd').onclick = () => {
 // 그룹 채팅
 document.getElementById('groupBtn').onclick = () => {
   const list = document.getElementById('groupFriendList');
-  list.innerHTML = friends.map(f => `
-    <label style="display:flex;align-items:center;padding:8px;cursor:pointer">
-      <input type="checkbox" value="${f}" style="margin-right:8px">
-      <span>${f}</span>
-    </label>
-  `).join('') || '<p style="color:#999">친구를 먼저 추가하세요</p>';
+  list.replaceChildren();
+  if (!friends.length) {
+    const p = document.createElement('p');
+    p.style.color = '#999';
+    p.textContent = '친구를 먼저 추가하세요';
+    list.append(p);
+  }
+  friends.forEach(f => {
+    const label = document.createElement('label');
+    label.style.cssText = 'display:flex;align-items:center;padding:8px;cursor:pointer';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = String(f);
+    checkbox.style.marginRight = '8px';
+    const text = document.createElement('span');
+    text.textContent = String(f);
+    label.append(checkbox, text);
+    list.append(label);
+  });
   document.getElementById('groupModal').classList.add('show');
 };
+
 document.getElementById('cancelGroup').onclick = () => document.getElementById('groupModal').classList.remove('show');
 document.getElementById('confirmGroup').onclick = () => {
   const checked = [...document.querySelectorAll('#groupFriendList input:checked')].map(x => x.value);
