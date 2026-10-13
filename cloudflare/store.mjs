@@ -1,6 +1,7 @@
 import schema from '../mvp/schema.sql';
 import {BusinessStore} from '../mvp/business.mjs';
 import {fail,digest} from '../mvp/security.mjs';
+import {OWNERSHIP,ownedIdentity} from './isolation-identity.mjs';
 export const TABLES=['users','auth_credentials','sessions','rooms','room_members','messages','message_receipts','proposals','promises','promise_attendees','approval_reviews','history','cf_invites','cf_outbox','cf_rate','cf_usage','cf_meta'];
 export class CloudStore extends BusinessStore {
  constructor(ctx){super();this.ctx=ctx;this.sql=ctx.storage.sql;this.meter=null;
@@ -32,11 +33,11 @@ export class CloudStore extends BusinessStore {
  }
  enqueue(){const payload={users:this.users(),invites:this.all('SELECT issuer_id,COUNT(*) AS issued FROM cf_invites GROUP BY issuer_id'),promises:this.all('SELECT id,room_id,host_id,status,version FROM promises ORDER BY id')};this.run('INSERT INTO cf_outbox(payload) VALUES (?)',JSON.stringify(payload));}
  invite(userId,id){return this.tx(()=>{const old=this.get('SELECT * FROM cf_invites WHERE id=?',id);if(old){if(old.issuer_id!==userId)fail(409,'IDEMPOTENCY_CONFLICT','초대 요청 ID가 다릅니다.');return old;}if(this.get('SELECT COUNT(*) AS n FROM cf_invites WHERE issuer_id=?',userId).n>=5)fail(409,'INVITE_LIMIT','가입 초대권은 5장입니다.');this.run('INSERT INTO cf_invites VALUES (?,?,?)',id,userId,this.now());return this.get('SELECT * FROM cf_invites WHERE id=?',id);});}
- exportSnapshot(){const data={format:'promise-box-cf-v1',createdAt:this.now(),tables:Object.fromEntries(TABLES.map(table=>[table,this.all('SELECT * FROM '+table)]))};return {...data,checksum:digest(JSON.stringify(data))};}
- restore(snapshot){if(snapshot?.format!=='promise-box-cf-v1'||!snapshot.tables||snapshot.checksum!==digest(JSON.stringify({format:snapshot.format,createdAt:snapshot.createdAt,tables:snapshot.tables}))||JSON.stringify(Object.keys(snapshot.tables).sort())!==JSON.stringify([...TABLES].sort()))fail(422,'INVALID_BACKUP','지원되는 백업만 복구합니다.');
+ exportSnapshot(){const data={format:'promise-box-cf-v1',owner:OWNERSHIP,createdAt:this.now(),tables:Object.fromEntries(TABLES.map(table=>[table,this.all('SELECT * FROM '+table)]))};return {...data,checksum:digest(JSON.stringify(data))};}
+ restore(snapshot){if(snapshot?.format!=='promise-box-cf-v1'||!ownedIdentity(snapshot.owner)||!snapshot.tables||snapshot.checksum!==digest(JSON.stringify({format:snapshot.format,owner:snapshot.owner,createdAt:snapshot.createdAt,tables:snapshot.tables}))||JSON.stringify(Object.keys(snapshot.tables).sort())!==JSON.stringify([...TABLES].sort()))fail(422,'INVALID_BACKUP','지원되는 격리 앱 백업만 복구합니다.');
   const meta=snapshot.tables.cf_meta;if(!Array.isArray(meta)||meta.length!==2||meta.some(row=>!row||JSON.stringify(Object.keys(row).sort())!==JSON.stringify(['key','value']))||new Set(meta.map(row=>row.key)).size!==2||meta.find(row=>row.key==='schema')?.value!=='cf-v1')fail(422,'INVALID_BACKUP','백업 스키마 표시를 확인해주세요.');
   const epoch=meta.find(row=>row.key==='epoch')?.value;if(typeof epoch!=='string'||!/^\d+$/.test(epoch)||!Number.isSafeInteger(Number(epoch))||Number(epoch)<1||Number(epoch)>=Number.MAX_SAFE_INTEGER)fail(422,'INVALID_BACKUP','백업 복구 세대를 확인해주세요.');
-  if(this.get('SELECT COUNT(*) AS n FROM users').n)fail(409,'RESTORE_TARGET_NOT_EMPTY','새로운 격리 저장소에만 복구합니다.');
+  if(TABLES.filter(table=>table!=='cf_meta').some(table=>this.get('SELECT COUNT(*) AS n FROM '+table).n)||this.get("SELECT value FROM cf_meta WHERE key='epoch'")?.value!=='1')fail(409,'RESTORE_TARGET_NOT_EMPTY','새로운 격리 저장소에만 복구합니다.');
   this.tx(()=>{for(const table of [...TABLES].reverse())this.run('DELETE FROM '+table);
    for(const table of TABLES){if(['sessions','approval_reviews','cf_outbox','cf_rate','cf_usage'].includes(table))continue;const columns=this.all('PRAGMA table_info('+table+')').map(r=>r.name);
     if(!Array.isArray(snapshot.tables[table]))fail(422,'INVALID_BACKUP','백업 테이블을 확인해주세요.');

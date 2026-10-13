@@ -175,6 +175,16 @@ test('preflight rejects malformed JSON without an unhandled crash', () => fixtur
  writeFileSync(join(dir,'harness/incidents.json'),'{not-json');
  blocked(run(dir,'harness/check.mjs'),/Inventory JSON unreadable or malformed/);
 }));
+test('legacy harness fixture without Cloudflare adapter retains structural PASS', () => fixture(dir => {
+ const result = run(dir,'harness/check.mjs');
+ assert.equal(result.status,0);
+ assert.match(result.stdout,/SAI HARNESS PASS/);
+ assert.equal(result.stderr,'');
+}));
+test('Cloudflare adapter cannot bypass missing isolation policy and metadata', () => fixture(dir => {
+ mkdirSync(join(dir,'cloudflare'));
+ blocked(run(dir,'harness/check.mjs'),/Missing Cloudflare isolation file: cloudflare\/isolation-plan.json/);
+}));
 test('preflight detects case-varied sensitive Git paths', () => fixture(dir => {
  writeFileSync(join(dir,'.ENV.production'),'SYNTHETIC_ONLY=redacted');
  execFileSync('git',['add','--','.ENV.production'],{cwd:dir,stdio:'pipe'});

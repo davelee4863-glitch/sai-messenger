@@ -92,6 +92,28 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
  for (const path of ['harness/README.md', 'harness/known-risks.json', 'harness/incidents.json', 'harness/check.mjs', 'harness/check.test.mjs', 'harness/record-incident.mjs', '.github/workflows/harness.yml']) {
   if (!existsSync(resolve(ROOT, path)) || !statSync(resolve(ROOT, path)).isFile()) errors.push('Missing harness file: ' + path);
  }
+ // Activate the Cloudflare invariant only for a checkout containing the adapter.
+ // Existing harness fixtures without cloudflare/ keep their original contract.
+ if (existsSync(resolve(ROOT, 'cloudflare'))) {
+  for (const path of ['harness/cloudflare-rules.json', 'harness/cloudflare-isolation.mjs', 'harness/cloudflare-isolation.test.mjs', 'harness/cloudflare-preflight.mjs', 'cloudflare/isolation-plan.json', 'cloudflare/ISOLATION.md', '.github/workflows/cloudflare-isolation.yml']) {
+   if (!existsSync(resolve(ROOT, path)) || !statSync(resolve(ROOT, path)).isFile()) errors.push('Missing Cloudflare isolation file: ' + path);
+  }
+  try {
+   const {validateLocalPlan} = await import('./cloudflare-isolation.mjs');
+   const plan = JSON.parse(readFileSync(resolve(ROOT, 'cloudflare/isolation-plan.json'), 'utf8'));
+   errors.push(...validateLocalPlan(plan).map(error => 'Cloudflare isolation: ' + error));
+   const rules = JSON.parse(readFileSync(resolve(ROOT, 'harness/cloudflare-rules.json'), 'utf8'));
+   if (!object(rules) || rules.schemaVersion !== 1 || !Array.isArray(rules.rules)) errors.push('Invalid Cloudflare invariant rule inventory');
+   else {
+    const ids = new Set();
+    for (const rule of rules.rules) {
+     if (!object(rule) || !text(rule.id) || ids.has(rule.id) || !text(rule.rule) || !testFile(rule.test, ROOT)) errors.push('Invalid Cloudflare invariant rule or regression path');
+     ids.add(rule?.id);
+    }
+    for (const id of ['CF-ISOLATION', 'CF-APP-ISOLATION', 'CF-RESOURCE-PREFLIGHT', 'CF-ROLLBACK-ISOLATION']) if (!ids.has(id)) errors.push('Missing Cloudflare invariant rule: ' + id);
+   }
+  } catch { errors.push('Cloudflare isolation plan/rules unreadable, malformed or validator unavailable'); }
+ }
  try {
   const pkg = JSON.parse(readFileSync(resolve(ROOT, 'package.json'), 'utf8'));
   if (pkg.scripts?.start !== 'node server.js') errors.push('Start contract changed');

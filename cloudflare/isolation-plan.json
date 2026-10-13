@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "appId": "davelee4863-glitch/sai-messenger:promise-box",
+  "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+  "environment": "local",
+  "execution": "local-only",
+  "deploymentAuthorized": false,
+  "liveInventoryVerified": false,
+  "resources": {
+    "workers": [
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker",
+        "name": "promise-box-sai-cf-dev-80f5fa37c2e8-worker",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8"
+      }
+    ],
+    "d1": [
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:meta",
+        "name": "promise-box-sai-cf-dev-80f5fa37c2e8-meta",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "binding": "PBX_CF_META"
+      }
+    ],
+    "durableObjects": [
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:workspace",
+        "name": "promise-box-sai-cf-dev-80f5fa37c2e8-workspace",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "binding": "PBX_CF_WORKSPACE",
+        "className": "PBXWorkspace",
+        "scriptName": "promise-box-sai-cf-dev-80f5fa37c2e8-worker"
+      }
+    ],
+    "r2": [],
+    "kv": [],
+    "queues": [],
+    "secrets": [],
+    "routes": [],
+    "domains": [],
+    "environmentVariables": [
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:MODE",
+        "name": "MODE",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:ORIGIN",
+        "name": "ORIGIN",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:PBX_CF_APP_ID",
+        "name": "PBX_CF_APP_ID",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:PBX_CF_NAMESPACE",
+        "name": "PBX_CF_NAMESPACE",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:REQUEST_BUDGET",
+        "name": "REQUEST_BUDGET",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:READ_BUDGET",
+        "name": "READ_BUDGET",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:WRITE_BUDGET",
+        "name": "WRITE_BUDGET",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:SESSION_IDLE_MS",
+        "name": "SESSION_IDLE_MS",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:SESSION_ABSOLUTE_MS",
+        "name": "SESSION_ABSOLUTE_MS",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:QUOTA_PAUSED",
+        "name": "QUOTA_PAUSED",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:var:D1_FAILURE",
+        "name": "D1_FAILURE",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "workerId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      }
+    ],
+    "migrations": [
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:migration:cf-v1",
+        "name": "promise-box-sai-cf-dev-80f5fa37c2e8-schema-cf-v1",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "targetId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:workspace"
+      },
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:migration:projection",
+        "name": "promise-box-sai-cf-dev-80f5fa37c2e8-projection-v1",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "targetId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:meta"
+      }
+    ],
+    "backups": [
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:backup",
+        "name": "promise-box-sai-cf-dev-80f5fa37c2e8-logical-backup",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "targetId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:workspace"
+      }
+    ],
+    "logs": [
+      {
+        "id": "local:promise-box-sai-cf-dev-80f5fa37c2e8:logs",
+        "name": "promise-box-sai-cf-dev-80f5fa37c2e8-local-log",
+        "owner": "davelee4863-glitch/sai-messenger:promise-box",
+        "namespace": "promise-box-sai-cf-dev-80f5fa37c2e8",
+        "targetId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+      }
+    ],
+    "permissions": []
+  },
+  "bindings": [
+    {
+      "name": "PBX_CF_WORKSPACE",
+      "kind": "durableObjects",
+      "targetId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:workspace"
+    },
+    {
+      "name": "PBX_CF_META",
+      "kind": "d1",
+      "targetId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:meta"
+    },
+    {
+      "name": "PBX_CF_ASSETS",
+      "kind": "assets",
+      "targetId": "local:promise-box-sai-cf-dev-80f5fa37c2e8:worker"
+    }
+  ],
+  "rollback": {
+    "targetIds": [
+      "local:promise-box-sai-cf-dev-80f5fa37c2e8:workspace",
+      "local:promise-box-sai-cf-dev-80f5fa37c2e8:meta"
+    ],
+    "actions": [
+      "restore-backup",
+      "rebuild-projection"
+    ]
+  }
+}

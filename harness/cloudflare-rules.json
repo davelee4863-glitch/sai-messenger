@@ -23,7 +23,7 @@
     },
     {
       "id": "CF-RESTORE",
-      "rule": "Checksummed schema/FK-validated snapshot restores into empty namespace only; sessions/reviews revoked and metadata rebuilt.",
+      "rule": "Checksummed exact app/namespace ownership envelope and schema/FK-validated snapshot restore into empty owned namespace only; sessions/reviews revoked and metadata rebuilt. Foreign or missing backup ownership is rejected before writes.",
       "test": "cloudflare/tests/recovery.test.mjs"
     },
     {
@@ -35,6 +35,21 @@
       "id": "CF-ISOLATION",
       "rule": "Local host-only emulator and denied external fetch; no R2/AI/remote credentials/config/deploy jobs.",
       "test": "cloudflare/tests/source.test.mjs"
+    },
+    {
+      "id": "CF-APP-ISOLATION",
+      "rule": "Invariant: PROMISE BOX uses only the promise-box-sai-cf-dev-80f5fa37c2e8 namespace owned by davelee4863-glitch/sai-messenger:promise-box. Never share, bind, mutate or delete another app's Workers, D1, Durable Objects, R2, KV, Queues, Secrets, Routes, Domains, environment variables, migrations, backups, logs or permissions. Metadata-only collision inventory may describe foreign resources; runtime, forward and rollback references may never resolve to them or read their data/secret values. Sharing a Cloudflare account never authorizes sharing an app resource.",
+      "test": "harness/cloudflare-isolation.test.mjs"
+    },
+    {
+      "id": "CF-RESOURCE-PREFLIGHT",
+      "rule": "Before any future cloud operation, require fresh complete resource metadata inventory, exact ownership and namespace, collision checks, separate bindings and permissions restricted to exact owned resource sets. Missing, malformed, incomplete, stale, foreign, conflicting or unknown resource references fail closed. Synthetic local inventories cannot approve deployment; real inventory and cloud validation remain NOT_RUN until separately authorized.",
+      "test": "harness/cloudflare-isolation.test.mjs"
+    },
+    {
+      "id": "CF-ROLLBACK-ISOLATION",
+      "rule": "Validate rollback ownership, identifiers, namespace and exact resource scopes before applying it. Restore only into a new empty PROMISE BOX namespace; preserve other app resource metadata byte-for-byte. Backup, migration, log and permission references cannot escape the PROMISE BOX scope. This task validates synthetic rollback locally and never applies cloud rollback.",
+      "test": "harness/cloudflare-isolation.test.mjs"
     },
     {
       "id": "CF-PREFLIGHT",
@@ -53,13 +68,18 @@
     },
     {
       "id": "CF-CONFIG-STRICT",
-      "rule": "Malformed budget/session values fail closed before runtime/storage startup.",
+      "rule": "Malformed budget/session values, unknown options, foreign bindings and MODE/ORIGIN/identity overrides fail closed before runtime/storage startup.",
       "test": "cloudflare/tests/config.test.mjs"
     },
     {
       "id": "CF-ONE-LOCAL-OWNER",
-      "rule": "A persistence directory belongs to one live emulator; dispose before restart.",
+      "rule": "A persistence directory belongs to one live emulator and the exact fixed app namespace; reject nonempty unmarked/foreign state, symlinks, junctions and hardlinks before opening storage. Dispose before restart.",
       "test": "cloudflare/tests/config.test.mjs"
+    },
+    {
+      "id": "CF-CAPABILITY-ALLOWLIST",
+      "rule": "Runtime, Worker and Durable Object accept only fixed owned PBX_CF bindings and identity plus explicitly allowed local safety settings. Reject foreign capabilities before storage/forwarding. Local rollback restores only owned backup data into an empty owned target while foreign state and log sentinel bytes remain unchanged.",
+      "test": "cloudflare/tests/local-isolation.test.mjs"
     },
     {
       "id": "CF-IMMUTABLE-BUILD",

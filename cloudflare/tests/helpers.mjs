@@ -10,7 +10,7 @@ export async function fixture(t,options={}){const persist=await mkdtemp(resolve(
  const mf=f.mf=await runtime({persist,...options});
  const users=[];for(let i=0;i<4;i++)users.push({handle:'synthetic-'+i,nickname:'합성 사용자 '+String.fromCharCode(65+i),credentials:await passwordHash(passwordFor(i))});
  const provision=await maintenance(mf,'__provision',{users});if(provision.status!==200)throw new Error('Provision failed: '+await provision.text());f.users=(await provision.json()).users;
- f.restart=async bindings=>{await f.mf.dispose();f.mf=await runtime({persist,...options,bindings:{...options.bindings,...bindings}});};
+ f.restart=async (bindings={},changes={})=>{await f.mf.dispose();f.mf=await runtime({persist,...options,...changes,bindings:{...options.bindings,...bindings}});if(changes.origin)f.origin=changes.origin;};
  return f;}
 export async function request(f,path,{user,method='GET',data,headers={}}={}){const h={...headers};if(user){h.Cookie=user.cookie;h['x-csrf-token']=user.csrf;}if(method!=='GET'){h.Origin??=f.origin;h['Content-Type']??='application/json';}
  const response=await f.mf.dispatchFetch(f.origin+path,{method,headers:h,body:data!==undefined?JSON.stringify(data):undefined});const raw=await response.text();let body;try{body=JSON.parse(raw);}catch{throw new Error('Non-JSON local runtime response: '+response.status+' '+raw);}return {status:response.status,body,headers:response.headers};}
