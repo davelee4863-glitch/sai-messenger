@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "id": "CF-AUTHORITY",
+      "rule": "DO canonical authority controls every membership, consent, RSVP and invitation grant; D1 projection never grants access.",
+      "test": "cloudflare/tests/recovery.test.mjs"
+    },
+    {
+      "id": "CF-PROJECTION-ACK",
+      "rule": "Exact persisted epoch/revision/payload acknowledgement precedes outbox deletion; no-op writes retain outbox.",
+      "test": "cloudflare/tests/projection.test.mjs"
+    },
+    {
+      "id": "CF-ATOMIC-QUOTA",
+      "rule": "Quota/error rollback cannot partially create messages/promises; retry canonical id/version.",
+      "test": "cloudflare/tests/recovery.test.mjs"
+    },
+    {
+      "id": "CF-HISTORY",
+      "rule": "Invite/rejoin floors guard messages, proposals, delayed confirmations, receipts and snapshots.",
+      "test": "cloudflare/tests/security.test.mjs"
+    },
+    {
+      "id": "CF-RESTORE",
+      "rule": "Checksummed schema/FK-validated snapshot restores into empty namespace only; sessions/reviews revoked and metadata rebuilt.",
+      "test": "cloudflare/tests/recovery.test.mjs"
+    },
+    {
+      "id": "CF-INVITE-FIVE",
+      "rule": "One issuer has at mostfive signup invite reservations; concurrent/idempotent retries cannot mint a sixth.",
+      "test": "cloudflare/tests/security.test.mjs"
+    },
+    {
+      "id": "CF-ISOLATION",
+      "rule": "Local host-only emulator and denied external fetch; no R2/AI/remote credentials/config/deploy jobs.",
+      "test": "cloudflare/tests/source.test.mjs"
+    },
+    {
+      "id": "CF-PREFLIGHT",
+      "rule": "Pinned dependencies, valid source syntax, live API/assets and accurate UI role/state before test PASS.",
+      "test": "cloudflare/tests/source.test.mjs"
+    },
+    {
+      "id": "CF-SESSIONS",
+      "rule": "Unique credentials, persistent login/WS throttles, session expiry/revocation and per-frame membership checks.",
+      "test": "cloudflare/tests/transport.test.mjs"
+    },
+    {
+      "id": "CF-FREE-GATE",
+      "rule": "Local app guards do not guarantee a bill cap on Paid accounts; realFree plan and deployment authorization must be verified before cloud creation.",
+      "test": "cloudflare/tests/transport.test.mjs"
+    }
+  ]
+}

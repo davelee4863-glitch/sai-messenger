@@ -12,3 +12,7 @@
 **/*.pem
 **/*.key
 **/deployment-private.json
+**/.wrangler/
+cloudflare/.build/
+cloudflare/.local/
+**/cf-snapshot*.json
