@@ -310,7 +310,7 @@
       "loggedAt": "2026-10-13T09:16:57.763Z",
       "recordType": "REAL",
       "severity": "HIGH",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "A slow authenticated message request completed with HTTP 201 after its session had been revoked by logout; expected HTTP 401 and no write. First core integration run: 18 PASS, 1 FAIL.",
       "rootCause": "Session was validated before awaiting the streamed request body and the cached actor was used after logout. Membership was checked but the session revocation was not rechecked at mutation time.",
       "resolution": "Added an authorized-body reader that revalidates the session after body completion for all authenticated JSON mutations. The exact delayed-body/logout attack now receives 401 and stores zero messages; 19/19 current core tests pass. Independent review pending.",
@@ -319,8 +319,13 @@
       "resolvedBy": "codex-root",
       "evidence": "work/pm005/evidence/core-first-tests.tap preserves 19 tests: 18 PASS and delayed-body/logout FAIL actual201 expected401. First run timestamp comes from its persisted TAP modification time. No operating identities, tokens or data used.",
       "regressionResult": "PASS",
-      "regressionEvidence": "Actual HTTP/WS core-tests-27.tap: 27/27 PASS after session revalidation and canonical UUID fixes; first failures remain in core-first-tests.tap and core-hardening-first.tap. Independent review pending.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Final actual core-tests-44-final.tap44/44PASS and baseline-174.tap174/174PASS, plus independent exact e732 reruns44/44 and174/174. First failures retained in the named original evidence and initialRegressionEvidence.",
+      "independentReviewResult": "PASS",
+      "initialRegressionEvidence": "Actual HTTP/WS core-tests-27.tap: 27/27 PASS after session revalidation and canonical UUID fixes; first failures remain in core-first-tests.tap and core-hardening-first.tap. Independent review pending.",
+      "reviewedBy": "codex-fresh-core-reviewer /root/pages_gate_review",
+      "verifiedAt": "2026-10-13T10:03:03.867Z",
+      "verificationCommit": "e7328edf58a8a8dedffe50e83725d6a78a3a2572",
+      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately."
     },
     {
       "id": "SAI-INC-20261013-16",
@@ -328,7 +333,7 @@
       "loggedAt": "2026-10-13T09:31:56.765Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "The same client message UUID with uppercase letters created a second message (HTTP 201); the negative idempotency test expected HTTP 422. Initial hardening run: 5 PASS, 1 FAIL.",
       "rootCause": "UUID validation accepted both cases while the SQLite idempotency key compared literal strings. One logical UUID could therefore have two keys.",
       "resolution": "Require canonical lowercase UUIDv4 throughout the protocol; native generated IDs already use that form. Preserve the database unique key and reject uppercase input before writing.",
@@ -337,8 +342,13 @@
       "resolvedBy": "codex-root",
       "evidence": "core-hardening-first.tap records HTTP 201 versus 422; temporary synthetic fixture removed after execution. No operating data used.",
       "regressionResult": "PASS",
-      "regressionEvidence": "Actual HTTP/WS core-tests-27.tap: 27/27 PASS after session revalidation and canonical UUID fixes; first failures remain in core-first-tests.tap and core-hardening-first.tap. Independent review pending.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Final actual core-tests-44-final.tap44/44PASS and baseline-174.tap174/174PASS, plus independent exact e732 reruns44/44 and174/174. First failures retained in the named original evidence and initialRegressionEvidence.",
+      "independentReviewResult": "PASS",
+      "initialRegressionEvidence": "Actual HTTP/WS core-tests-27.tap: 27/27 PASS after session revalidation and canonical UUID fixes; first failures remain in core-first-tests.tap and core-hardening-first.tap. Independent review pending.",
+      "reviewedBy": "codex-fresh-core-reviewer /root/pages_gate_review",
+      "verifiedAt": "2026-10-13T10:03:03.867Z",
+      "verificationCommit": "e7328edf58a8a8dedffe50e83725d6a78a3a2572",
+      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately."
     },
     {
       "id": "SAI-INC-20261013-17",
@@ -346,7 +356,7 @@
       "loggedAt": "2026-10-13T09:34:33.296Z",
       "recordType": "REAL",
       "severity": "LOW",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "The new source-preservation test falsely failed on unchanged harness.yml because Windows checkout CRLF differed from the LF Git blob. First combined 33-test run: 32 PASS, 1 FAIL.",
       "rootCause": "The test compared raw working-tree strings with Git blob strings without applying Git checkout normalization.",
       "resolution": "Compare git hash-object --path with the baseline blob OID. This honors repository clean filters while still detecting source changes. Preserve prior incident objects separately by deep equality.",
@@ -355,8 +365,13 @@
       "resolvedBy": "codex-root",
       "evidence": "core-tests-33.tap preserves the CRLF versus LF mismatch and unchanged workflow path; no legacy source was modified.",
       "regressionResult": "PASS",
-      "regressionEvidence": "Actual core-tests-33-fixed.tap: 33/33 PASS; updated core-tests-37-fixed.tap: 37/37 PASS, including normalized Git source preservation. First CRLF failure retained separately.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Final actual core-tests-44-final.tap44/44PASS and baseline-174.tap174/174PASS, plus independent exact e732 reruns44/44 and174/174. First failures retained in the named original evidence and initialRegressionEvidence.",
+      "independentReviewResult": "PASS",
+      "initialRegressionEvidence": "Actual core-tests-33-fixed.tap: 33/33 PASS; updated core-tests-37-fixed.tap: 37/37 PASS, including normalized Git source preservation. First CRLF failure retained separately.",
+      "reviewedBy": "codex-fresh-core-reviewer /root/pages_gate_review",
+      "verifiedAt": "2026-10-13T10:03:03.867Z",
+      "verificationCommit": "e7328edf58a8a8dedffe50e83725d6a78a3a2572",
+      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately."
     },
     {
       "id": "SAI-INC-20261013-18",
@@ -364,7 +379,7 @@
       "loggedAt": "2026-10-13T09:45:23.863Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "Fresh Reviewer rejected ff2e38b on three recovery utility failures: missing backup source produced an empty successful backup; marker-only or altered schema was accepted at startup/restore; private credential output failure left four inaccessible committed users. Root reproduced all three: 0/3 PASS.",
       "rootCause": "Recovery trusted a schema revision marker instead of the full schema, used a create-capable Store for backup paths, and committed seed accounts before writing their private credentials.",
       "resolution": "Reject missing backup/CLI server sources; validate complete tables, constraints, indexes, integrity and foreign keys before opening an existing database or creating a restore target; preflight and exclusively reserve private output and commit all account rows only after the credential write is synced, cleaning failed output and rolling back inserts.",
@@ -373,8 +388,13 @@
       "resolvedBy": "codex-root",
       "evidence": "Independent first review FAIL: fresh-core-review.json/fresh-core-recovery.json on ff2e38b; actual root reproduction recovery-safety-first.tap 0 PASS/3 FAIL. Existing source and private test values were never published.",
       "regressionResult": "PASS",
-      "regressionEvidence": "core-tests-37-fixed.tap: 37/37 PASS, including all three recovery failures, platform-newline recovery, real crash/restart and backup restore. Original independent failure remains preserved; corrected exact-candidate independent review pending.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Final actual core-tests-44-final.tap44/44PASS and baseline-174.tap174/174PASS, plus independent exact e732 reruns44/44 and174/174. First failures retained in the named original evidence and initialRegressionEvidence.",
+      "independentReviewResult": "PASS",
+      "initialRegressionEvidence": "core-tests-37-fixed.tap: 37/37 PASS, including all three recovery failures, platform-newline recovery, real crash/restart and backup restore. Original independent failure remains preserved; corrected exact-candidate independent review pending.",
+      "reviewedBy": "codex-fresh-core-reviewer /root/pages_gate_review",
+      "verifiedAt": "2026-10-13T10:03:03.867Z",
+      "verificationCommit": "e7328edf58a8a8dedffe50e83725d6a78a3a2572",
+      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately."
     },
     {
       "id": "SAI-INC-20261013-19",
@@ -382,7 +402,7 @@
       "loggedAt": "2026-10-13T09:50:32.967Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "The second independent candidate review found two recovery validation gaps: an existing empty source was silently initialized and backed up; a non-internal sqlitex-prefixed trigger escaped full-schema comparison. Root reproduction: four recovery checks PASS, two FAIL.",
       "rootCause": "Store initialized revision-zero empty files without distinguishing a new file from an existing backup source. Schema introspection used SQL LIKE with an unescaped underscore, which excluded names beyond the literal internal sqlite_ prefix.",
       "resolution": "Initialize schema only when the path did not exist before opening it; reject existing empty/revision-zero files before mutation. Use literal-prefix GLOB sqlite_* filtering so every non-internal trigger/table/index participates in full-schema comparison.",
@@ -391,8 +411,13 @@
       "resolvedBy": "codex-root",
       "evidence": "Fresh ff9baf4 follow-up evidence fresh-core-fixed-schema-prefix-probe.json and fixed recovery report; recovery-safety-second.tap preserves 4 PASS/2 FAIL before fixes.",
       "regressionResult": "PASS",
-      "regressionEvidence": "Actual core-tests-39-fixed.tap: 39/39 PASS after both fixes; exact independent corrected-candidate review pending.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Final actual core-tests-44-final.tap44/44PASS and baseline-174.tap174/174PASS, plus independent exact e732 reruns44/44 and174/174. First failures retained in the named original evidence and initialRegressionEvidence.",
+      "independentReviewResult": "PASS",
+      "initialRegressionEvidence": "Actual core-tests-39-fixed.tap: 39/39 PASS after both fixes; exact independent corrected-candidate review pending.",
+      "reviewedBy": "codex-fresh-core-reviewer /root/pages_gate_review",
+      "verifiedAt": "2026-10-13T10:03:03.867Z",
+      "verificationCommit": "e7328edf58a8a8dedffe50e83725d6a78a3a2572",
+      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately."
     },
     {
       "id": "SAI-INC-20261013-20",
@@ -400,7 +425,7 @@
       "loggedAt": "2026-10-13T09:51:34.648Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "Fresh Reviewer found a false-PASS in the new browser assertion helper: a correct going status pill and exactly one wrongly selected declined button passed. An incomplete one-button control set also passed. Root Node counterexamples: 1 PASS, 2 FAIL. Actual application RSVP state remained correct.",
       "rootCause": "The helper compared only the number of aria-pressed buttons rather than the exact selected label and all three control states, repeating a previously recorded class of test weakness.",
       "resolution": "Require all three unique RSVP controls and exact aria-pressed true/false values matching the authenticated user response. Add Node counterexample tests and rerun the strengthened helper against actual browser clients.",
@@ -409,8 +434,13 @@
       "resolvedBy": "codex-root",
       "evidence": "fresh-core-fixed-rsvp-assertion-probe.json is explicitly a Node tab-adapter counterexample, not browser execution; browser-assertions-first.tap preserves 1 PASS/2 FAIL. Real browser RSVP/pill observations remain in core-browser-before-restart.json.",
       "regressionResult": "PASS",
-      "regressionEvidence": "core-tests-42-fixed.tap actual42/42PASS, including three Node assertion counterexamples; strengthened helper actually rerun through Cua against three authenticated browser clients with exact going/declined/pending pills and all three buttons, core-browser-rsvp-strengthened.json PASS. Node counterexamples are not claimed as browser runs.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Final actual core-tests-44-final.tap44/44PASS and baseline-174.tap174/174PASS, plus independent exact e732 reruns44/44 and174/174. First failures retained in the named original evidence and initialRegressionEvidence. Five Node assertion counterexamples pass; strengthened exact own RSVP helper reran in three actual clients, core-browser-rsvp-strengthened.json. Node adapters are not counted as browser execution.",
+      "independentReviewResult": "PASS",
+      "initialRegressionEvidence": "core-tests-42-fixed.tap actual42/42PASS, including three Node assertion counterexamples; strengthened helper actually rerun through Cua against three authenticated browser clients with exact going/declined/pending pills and all three buttons, core-browser-rsvp-strengthened.json PASS. Node counterexamples are not claimed as browser runs.",
+      "reviewedBy": "codex-fresh-core-reviewer /root/pages_gate_review",
+      "verifiedAt": "2026-10-13T10:03:03.867Z",
+      "verificationCommit": "e7328edf58a8a8dedffe50e83725d6a78a3a2572",
+      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately."
     },
     {
       "id": "SAI-INC-20261013-21",
@@ -418,7 +448,7 @@
       "loggedAt": "2026-10-13T09:57:36.502Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "The first 15 responsive checks nominally passed without applying requested mobile widths: actual Chrome viewport stayed1523x723 for every size. Root inspected saved dimensions before reporting and invalidated all15; no mobile PASS is taken from that file.",
       "rootCause": "The installed Chrome viewport capability returned without applying the override, and the initial layout assertion checked overflow but did not compare observed dimensions with requested dimensions.",
       "resolution": "Retained original raw15 results under an invalid filename plus explicit invalidation record. Require exact observed width/height and intended heading before checking page/control bounds. Reran all15 on the Codex in-app browser, whose actual viewport overrides were observed and verified.",
@@ -427,8 +457,13 @@
       "resolvedBy": "codex-root",
       "evidence": "core-browser-layout-invalid-chrome-viewport.json preserves raw first outputs; core-browser-layout-invalidation.json explicitly excludes those PASS labels. Chrome390x844 request actually observed1523x723; in-app browser observed390x844 and later all five exact widths.",
       "regressionResult": "PASS",
-      "regressionEvidence": "Five Node assertion counterexamples PASS in browser-assertions-final.tap; these are not browser runs. Actual Cua in-app browser five sizes320/375/390/768/1440 x rooms/group/detail:15/15 PASS with exact dimensions and headings in core-browser-layout-final.json. Mobile and desktop screenshots preserved; root four-client console errors/warnings0.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Final actual core-tests-44-final.tap44/44PASS and baseline-174.tap174/174PASS, plus independent exact e732 reruns44/44 and174/174. First failures retained in the named original evidence and initialRegressionEvidence. Actual Codex browser15/15 dimensions/heading/page/control checks pass in core-browser-layout-final.json; original15 invalid Chrome rows excluded and retained with explicit invalidation. Five Node helper tests also pass.",
+      "independentReviewResult": "PASS",
+      "initialRegressionEvidence": "Five Node assertion counterexamples PASS in browser-assertions-final.tap; these are not browser runs. Actual Cua in-app browser five sizes320/375/390/768/1440 x rooms/group/detail:15/15 PASS with exact dimensions and headings in core-browser-layout-final.json. Mobile and desktop screenshots preserved; root four-client console errors/warnings0.",
+      "reviewedBy": "codex-fresh-core-reviewer /root/pages_gate_review",
+      "verifiedAt": "2026-10-13T10:03:03.867Z",
+      "verificationCommit": "e7328edf58a8a8dedffe50e83725d6a78a3a2572",
+      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately."
     }
   ]
 }
