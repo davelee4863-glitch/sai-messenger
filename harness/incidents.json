@@ -313,7 +313,7 @@
       "status": "VERIFIED",
       "symptom": "A slow authenticated message request completed with HTTP 201 after its session had been revoked by logout; expected HTTP 401 and no write. First core integration run: 18 PASS, 1 FAIL.",
       "rootCause": "Session was validated before awaiting the streamed request body and the cached actor was used after logout. Membership was checked but the session revocation was not rechecked at mutation time.",
-      "resolution": "Added an authorized-body reader that revalidates the session after body completion for all authenticated JSON mutations. The exact delayed-body/logout attack now receives 401 and stores zero messages; 19/19 current core tests pass. Independent review pending.",
+      "resolution": "Added an authorized-body reader that revalidates the session after the streamed body completes and before any authenticated mutation. The first corrected19/19 run passed. Final44/44MVP and174/174baseline passed; Fresh Reviewer independently completed exact e7328edf58a8a8dedffe50e83725d6a78a3a2572 review with no implementation edits.",
       "prevention": "Revalidate authentication after every asynchronous boundary before a state-changing operation; check membership and expected versions transactionally. Keep a real HTTP delayed-body/logout regression, not a mocked authorization result.",
       "regressionTest": "mvp/tests/security.test.mjs",
       "resolvedBy": "codex-root",
@@ -325,7 +325,9 @@
       "reviewedBy": "codex-fresh-core-reviewer /root/pages_gate_review",
       "verifiedAt": "2026-10-13T10:03:03.867Z",
       "verificationCommit": "e7328edf58a8a8dedffe50e83725d6a78a3a2572",
-      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately."
+      "verificationEvidence": "Fresh Reviewer made no implementation, journal, ref or infrastructure edits. Original ff2e38b and ff9baf4 FAIL reviews retained separately; corrected final e7328ed clean-SHA checks independently reran44/44MVP and174/174baseline PASS. Full existing source/risk/prior14incident preservation and tests-only CI reviewed. Root actual browser/restart/RSVP/layout evidence reviewed; reviewer browser, Production and public backend execution NOT_RUN. See fresh-core-final-review.json and exact candidate logs; independent supplemental recovery and authorization results preserved separately.",
+      "initialResolution": "Added an authorized-body reader that revalidates the session after body completion for all authenticated JSON mutations. The exact delayed-body/logout attack now receives 401 and stores zero messages; 19/19 current core tests pass. Independent review pending.",
+      "completionCorrectionEvidence": "Fresh journal-only review of cef054c found a stale independent-review-pending sentence in the resolution. Corrected this narrative to match executed final evidence; original wording retained in initialResolution and first journal review retained separately."
     },
     {
       "id": "SAI-INC-20261013-16",
