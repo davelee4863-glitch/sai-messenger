@@ -393,6 +393,24 @@
       "regressionResult": "PASS",
       "regressionEvidence": "Actual core-tests-39-fixed.tap: 39/39 PASS after both fixes; exact independent corrected-candidate review pending.",
       "independentReviewResult": "NOT_RUN"
+    },
+    {
+      "id": "SAI-INC-20261013-20",
+      "occurredAt": "2026-10-13T09:50:23.106Z",
+      "loggedAt": "2026-10-13T09:51:34.648Z",
+      "recordType": "REAL",
+      "severity": "MEDIUM",
+      "status": "MITIGATING",
+      "symptom": "Fresh Reviewer found a false-PASS in the new browser assertion helper: a correct going status pill and exactly one wrongly selected declined button passed. An incomplete one-button control set also passed. Root Node counterexamples: 1 PASS, 2 FAIL. Actual application RSVP state remained correct.",
+      "rootCause": "The helper compared only the number of aria-pressed buttons rather than the exact selected label and all three control states, repeating a previously recorded class of test weakness.",
+      "resolution": "Require all three unique RSVP controls and exact aria-pressed true/false values matching the authenticated user response. Add Node counterexample tests and rerun the strengthened helper against actual browser clients.",
+      "prevention": "A status pill and selected-control count cannot prove selection correctness. Check dedicated status, exact selected label and all other choices false; label Node assertion probes separately from actual browser execution.",
+      "regressionTest": "mvp/tests/browser-assertions.test.mjs",
+      "resolvedBy": "codex-root",
+      "evidence": "fresh-core-fixed-rsvp-assertion-probe.json is explicitly a Node tab-adapter counterexample, not browser execution; browser-assertions-first.tap preserves 1 PASS/2 FAIL. Real browser RSVP/pill observations remain in core-browser-before-restart.json.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "core-tests-42-fixed.tap actual42/42PASS, including three Node assertion counterexamples; strengthened helper actually rerun through Cua against three authenticated browser clients with exact going/declined/pending pills and all three buttons, core-browser-rsvp-strengthened.json PASS. Node counterexamples are not claimed as browser runs.",
+      "independentReviewResult": "NOT_RUN"
     }
   ]
 }
