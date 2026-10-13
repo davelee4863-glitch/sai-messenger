@@ -1,4 +1,5 @@
 import {Miniflare,Log,LogLevel} from 'miniflare';
+import {assertHostRuntime} from './host-security.mjs';
 import {fileURLToPath} from 'node:url';
 import {resolve} from 'node:path';
 import {bundle} from './build.mjs';
@@ -6,6 +7,7 @@ import {acquireWriter} from '../mvp/writer-lock.mjs';
 import {runtimeOptions,ownPersistence} from './local-isolation.mjs';
 import {APP_ID,NAMESPACE,BINDINGS,WORKER_NAME,WORKSPACE_NAME,D1_ID,DO_CLASS} from './isolation-identity.mjs';
 export async function runtime(options={}){
+ assertHostRuntime();
  const {persist,port,origin,bindings}=runtimeOptions(options);ownPersistence(persist);
  const release=acquireWriter(resolve(persist,'workspace.sqlite'),{mode:'local',reclaimDeadLocal:true});let mf;
  try{mf=new Miniflare({name:WORKER_NAME,rootPath:fileURLToPath(new URL('../',import.meta.url)),modules:true,script:await bundle(),compatibilityDate:'2026-07-30',compatibilityFlags:['nodejs_compat'],host:'127.0.0.1',port,cf:false,

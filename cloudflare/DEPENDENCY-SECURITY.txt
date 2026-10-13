@@ -1,0 +1,107 @@
+PROMISE BOX / PM011 dependency security assessment
+Baseline c44018ff40c898a9c4da295e50ad31564136cd2c. Cloud deployment BLOCKED.
+
+PACKAGE EFFECT AND MINIMAL REMEDIATION
+cloudflare/devDependencies miniflare4.20260730.0 -> sharp0.35.2 / undici7.28.0. Audit packageHIGH3 contains17advisory objects (5HIGH,9MODERATE,3LOW); Miniflare has no own direct advisory.
+The current registry latest Miniflare still pins these vulnerable leaves. Preserve Miniflare4.20260730.0, workerd1.20260730.1, esbuild0.28.2 and compatibilityDate2026-07-30; override only miniflare@4.20260730.0 sharp0.35.5 and undici7.29.1.
+Lockfile changes are28 existing sharp/undici/native dependency entries, no added/removed or unrelated dependency changes. sharp native distributions also require their matching0.35.5/libvips1.3.4 packages.
+After update Windows loaded sharp0.35.5, libheif1.23.5 >=1.23.2, librsvg2.63.2 >=2.63.2, libvips8.18.7. Native Linux confirmation requires CI. No global libheif/librsvg build is used or accepted by the patch-floor test.
+Node22.23.3 embeds Undici6.28.1 independently of the npm package; this matches the applicable6.x security release. npm overrides do not update Node embedded libraries.
+No npm audit fix --force, runtime/workerd update, production data or paid service.
+
+WORKER VERSUS HOST TOOL
+Miniflare/sharp/undici are development-only packages; Miniflare host bridges use Undici and its optional Images support lazy-loads sharp.
+The Worker input graph contains no miniflare/sharp/undici/@img inputs. Baseline Worker60781bytes SHA2561e915d920f2a0e17d1248d45669fbd206222cba4bd86711beb19591277c1a6cb; the build and deployed-code candidates must remain identical in this branch.
+This is bundle exclusion evidence, not verification of a deployed Cloudflare service or Cloudflare-managed runtime libraries.
+Current local runtime binds127.0.0.1, cf:false, denies outbound application fetch403, and its immutable option allowlist rejects Images/remote/foreign capabilities. No shared Undici cache, BalancedPool or user-provided upstream URL is configured.
+Library primitives can be vulnerable while the current product does not enable their attack conditions. Same-host compromise, future Images bindings/cache/upstream configuration and actual cloud runtime remain outside this reachability claim.
+
+ADVISORIES (official metadata, selected installed major branch)
+GHSA-rgj7-g3m4-5g8c HIGH CVE not assigned https://github.com/advisories/GHSA-rgj7-g3m4-5g8c
+ affected < 0.35.4; patched see official source
+ condition: Untrusted AVIF/HEIF decode in a native image processing path; possible Linux glibc RCE depends on runtime conditions. Current app has no Images binding.
+GHSA-wq5f-xc86-pv6w HIGH CVE not assigned https://github.com/advisories/GHSA-wq5f-xc86-pv6w
+ affected < 0.35.5; patched see official source
+ condition: Untrusted SVG decode via native librsvg; possible Linux glibc RCE depends on runtime conditions. Current app has no Images binding.
+GHSA-8xcm-r25x-g524 MEDIUM CVE-2026-16728 https://github.com/advisories/GHSA-8xcm-r25x-g524
+ affected < 6.28.0; patched see official source
+ affected >= 7.0.0, < 7.29.0; patched see official source
+ affected >= 8.0.0, < 8.9.0; patched see official source
+ condition: Retry interceptor receives attacker-controlled retry/framing responses.
+GHSA-4cwx-7wf7-3272 HIGH CVE-2026-13697 https://github.com/advisories/GHSA-4cwx-7wf7-3272
+ affected >= 7.0.0, < 7.29.0; patched see official source
+ affected >= 8.0.0, < 8.9.0; patched see official source
+ condition: Explicit shared Undici cache interceptor plus malformed private directives; no such interceptor configured by this app or Miniflare.
+GHSA-m8rv-5g2x-5cg5 MEDIUM CVE-2026-15157 https://github.com/advisories/GHSA-m8rv-5g2x-5cg5
+ affected < 6.28.0; patched see official source
+ affected >= 7.0.0, < 7.29.0; patched see official source
+ affected >= 8.0.0, < 8.9.0; patched see official source
+ condition: Non-fetch request uses a duck-typed blob with untrusted MIME type containing CRLF.
+GHSA-jr45-8vmc-qm54 MEDIUM CVE-2026-14643 https://github.com/advisories/GHSA-jr45-8vmc-qm54
+ affected >= 7.0.0, < 7.29.0; patched see official source
+ affected >= 8.0.0, < 8.9.0; patched see official source
+ condition: Explicit shared cache with whitespace-qualified private/no-cache directives.
+GHSA-v3r7-h72x-cjcm MEDIUM CVE-2026-16729 https://github.com/advisories/GHSA-v3r7-h72x-cjcm
+ affected < 6.28.0; patched see official source
+ affected >= 7.0.0, < 7.29.0; patched see official source
+ affected >= 8.0.0, < 8.9.0; patched see official source
+ condition: setCookie receives attacker-controlled domain or unparsed attributes.
+GHSA-3wwx-pv8p-q78v MEDIUM CVE-2026-85024 https://github.com/advisories/GHSA-3wwx-pv8p-q78v
+ affected >= 6.25.0, < 6.28.1; patched see official source
+ affected >= 7.28.0, < 7.29.1; patched see official source
+ affected >= 8.1.0, < 8.10.2; patched see official source
+ condition: Undici WebSocket uses permessage-deflate and encounters invalid compressed frames.
+GHSA-pmjh-fq2x-6v4x MEDIUM CVE-2026-18149 https://github.com/advisories/GHSA-pmjh-fq2x-6v4x
+ affected >= 7.11.0, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: RetryHandler encounters an orphaned retry response body.
+GHSA-r53p-7pc4-xj5r LOW CVE-2026-18540 https://github.com/advisories/GHSA-r53p-7pc4-xj5r
+ affected < 6.28.1; patched see official source
+ affected >= 7.0.0, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: Retry interceptor accepts attacker-controlled response framing.
+GHSA-rfgv-xxqx-mfg5 HIGH CVE-2026-19534 https://github.com/advisories/GHSA-rfgv-xxqx-mfg5
+ affected >= 6.7.0, < 6.28.1; patched see official source
+ affected >= 7.0.0, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: Undici WebSocket opens a malicious or compromised upstream; local loopback malicious101 reproduction crashes old package child only; patched child must survive.
+GHSA-3xpg-4rpp-hhhm MEDIUM CVE-2026-84890 https://github.com/advisories/GHSA-3xpg-4rpp-hhhm
+ affected >= 7.15.0, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: Response content-decoding handles attacker-controlled compressed bodies without adequate bounds.
+GHSA-2jfj-6hjv-fm6j MEDIUM CVE-2026-84933 https://github.com/advisories/GHSA-2jfj-6hjv-fm6j
+ affected >= 7.0.0, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: Shared cache replays cached Set-Cookie across callers.
+GHSA-2gqq-gqf2-x968 LOW CVE-2026-84947 https://github.com/advisories/GHSA-2gqq-gqf2-x968
+ affected >= 7.1.0, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: Dump interceptor handles oversized chunked responses.
+GHSA-w293-vg96-wgc3 HIGH CVE-2026-84961 https://github.com/advisories/GHSA-w293-vg96-wgc3
+ affected >= 7.24.1, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: BalancedPool with function-valued custom TLS/connector checks; this Miniflare uses Pool, not BalancedPool.
+GHSA-8436-99hf-9mmv LOW CVE-2026-85008 https://github.com/advisories/GHSA-8436-99hf-9mmv
+ affected >= 7.0.0, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: Cache interceptor stores/replays unsafe method responses.
+GHSA-rx4f-c7p8-82vq MEDIUM CVE-2026-85014 https://github.com/advisories/GHSA-rx4f-c7p8-82vq
+ affected >= 7.0.0, < 7.29.1; patched see official source
+ affected >= 8.0.0, < 8.10.2; patched see official source
+ condition: WebSocketStream handles an unclean close.
+
+VALIDATION AND LIMITS
+Known affected installed versions and actual loaded native library patch levels are checked. Benign SVG/AVIF image operations, malicious loopback WebSocket handshake, actual custom TLS rejection and shared-cache privacy are tested without external services or real user data.
+Independent pre-update primitives reproduce cookie/parser/connection-option failures. Product exploitation of every advisory and Linux RCE payload execution are NOT_RUN; no assertion that all possible attacks or future library advisories are solved.
+The first test draft incorrectly used sharp/package.json exports and over-restricted qualified private cache behavior. Preserve security-after-first.tap10PASS/2FAIL; repair metadata access and test RFC9111 whole-body versus qualified-header semantics with a positive control. SAI-INC-20261014-11 records the real harness test failures.
+RFC9111 section5.2.2.7: https://datatracker.ietf.org/doc/html/rfc9111#section-5.2.2.7
+SAI-INC-20261014-05 remainsOPEN until independent frozen-SHA and remote CI verification. Package/native remediation does not authorize production or certify actualCloud isolation.
+
+ISOLATION READINESS
+Fixed app namespace promise-box-sai-cf-dev-80f5fa37c2e8 and local-only plan are unchanged. No Cloudflare queries, tokens, resource creation/modification/deletion, Secret values, customer or other-app data.
+Actual account pagination, ownership/relationships, effective IAM, routing/backups/logging, quota and billing controls areUNVERIFIED. Need separate endpoint-limited metadata-only read authorization before inventory; no existing app DB/Secret values/user data or logs.
+Cloud resource creation, external access, realCloud rollback and paid activation require later separate approval. Preflight staysBLOCKED.
+
+PM011 pre-Push review corrections
+The Windows byte hash is descriptive only, not a cross-platform constant. Git SQL checkoutCRLF/LF changes60781/60645 bytes respectively; current/baseline comparisons use identical EOL and both variants are tested in memory. Incident12 preserves independent initialFAIL; actualLinux is still pending CI.
+Default systemNode22.23.2 embeds6.28.0. Approved task runtimeNode22.23.3 embeds6.28.1; the project now requires>=22.23.3 <23 and checks host runtime before persistence/Miniflare starts. The system default Node itself is unchanged. Incident13 tracks the rejected environment; this guard is host-only, not Worker bundle code.

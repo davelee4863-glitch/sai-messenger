@@ -1,0 +1,12 @@
+import {createServer} from 'node:http';
+import {createHash} from 'node:crypto';
+import {createRequire} from 'node:module';
+const {WebSocket}=createRequire(new URL('../package.json',import.meta.url))('undici');
+const server=createServer(),sockets=new Set();
+server.on('connection',socket=>{sockets.add(socket);socket.on('close',()=>sockets.delete(socket));});
+server.on('upgrade',(req,socket)=>{const accept=createHash('sha1').update(req.headers['sec-websocket-key']+'258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest('base64');socket.write('HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: '+accept+'\r\nSec-WebSocket-Protocol: unrequested\r\n\r\n');});
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+const timer=setTimeout(()=>{console.error('Synthetic loopback handshake timed out');process.exit(2);},4000);
+const ws=new WebSocket('ws://127.0.0.1:'+server.address().port);
+ws.addEventListener('open',()=>{console.error('Unexpected unrequested protocol accepted');process.exit(3);});
+ws.addEventListener('error',()=>{clearTimeout(timer);for(const socket of sockets)socket.destroy();server.close(()=>{console.log(JSON.stringify({status:'REJECTED',processSurvived:true}));});},{once:true});

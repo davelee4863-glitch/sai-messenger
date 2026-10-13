@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baselineSha": "74bac08885c83740a87f6731d6b6de1230e8f3ba",
-  "baselineExpectedCases": 348,
+  "baselineSha": "c44018ff40c898a9c4da295e50ad31564136cd2c",
+  "baselineExpectedCases": 401,
   "baselineFiles": [
     "cloudflare/tests/config.test.mjs",
     "cloudflare/tests/core.test.mjs",
@@ -12,6 +12,8 @@
     "cloudflare/tests/source.test.mjs",
     "cloudflare/tests/transport.test.mjs",
     "harness/check.test.mjs",
+    "harness/cloudflare-ci.test.mjs",
+    "harness/cloudflare-isolation-policy.test.mjs",
     "harness/cloudflare-isolation.test.mjs",
     "mvp/tests/browser-assertions.test.mjs",
     "mvp/tests/core.test.mjs",

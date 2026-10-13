@@ -1,0 +1,37 @@
+name: PROMISE BOX dependency security (tests only)
+on:
+  push:
+    branches: [feat/promise-box-dependency-security-20261014]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  security-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - run: npm ci --prefix mvp --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix cloudflare --ignore-scripts --no-audit --no-fund
+      - name: Installed dependency tree and live security audit
+        run: |
+          mkdir -p cloudflare/.local/security
+          npm ls --prefix cloudflare miniflare sharp undici --all --json > cloudflare/.local/security/tree.json
+          npm audit --prefix cloudflare --json > cloudflare/.local/security/audit.json
+      - run: node harness/check.mjs
+      - run: node harness/cloudflare-ci.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-security-evidence
+          path: |
+            cloudflare/.local/ci/
+            cloudflare/.local/security/
+          if-no-files-found: error
+      # Read-only repository CI; no cloud account credentials or deployment.
