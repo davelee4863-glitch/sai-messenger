@@ -1,4 +1,65 @@
 {
   "schemaVersion": 1,
-  "incidents": []
+  "incidents": [
+    {
+      "id": "SAI-INC-20261013-01",
+      "occurredAt": "2026-10-13T05:49:27.274Z",
+      "loggedAt": "2026-10-13T05:54:49.000Z",
+      "recordType": "REAL",
+      "status": "MITIGATING",
+      "severity": "HIGH",
+      "symptom": "Harness accepted invalid VERIFIED metadata and returned release PASS for a P0 risk using README as regressionTest and NOT_RUN as review evidence.",
+      "rootCause": "Completion gate checked only path existence and truthy reviewer/evidence; it did not require a test file, actual PASS evidence or distinct reviewer.",
+      "resolution": "Require an internal regular test file, concrete regression/review metadata, normalized distinct implementer/reviewer, review timestamp and commit; fail closed for invalid release records.",
+      "prevention": "Never mark VERIFIED without execution evidence and independent review; keep adversarial completion regressions.",
+      "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; schema-probes-results.json: Forged VERIFIED P0 release (exit 0); README/directory/whitespace/NOT_RUN probes accepted.",
+      "regressionTest": "harness/check.test.mjs",
+      "resolvedBy": "codex-root"
+    },
+    {
+      "id": "SAI-INC-20261013-02",
+      "occurredAt": "2026-10-13T05:49:27.274Z",
+      "loggedAt": "2026-10-13T05:54:49.000Z",
+      "recordType": "REAL",
+      "status": "MITIGATING",
+      "severity": "MEDIUM",
+      "symptom": "Harness accepted incident records without occurrence time, resolution or REAL/SYNTHETIC distinction and accepted invalid loggedAt.",
+      "rootCause": "Incident required-field list did not include occurrence time or resolution, and timestamps were only checked as nonblank strings.",
+      "resolution": "Require occurredAt, loggedAt ISO roundtrip validation, resolution and recordType; CLI exposes occurrence/resolution and creates OPEN records only.",
+      "prevention": "Keep required-field and impossible-date regression cases; synthetic journals remain isolated.",
+      "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; schema-probes-results.json: Missing incident solution metadata and Invalid incident date accepted were ACCEPTED.",
+      "regressionTest": "harness/check.test.mjs",
+      "resolvedBy": "codex-root"
+    },
+    {
+      "id": "SAI-INC-20261013-03",
+      "occurredAt": "2026-10-13T05:49:27.274Z",
+      "loggedAt": "2026-10-13T05:54:49.000Z",
+      "recordType": "REAL",
+      "status": "MITIGATING",
+      "severity": "HIGH",
+      "symptom": "Harness stored JSON-shaped synthetic credentials and accepted credentials inserted directly into the journal; initial patch still missed nested JSON text in three regression cases.",
+      "rootCause": "Credential regex was CLI-only and did not handle quoted JSON keys or nested string escaping.",
+      "resolution": "Share recursive credential validation across CLI and inventories, cover JSON/Basic/URL/private-key patterns, and report generic errors without echoing values.",
+      "prevention": "Redact before recording; test rejected inputs leave journal bytes unchanged; pattern scanning remains defense in depth.",
+      "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; integration-probes-initial.json credential probes failed guards. First candidate self-tests: 72 total, 69 PASS, 3 FAIL; recursive string inspection added.",
+      "regressionTest": "harness/check.test.mjs",
+      "resolvedBy": "codex-root"
+    },
+    {
+      "id": "SAI-INC-20261013-04",
+      "occurredAt": "2026-10-13T05:49:27.274Z",
+      "loggedAt": "2026-10-13T05:54:49.000Z",
+      "recordType": "REAL",
+      "status": "MITIGATING",
+      "severity": "HIGH",
+      "symptom": "Preflight allowed case-varied environment/key paths, several SSH/service-account key names and invalid external browser JavaScript syntax.",
+      "rootCause": "Filename regex was case-sensitive and narrow; syntax checking covered only server.js and inline browser scripts.",
+      "resolution": "Use NUL-delimited Git filenames and case-insensitive sensitive basename matching; syntax-check all tracked js/mjs/cjs with node --check.",
+      "prevention": "Keep tracked secret filename and external/harness syntax regression cases; no product code is executed.",
+      "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; integration-probes-initial.json: five filename guards and external browser syntax guard failed.",
+      "regressionTest": "harness/check.test.mjs",
+      "resolvedBy": "codex-root"
+    }
+  ]
 }
