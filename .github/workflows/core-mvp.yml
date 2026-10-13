@@ -1,0 +1,25 @@
+name: PROMISE BOX isolated core MVP tests
+on:
+  push:
+    branches: [feat/promise-box-core-mvp-20261013]
+  pull_request:
+    branches: [main]
+    paths: [mvp/**, harness/core-mvp-rules.json, harness/incidents.json, .github/workflows/core-mvp.yml, .gitignore]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.2'
+      - run: npm ci --prefix mvp --ignore-scripts --no-fund --no-audit
+      - run: node harness/check.mjs
+      - run: node --test harness/check.test.mjs tests/ui-state.test.mjs tests/ui-static.test.mjs tests/ui-qr.test.mjs tests/ui-build.test.mjs tests/ui-pages-environment.test.mjs
+      - run: node --test mvp/tests/*.test.mjs
