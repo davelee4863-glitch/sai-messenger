@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {validate,blockers} from './check.mjs';
+const risk={id:'SAI-R999',priority:'P0',status:'OPEN',title:'x',evidence:'x',prevention:'x',regressionTest:'PENDING'};
+const incident={id:'SAI-INC-20261013-01',loggedAt:'2026-10-13',severity:'HIGH',status:'OPEN',symptom:'x',rootCause:'UNCONFIRMED',prevention:'x',regressionTest:'PENDING',evidence:'x'};
+const r=x=>({schemaVersion:1,risks:x});
+const i=x=>({schemaVersion:1,incidents:x});
+test('valid open records',()=>assert.deepEqual(validate(r([risk]),i([incident])),[]));
+test('duplicate risk rejected',()=>assert.match(validate(r([risk,risk]),i([])).join(' '),/duplicate/));
+test('duplicate incident rejected',()=>assert.match(validate(r([]),i([incident,incident])).join(' '),/duplicate/));
+test('premature VERIFIED rejected',()=>assert.ok(validate(r([{...risk,status:'VERIFIED'}]),i([{...incident,status:'VERIFIED'}])).length>=2));
+test('P0 and HIGH block release',()=>assert.deepEqual(blockers(r([risk]),i([incident])),[risk.id,incident.id]));
+test('unresolved P1 is tracked but does not alone block',()=>assert.deepEqual(blockers(r([{...risk,priority:'P1'}]),i([])),[]));
