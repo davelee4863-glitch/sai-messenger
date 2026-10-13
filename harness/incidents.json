@@ -969,8 +969,8 @@
       "id": "SAI-INC-20261013-43",
       "recordType": "REAL",
       "severity": "LOW",
-      "status": "MITIGATING",
-      "occurredAt": "2026-10-13T13:55:46.856Z",
+      "status": "VERIFIED",
+      "occurredAt": "2026-10-13T13:32:51.237Z",
       "loggedAt": "2026-10-13T13:55:46.856Z",
       "symptom": "First independent attack run from a sibling working directory failed to start workerd with a parent-directory escape error.",
       "rootCause": "The file-backed emulator root depended on caller working directory; review invocation was outside the repository.",
@@ -980,14 +980,20 @@
       "evidence": "fresh-attacks-first.tap",
       "resolvedBy": "codex-root",
       "regressionResult": "PASS",
-      "regressionEvidence": "PM007 evidence: exactbase243; extracted243; cf20candidate + sourcepreflight2 pass. Final pinned Fresh Review pending.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Exact9f3f7e9bddbfcd88bb83468e2b7d3488a3fab84d Fresh CF27/27,independent14/14,crossCWD1/1PASS. cf-cwd-regression4.tap4/4PASS; cf-rule-index-first.tap1PASS1FAIL then fixed2/2PASS.",
+      "independentReviewResult": "PASS",
+      "occurredAtAccuracy": "APPROXIMATE_EVIDENCE_CAPTURE",
+      "reviewedBy": "codex-fresh-cloudflare-reviewer /root/fresh_cloudflare_review",
+      "verifiedAt": "2026-10-13T14:05:51.562Z",
+      "verificationCommit": "9f3f7e9bddbfcd88bb83468e2b7d3488a3fab84d",
+      "verificationEvidence": "fresh-9f-review.json/txt: Reviewer made no source/journal/ref/infra changes; exact9f and sibling-CWD checks passed. Initial failures retained; original42objects and13rules preserved. Existing243 attribution83b with identical MVP/testblobs. Only local scope; cloud/freebilling/CPU/PITR/trustedTLS/physicalphonesNOT_RUN.",
+      "initialRegressionEvidence": "fresh-attacks-first.tap"
     },
     {
       "id": "SAI-INC-20261013-44",
       "recordType": "REAL",
       "severity": "LOW",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "occurredAt": "2026-10-13T13:57:11.862Z",
       "occurredAtAccuracy": "APPROXIMATE_EVIDENCE_CAPTURE",
       "loggedAt": "2026-10-13T13:57:53.835Z",
@@ -999,8 +1005,13 @@
       "evidence": "cf-rule-index-first.tap",
       "resolvedBy": "codex-root",
       "regressionResult": "PASS",
-      "regressionEvidence": "cf-rule-index-first.tap1/2PASS+1FAIL, cf-rule-index-fixed.tap2/2PASS; source/runtime final review pending.",
-      "independentReviewResult": "NOT_RUN"
+      "regressionEvidence": "Exact9f3f7e9bddbfcd88bb83468e2b7d3488a3fab84d Fresh CF27/27,independent14/14,crossCWD1/1PASS. cf-cwd-regression4.tap4/4PASS; cf-rule-index-first.tap1PASS1FAIL then fixed2/2PASS.",
+      "independentReviewResult": "PASS",
+      "reviewedBy": "codex-fresh-cloudflare-reviewer /root/fresh_cloudflare_review",
+      "verifiedAt": "2026-10-13T14:05:51.562Z",
+      "verificationCommit": "9f3f7e9bddbfcd88bb83468e2b7d3488a3fab84d",
+      "verificationEvidence": "fresh-9f-review.json/txt: Reviewer made no source/journal/ref/infra changes; exact9f and sibling-CWD checks passed. Initial failures retained; original42objects and13rules preserved. Existing243 attribution83b with identical MVP/testblobs. Only local scope; cloud/freebilling/CPU/PITR/trustedTLS/physicalphonesNOT_RUN.",
+      "initialRegressionEvidence": "cf-rule-index-first.tap"
     }
   ]
 }
