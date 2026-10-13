@@ -411,6 +411,24 @@
       "regressionResult": "PASS",
       "regressionEvidence": "core-tests-42-fixed.tap actual42/42PASS, including three Node assertion counterexamples; strengthened helper actually rerun through Cua against three authenticated browser clients with exact going/declined/pending pills and all three buttons, core-browser-rsvp-strengthened.json PASS. Node counterexamples are not claimed as browser runs.",
       "independentReviewResult": "NOT_RUN"
+    },
+    {
+      "id": "SAI-INC-20261013-21",
+      "occurredAt": "2026-10-13T09:54:04.663Z",
+      "loggedAt": "2026-10-13T09:57:36.502Z",
+      "recordType": "REAL",
+      "severity": "MEDIUM",
+      "status": "MITIGATING",
+      "symptom": "The first 15 responsive checks nominally passed without applying requested mobile widths: actual Chrome viewport stayed1523x723 for every size. Root inspected saved dimensions before reporting and invalidated all15; no mobile PASS is taken from that file.",
+      "rootCause": "The installed Chrome viewport capability returned without applying the override, and the initial layout assertion checked overflow but did not compare observed dimensions with requested dimensions.",
+      "resolution": "Retained original raw15 results under an invalid filename plus explicit invalidation record. Require exact observed width/height and intended heading before checking page/control bounds. Reran all15 on the Codex in-app browser, whose actual viewport overrides were observed and verified.",
+      "prevention": "A requested emulation size is not proof that it applied. Always verify actual viewport, target screen, overflow and control bounds; invalid runs must remain separate from executed valid PASS counts.",
+      "regressionTest": "mvp/tests/browser-assertions.test.mjs",
+      "resolvedBy": "codex-root",
+      "evidence": "core-browser-layout-invalid-chrome-viewport.json preserves raw first outputs; core-browser-layout-invalidation.json explicitly excludes those PASS labels. Chrome390x844 request actually observed1523x723; in-app browser observed390x844 and later all five exact widths.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Five Node assertion counterexamples PASS in browser-assertions-final.tap; these are not browser runs. Actual Cua in-app browser five sizes320/375/390/768/1440 x rooms/group/detail:15/15 PASS with exact dimensions and headings in core-browser-layout-final.json. Mobile and desktop screenshots preserved; root four-client console errors/warnings0.",
+      "independentReviewResult": "NOT_RUN"
     }
   ]
 }
