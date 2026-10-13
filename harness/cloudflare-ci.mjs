@@ -12,6 +12,12 @@ const safePath = path => typeof path === 'string' && path.length > 0 && !path.in
 export function discoverTests(root) {
   const base = realpathSync(root), found = [];
   function walk(path) {
+    let ancestor=base;
+    for(const part of relative(base,path).split(sep)) {
+      if(!part||part==='.'||part==='..')throw Error('Unsafe test path ancestor');
+      ancestor=resolve(ancestor,part);
+      if(lstatSync(ancestor).isSymbolicLink())throw Error('Linked or external test path ancestor');
+    }
     const info = lstatSync(path);
     if (info.isSymbolicLink() || (info.isFile() && info.nlink > 1) || !realpathSync(path).startsWith(base + sep)) throw Error('Linked or external test path');
     if (info.isDirectory()) for (const name of readdirSync(path)) walk(resolve(path, name));

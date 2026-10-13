@@ -1201,6 +1201,24 @@
       "regressionEvidence": "policy-final-candidate.tap118/118 PASS; stable full/independent/remote validation pending.",
       "resolvedBy": "codex-root-pm010",
       "verificationEvidence": "Initial independent review at549: FAIL for runner edge cases, preserved; final independent verification pending."
+    },
+    {
+      "id": "SAI-INC-20261014-10",
+      "recordType": "REAL",
+      "status": "OPEN",
+      "severity": "HIGH",
+      "occurredAt": "2026-10-13T16:44:35.724Z",
+      "loggedAt": "2026-10-13T16:44:35.724Z",
+      "occurrenceAccuracy": "APPROXIMATE_EVIDENCE_CAPTURE",
+      "symptom": "Independent review found Git-tracked outside-root test files accepted through an internal parent directory junction.",
+      "rootCause": "Discovery checked only leaf link state and resolved containment; a linked ancestor inside the root could alias another test and inflate coverage.",
+      "resolution": "IMPLEMENTED_PENDING_INDEPENDENT_REVIEW: validate every test path ancestor before walking or reading a leaf.",
+      "prevention": "Reject linked ancestors even when their target resolves inside the repository; retain a Git-tracked internal-junction regression.",
+      "regressionTest": "harness/cloudflare-ci.test.mjs",
+      "evidence": "Fresh c417 snapshot independent-probes-c417.tap:45PASS/1FAIL; ci-junction-c417.test.mjs preserves initial reproduction. Root linked-ancestor-fixed.tap16/16PASS.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "linked-ancestor-fixed.tap16/16PASS; final full suite, independent review and remote CI pending.",
+      "resolvedBy": "codex-root-pm010"
     }
   ]
 }

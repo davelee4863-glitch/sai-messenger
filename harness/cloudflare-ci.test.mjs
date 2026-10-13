@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,rmSync,readFileSync,linkSync} from 'node:fs';
-import {resolve} from 'node:path';
+import {mkdtempSync,mkdirSync,writeFileSync,rmSync,readFileSync,linkSync,symlinkSync} from 'node:fs';
+import {resolve,sep} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
@@ -36,3 +36,4 @@ test('hardlinked test paths are rejected without reading the external source',t=
 test('overflow, unsafe integers and excessive TAP totals never PASS',()=>{for(const n of ['9'.repeat(400),'9007199254740992','1000001']){const stdout=tap().replace('# tests 1','# tests '+n).replace('# pass 1','# pass '+n);assert.equal(parseResult({status:0,stdout}).status,'FAIL');}});
 test('manual source fingerprint treats CRLF and LF as the same reviewed source',t=>{const {dir,manifest}=fixture(t),path='tests/ui-browser-regression.test.mjs',lf='// synthetic browser procedure\n';writeFileSync(resolve(dir,path),lf.replace(/\n/g,'\r\n'));manifest.manualSuites=[{path,status:'NOT_RUN',reason:'Browser procedure only',sha256:createHash('sha256').update(lf).digest('hex')}];assert.equal(validateCoverage(dir,manifest).manualSuites.length,1);});
 test('child execution clears inherited Node test context and really executes cases',t=>{const {dir,manifest}=fixture(t);const summary=runSuite(dir,{manifest});assert.equal(summary.status,'PASS');assert.equal(summary.existing.pass,1);});
+test('Git-tracked outside-root tests cannot alias a linked parent inside the repository',t=>{const {dir}=fixture(t);const extra=resolve(dir,'extra');mkdirSync(extra);writeFileSync(resolve(extra,'guard.test.mjs'),'// synthetic tracked guard');execFileSync('git',['init','-q'],{cwd:dir});execFileSync('git',['add','--','extra/guard.test.mjs'],{cwd:dir});writeFileSync(resolve(dir,'tests/guard.test.mjs'),'// synthetic aliased guard');assert.ok(extra.startsWith(dir+sep));rmSync(extra,{recursive:true,force:true});symlinkSync(resolve(dir,'tests'),extra,'junction');assert.throws(()=>discoverTests(dir),/Linked or external/);});
