@@ -1,0 +1,51 @@
+name: PROMISE BOX UI preview (Pages only)
+on:
+  push:
+    branches: [ui/promise-box-v1-preview-20261013]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: promise-box-ui-pages
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node harness/check.mjs
+      - run: node --test harness/check.test.mjs tests/ui-state.test.mjs tests/ui-static.test.mjs tests/ui-qr.test.mjs tests/ui-build.test.mjs
+  publish:
+    if: github.ref == 'refs/heads/ui/promise-box-v1-preview-20261013'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/build-ui-preview.mjs "$RUNNER_TEMP/promise-box-site"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/promise-box-site
+      - name: Publish static UI only
+        id: deployment
+        uses: actions/deploy-pages@v4
+

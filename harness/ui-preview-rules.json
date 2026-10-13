@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "scope": "PROMISE BOX UI V1 public static preview only",
+  "baselineHarnessCommit": "86830e46f5857978ff12863da63ced974a5e91f9",
+  "deploymentSource": "docs/",
+  "rules": [
+    {
+      "id": "PB-UI-R001",
+      "requirement": "Only isolated static assets from docs/ may be published. Production, Railway, server.js, public/, main and existing PRs are outside this task's change scope.",
+      "evidence": "Git diff review, Pages source configuration and independent review"
+    },
+    {
+      "id": "PB-UI-R002",
+      "requirement": "Use synthetic identities, conversations and appointments. Do not copy real user data, credentials, production environment variables or production API endpoints.",
+      "evidence": "Source and fixture review plus tests/ui-static.test.mjs"
+    },
+    {
+      "id": "PB-UI-R003",
+      "requirement": "Preview browser interactions stay in memory. No network API calls, WebSocket, browser storage, service worker, persistent cache or external calendar mutations.",
+      "evidence": "Static policy tests, CSP connect-src none and browser request inspection"
+    },
+    {
+      "id": "PB-UI-R004",
+      "requirement": "AI candidates remain unconfirmed until the user explicitly answers 이대로 확정할까요? with confirm. Edit and ignore must not create an appointment.",
+      "evidence": "State regression tests and browser flow checks"
+    },
+    {
+      "id": "PB-UI-R005",
+      "requirement": "A group organizer's confirmation creates the group appointment while each participant's RSVP remains a separate state. Organizer confirmation does not accept for other participants.",
+      "evidence": "Group confirmation and RSVP regression tests plus browser flow checks"
+    },
+    {
+      "id": "PB-UI-R006",
+      "requirement": "Render untrusted text through textContent or equivalent text nodes. Do not use HTML string insertion, inline script handlers or executable URLs.",
+      "evidence": "Static security tests and browser XSS probe"
+    },
+    {
+      "id": "PB-UI-R007",
+      "requirement": "Use local relative assets and paths that work under a GitHub Pages repository subdirectory. Show a demo notice, version, update time and change history.",
+      "evidence": "Asset and version tests plus local and published browser checks"
+    },
+    {
+      "id": "PB-UI-R008",
+      "requirement": "Meet WCAG AA normal-text contrast of 4.5:1 for the tested palette combinations and 3:1 for focus indicators. Verify keyboard, mobile layout, Korean wrapping and control labels in a browser.",
+      "evidence": "Computed palette tests and recorded browser checks"
+    },
+    {
+      "id": "PB-UI-R009",
+      "requirement": "GitHub Pages is public. Publish only synthetic static data, retain versioned commits for rollback, and do not treat an unrun test or source review as a browser PASS.",
+      "evidence": "Deployment report with commit, URL, test results and NOT_RUN fields"
+    },
+    {
+      "id": "PB-UI-R010",
+      "requirement": "Preserve real incidents and redacted reproduction evidence. Invented incidents belong only in isolated test fixtures. Mark resolved incidents VERIFIED only after regression PASS and an independent review.",
+      "evidence": "Existing harness validation and incident journal review"
+    }
+  ],
+  "paletteContract": {
+    "normalText": [
+      ["--ink", "--paper"],
+      ["--ink", "--cream"],
+      ["--ink", "--peach"],
+      ["--ink", "--apricot"],
+      ["--muted", "--paper"],
+      ["--muted", "--cream"],
+      ["#ffffff", "--deep"]
+    ],
+    "focus": [
+      ["--deep", "--paper"],
+      ["--deep", "--cream"],
+      ["--deep", "--peach"],
+      ["--deep", "--apricot"]
+    ],
+    "constraint": "Use ink for normal text on peach and apricot. Muted on these backgrounds, and deep on apricot, fail the normal-text AA threshold. Palette arithmetic alone does not prove every rendered element's contrast."
+  }
+}

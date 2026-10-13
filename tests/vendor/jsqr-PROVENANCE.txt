@@ -1,0 +1,9 @@
+jsQR 1.4.0 — independent QR decoder used only by tests.
+Official source: https://github.com/cozmo/jsQR
+Package: https://registry.npmjs.org/jsqr/-/jsqr-1.4.0.tgz
+Downloaded with npm pack jsqr@1.4.0 --ignore-scripts on 2026-10-13.
+npm integrity: sha512-dxLob7q65Xg2DvstYkRpkYtmKm2sPJ9oFhrhmudT1dZvNFFTlroai3AWSpLey/w5vMcLBXRgOJsbXpdN9HzU/A==
+Unmodified package dist/jsQR.js copied to jsqr.cjs for CommonJS use.
+jsqr.cjs SHA-256: bc40c8a15196236b2314db0856f72ca0b49980cd5413b8c852a7349f5fee0859
+License: Apache-2.0; complete upstream license in jsqr-LICENSE.txt.
+The decoder is not part of the deployed static UI and has no npm runtime dependency.
