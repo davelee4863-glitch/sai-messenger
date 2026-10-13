@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "scope": "PM005 isolated loopback MVP only; legacy product and existing Pages are unchanged",
+  "baselineUICommit": "ceff7952c04506ddd42ca012ec10ba5cf89c4761",
+  "baselineRiskStatus": "UNCHANGED; new MVP guards do not verify or deploy the legacy Production product",
+  "riskMappings": {
+    "SAI-R001": "SQLite WAL/FULL transactions, real restart and backup restoration tests",
+    "SAI-R002": "Authenticated membership and host/owner checks; reset disabled; explicit versioned cancellation review",
+    "SAI-R003": "Opaque hashed sessions, exact Origin/Host, WebSocket membership and revocation checks",
+    "SAI-R004": "Bounded messages, bodies, requests, auth concurrency, sockets; external APIs disabled",
+    "SAI-R007": "Static client CSP, text-only DOM rendering, browser synthetic XSS checks"
+  },
+  "rules": [
+    {
+      "id": "PB-CORE-R001",
+      "requirement": "Bind only 127.0.0.1. Refuse public bind and external API activation. No paid or public server provisioning."
+    },
+    {
+      "id": "PB-CORE-R002",
+      "requirement": "Server UUID identity is authoritative; nickname is display text. Reject client-supplied sender/owner/RSVP identity fields."
+    },
+    {
+      "id": "PB-CORE-R003",
+      "requirement": "Use salted scrypt password hashes, opaque session token digests, rotation, idle/absolute expiry, HttpOnly/SameSite cookies and logout revocation."
+    },
+    {
+      "id": "PB-CORE-R004",
+      "requirement": "Require matching Host/Origin and CSRF on mutations. Revalidate sessions after request-body waits and memberships inside write transactions."
+    },
+    {
+      "id": "PB-CORE-R005",
+      "requirement": "Authenticate WebSocket upgrade, enforce active room membership, cap connections/frames, revoke removed/expired/logout sessions and avoid stale-room reconnect."
+    },
+    {
+      "id": "PB-CORE-R006",
+      "requirement": "Persist authoritative messages with a unique per-room/per-sender client message ID; confirm server storage and recipient delivery independently. Require canonical lowercase UUIDs so alternative casing cannot bypass the idempotency key."
+    },
+    {
+      "id": "PB-CORE-R007",
+      "requirement": "Persist proposals separately, create zero confirmed promises before explicit host CONFIRM; transactionally deduplicate confirmation."
+    },
+    {
+      "id": "PB-CORE-R008",
+      "requirement": "Only each authenticated attendee may RSVP for themselves. Host confirmation never accepts for other participants."
+    },
+    {
+      "id": "PB-CORE-R009",
+      "requirement": "Change/cancel requires a server-issued actor-bound expiring versioned review and explicit single-use approval. Preserve all history."
+    },
+    {
+      "id": "PB-CORE-R010",
+      "requirement": "Keep plaintext synthetic credentials outside DB and Git in a separate private directory; auth hash/session tables are separate from domain data."
+    },
+    {
+      "id": "PB-CORE-R011",
+      "requirement": "Run actual HTTP/WS normal/negative/bypass tests, independent browser identities, restart/crash and backup recovery checks. Physical devices and public staging are NOT_RUN until approved."
+    },
+    {
+      "id": "PB-CORE-R012",
+      "requirement": "Preserve all existing risks and real incidents. Record first failures and fixes; require fresh independent verification before VERIFIED. Existing Pages artifact/workflow/source branch stay unchanged."
+    },
+    {
+      "id": "PB-CORE-R013",
+      "requirement": "Reject missing, existing empty, malformed, additional-object or foreign-key-invalid recovery sources. Validate complete schema before restore target creation; never repair an incompatible backup."
+    },
+    {
+      "id": "PB-CORE-R014",
+      "requirement": "Reserve and sync private synthetic credential output before committing all provisioned users in one transaction. Failures must roll back and leave retry possible."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+**/node_modules/
+.mvp-data/
+.mvp-private/
+**/*.sqlite
+**/*.sqlite-wal
+**/*.sqlite-shm
+**/*.db
+**/*.db-wal
+**/*.db-shm
+**/test-credentials*.json
