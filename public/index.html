@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사이톡</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, sans-serif; background: #fff; height: 100vh; display: flex; flex-direction: column; }
+
+  /* 상단 탭 */
+  .tabs { display: flex; background: #fff; border-bottom: 1px solid #eee; }
+  .tab { flex: 1; padding: 14px; text-align: center; font-size: 14px; color: #999; cursor: pointer; border: none; background: none; }
+  .tab.active { color: #333; font-weight: 700; border-bottom: 2px solid #FEE500; }
+
+  /* 화면 */
+  .screen { flex: 1; overflow-y: auto; display: none; }
+  .screen.active { display: block; }
+
+  /* 친구 목록 */
+  .friend { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; }
+  .friend:hover { background: #fafafa; }
+  .friend .avatar {
+    width: 48px; height: 48px; border-radius: 18px;
+    background: #FEE500; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #3c1e1e; margin-right: 12px;
+  }
+  .friend .info h3 { font-size: 15px; font-weight: 600; }
+  .friend .info p { font-size: 12px; color: #999; margin-top: 2px; }
+
+  /* 채팅방 목록 */
+  .room { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
+  .room:hover { background: #fafafa; }
+  .room .avatar {
+    width: 52px; height: 52px; border-radius: 20px;
+    background: #e8e8e8; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-right: 12px; overflow: hidden;
+  }
+  .room .info { flex: 1; }
+  .room .info h3 { font-size: 15px; }
+  .room .info p { font-size: 13px; color: #999; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  .room .time { font-size: 11px; color: #bbb; }
+
+  /* 채팅 화면 */
+  #chatScreen { display: none; flex-direction: column; height: 100vh; }
+  #chatScreen.active { display: flex; }
+  .chathead {
+    display: flex; align-items: center; padding: 12px 16px;
+    background: #fff; border-bottom: 1px solid #eee;
+  }
+  .chathead .back { font-size: 20px; cursor: pointer; margin-right: 12px; color: #666; }
+  .chathead h2 { font-size: 16px; }
+  #chatBody { flex: 1; overflow-y: auto; padding: 16px; background: #bacee0; display: flex; flex-direction: column; gap: 8px; }
+  .bubble-row { display: flex; align-items: flex-end; gap: 6px; max-width: 80%; }
+  .bubble-row.me { align-self: flex-end; flex-direction: row-reverse; }
+  .bubble-row .pavatar {
+    width: 36px; height: 36px; border-radius: 14px; background: #ddd;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .bubble {
+    padding: 10px 14px; border-radius: 16px; font-size: 15px; line-height: 1.45;
+    word-break: break-word;
+  }
+  .bubble-row.me .bubble { background: #FEE500; border-top-right-radius: 4px; }
+  .bubble-row.other .bubble { background: #fff; border-top-left-radius: 4px; }
+  .bubble-row.ai .bubble { background: #e8f5e9; border-top-left-radius: 4px; border: 1px solid #c8e6c9; }
+  .bubble-row .pname { font-size: 12px; color: #666; margin-bottom: 4px; }
+  .inputbar { display: flex; padding: 10px 12px; background: #fff; gap: 8px; }
+  .inputbar input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 15px; outline: none; }
+  .inputbar button { padding: 10px 18px; background: #FEE500; border: none; border-radius: 20px; font-weight: 600; cursor: pointer; }
+
+  /* 저장 카드 */
+  .saved-card {
+    align-self: center; background: #fff; border-radius: 12px; padding: 14px;
+    font-size: 14px; text-align: center; max-width: 85%; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .saved-card a {
+    display: inline-block; margin: 6px 4px 0; padding: 8px 16px;
+    background: #FEE500; border-radius: 20px; text-decoration: none;
+    color: #3c1e1e; font-size: 13px; font-weight: 600;
+  }
+
+  /* 친구 추가 */
+  .add-btn {
+    position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px;
+    background: #FEE500; border-radius: 50%; font-size: 28px; border: none;
+    cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    display: none; align-items: center; justify-content: center; z-index: 100;
+  }
+  .modal.show { display: flex; }
+  .modal .box { background: #fff; border-radius: 16px; padding: 24px; width: 300px; }
+  .modal h3 { margin-bottom: 12px; }
+  .modal input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; font-size: 15px; }
+  .modal .btns { display: flex; gap: 8px; }
+  .modal button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+  .modal .ok { background: #FEE500; font-weight: 600; }
+  .modal .cancel { background: #f0f0f0; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- 메인 화면 -->
+<div id="mainScreen" style="display:flex;flex-direction:column;height:100vh">
+  <div class="tabs">
+    <button class="tab active" data-s="friends">친구</button>
+    <button class="tab" data-s="chats">채팅</button>
+  </div>
+  <div id="friendsScreen" class="screen active"></div>
+  <div id="chatsScreen" class="screen"></div>
+  <button class="add-btn" id="addFriendBtn">+</button>
+  <button class="add-btn" id="groupBtn" style="bottom:92px;font-size:20px">👥</button>
+</div>
+
+<!-- 채팅 화면 -->
+<div id="chatScreen">
+  <div class="chathead">
+    <span class="back" id="backBtn">‹</span>
+    <h2 id="chatTitle">채팅</h2>
+  </div>
+  <div id="chatBody"></div>
+  <div class="inputbar">
+    <input id="msgInput" placeholder="메시지 입력">
+    <button id="sendBtn">전송</button>
+  </div>
+</div>
+
+<!-- 친구 추가 모달 -->
+<div class="modal" id="addModal">
+  <div class="box">
+    <h3>친구 추가</h3>
+    <input id="newFriendName" placeholder="이름">
+    <div class="btns">
+      <button class="cancel" id="cancelAdd">취소</button>
+      <button class="ok" id="confirmAdd">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- 그룹 채팅 만들기 모달 -->
+<div class="modal" id="groupModal">
+  <div class="box">
+    <h3>그룹 채팅</h3>
+    <p style="font-size:13px;color:#999;margin-bottom:10px">초대할 친구를 선택하세요</p>
+    <div id="groupFriendList" style="max-height:200px;overflow-y:auto;margin-bottom:10px"></div>
+    <input id="groupName" placeholder="그룹 이름 (선택)">
+    <div class="btns">
+      <button class="cancel" id="cancelGroup">취소</button>
+      <button class="ok" id="confirmGroup">만들기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let myName = localStorage.getItem('saitalk_name') || '';
+let friends = JSON.parse(localStorage.getItem('saitalk_friends') || '[]');
+let rooms = JSON.parse(localStorage.getItem('saitalk_rooms') || '{}');
+let currentRoom = null;
+let ws = null;
+
+// 이름 설정
+if (!myName) {
+  myName = prompt('당신의 이름은?') || '나';
+  localStorage.setItem('saitalk_name', myName);
+}
+
+function save() {
+  localStorage.setItem('saitalk_friends', JSON.stringify(friends));
+  localStorage.setItem('saitalk_rooms', JSON.stringify(rooms));
+}
+
+function renderFriends() {
+  const el = document.getElementById('friendsScreen');
+  el.innerHTML = friends.map((f, i) => `
+    <div class="friend" onclick="openChat('${f}')">
+      <div class="avatar">${f[0]}</div>
+      <div class="info"><h3>${f}</h3><p>탭해서 대화하기</p></div>
+    </div>
+  `).join('') || '<p style="padding:20px;color:#999">+ 버튼으로 친구를 추가하세요</p>';
+}
+
+function renderChats() {
+  const el = document.getElementById('chatsScreen');
+  const ids = Object.keys(rooms);
+  el.innerHTML = ids.map(id => {
+    const r = rooms[id];
+    const last = r.messages[r.messages.length - 1];
+    return `<div class="room" onclick="openChat('${id}')">
+      <div class="avatar">${id[0]}</div>
+      <div class="info"><h3>${id}</h3><p>${last ? last.text.slice(0, 30) : ''}</p></div>
+    </div>`;
+  }).join('') || '<p style="padding:20px;color:#999">채팅방이 없어요</p>';
+}
+
+function openChat(name) {
+  currentRoom = name;
+  if (!rooms[name]) rooms[name] = { messages: [] };
+  save();
+  document.getElementById('mainScreen').style.display = 'none';
+  document.getElementById('chatScreen').classList.add('active');
+  document.getElementById('chatTitle').textContent = name;
+  renderChatMessages();
+  connectWS();
+}
+
+function renderChatMessages() {
+  const body = document.getElementById('chatBody');
+  body.innerHTML = '';
+  const msgs = rooms[currentRoom]?.messages || [];
+  msgs.forEach(m => addBubble(m.text, m.who, m.sender));
+}
+
+function addBubble(text, who, sender) {
+  const body = document.getElementById('chatBody');
+  if (who === 'saved') {
+    const d = document.createElement('div');
+    d.className = 'saved-card';
+    d.innerHTML = `<b>📝 약속 저장됨</b><br>${text}<br>
+      <a href="/api/memo/${currentRoom}/ics">캘린더</a>
+      <a href="/api/memo/${currentRoom}/md" download>메모</a>`;
+    body.appendChild(d);
+  } else {
+    const row = document.createElement('div');
+    row.className = 'bubble-row ' + who;
+    let html = who !== 'me' ? `<div class="pavatar">${(sender || '?')[0]}</div>` : '';
+    html += `<div><${who !== 'me' ? `div class="pname">${sender}</div>` : 'div'}<div class="bubble">${text.replace(/\n/g, '<br>')}</div></div>`;
+    row.innerHTML = html;
+    body.appendChild(row);
+  }
+  body.scrollTop = body.scrollHeight;
+}
+
+function connectWS() {
+  if (ws) ws.close();
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${proto}//${location.host}/ws?room=${encodeURIComponent(currentRoom)}&name=${encodeURIComponent(myName)}`);
+  ws.onmessage = (ev) => {
+    const d = JSON.parse(ev.data);
+    if (d.type === 'chat') {
+      const who = d.name === myName ? 'me' : (d.name === 'AI' ? 'ai' : 'other');
+      // 로컬 저장
+      if (!rooms[currentRoom]) rooms[currentRoom] = { messages: [] };
+      rooms[currentRoom].messages.push({ text: d.text, who, sender: d.name });
+      save();
+      // 내가 보낸 건 이미 표시했으면 스킵 (서버 에코 방지)
+      if (d.name !== myName || who === 'ai') addBubble(d.text, who, d.name);
+    } else if (d.type === 'saved') {
+      addBubble(`${d.data.date} ${d.data.time}\n${d.data.place}`, 'saved');
+    } else if (d.type === 'history') {
+      // 서버 히스토리는 무시 (로컬 사용)
+    }
+  };
+  ws.onclose = () => setTimeout(() => { if (currentRoom) connectWS(); }, 3000);
+}
+
+function sendMsg() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || !ws || ws.readyState !== 1) return;
+  addBubble(text, 'me');
+  if (!rooms[currentRoom]) rooms[currentRoom] = { messages: [] };
+  rooms[currentRoom].messages.push({ text, who: 'me', sender: myName });
+  save();
+  ws.send(JSON.stringify({ type: 'chat', text }));
+  input.value = '';
+  renderChats();
+}
+
+// 이벤트
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('friendsScreen').classList.toggle('active', t.dataset.s === 'friends');
+    document.getElementById('chatsScreen').classList.toggle('active', t.dataset.s === 'chats');
+    if (t.dataset.s === 'chats') renderChats();
+  };
+});
+document.getElementById('backBtn').onclick = () => {
+  if (ws) ws.close();
+  ws = null; currentRoom = null;
+  document.getElementById('chatScreen').classList.remove('active');
+  document.getElementById('mainScreen').style.display = 'flex';
+  renderFriends(); renderChats();
+};
+document.getElementById('sendBtn').onclick = sendMsg;
+document.getElementById('msgInput').onkeydown = e => { if (e.key === 'Enter') sendMsg(); };
+document.getElementById('addFriendBtn').onclick = () => document.getElementById('addModal').classList.add('show');
+document.getElementById('cancelAdd').onclick = () => document.getElementById('addModal').classList.remove('show');
+document.getElementById('confirmAdd').onclick = () => {
+  const name = document.getElementById('newFriendName').value.trim();
+  if (name && !friends.includes(name)) { friends.push(name); save(); renderFriends(); }
+  document.getElementById('newFriendName').value = '';
+  document.getElementById('addModal').classList.remove('show');
+};
+
+// 그룹 채팅
+document.getElementById('groupBtn').onclick = () => {
+  const list = document.getElementById('groupFriendList');
+  list.innerHTML = friends.map(f => `
+    <label style="display:flex;align-items:center;padding:8px;cursor:pointer">
+      <input type="checkbox" value="${f}" style="margin-right:8px">
+      <span>${f}</span>
+    </label>
+  `).join('') || '<p style="color:#999">친구를 먼저 추가하세요</p>';
+  document.getElementById('groupModal').classList.add('show');
+};
+document.getElementById('cancelGroup').onclick = () => document.getElementById('groupModal').classList.remove('show');
+document.getElementById('confirmGroup').onclick = () => {
+  const checked = [...document.querySelectorAll('#groupFriendList input:checked')].map(x => x.value);
+  if (checked.length === 0) return;
+  const name = document.getElementById('groupName').value.trim() || checked.join(', ');
+  if (!rooms[name]) rooms[name] = { messages: [], members: checked };
+  save();
+  document.getElementById('groupModal').classList.remove('show');
+  document.getElementById('groupName').value = '';
+  openChat(name);
+};
+
+renderFriends();
+</script>
+</body>
+</html>
