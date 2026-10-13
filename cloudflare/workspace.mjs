@@ -2,23 +2,24 @@ import {DurableObject} from 'cloudflare:workers';
 import {CloudStore} from './store.mjs';
 import {localOrigin} from './origin.mjs';
 import {configuration} from './config.mjs';
+import {BINDINGS,assertWorkerEnvironment} from './isolation-identity.mjs';
 import {Fault,fail,keys,text,uuid,digest,token,equal,passwordMatches} from '../mvp/security.mjs';
 const COOKIE='pb_cf_local_session';
 const ASSETS=new Set(['/','/index.html','/app.mjs','/styles.css','/icon.svg','/socket-url.mjs']);
 function rawCookie(request){const values=(request.headers.get('cookie')||'').split(';').map(v=>v.trim()).filter(v=>v.startsWith(COOKIE+'='));return values.length===1&&/^[a-f0-9]{64}$/.test(values[0].slice(COOKIE.length+1))?values[0].slice(COOKIE.length+1):null;}
 async function body(request){if(request.headers.get('content-type')?.split(';')[0].trim()!=='application/json')fail(415,'JSON_REQUIRED','JSON 요청만 허용합니다.');const reader=request.body?.getReader();let size=0,parts=[];if(!reader)fail(400,'INVALID_JSON','JSON 요청을 확인해주세요.');while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>16384){await reader.cancel();fail(413,'BODY_TOO_LARGE','요청 크기가 너무 큽니다.');}parts.push(value);}const data=new Uint8Array(size);let offset=0;for(const p of parts){data.set(p,offset);offset+=p.length;}try{return JSON.parse(new TextDecoder().decode(data));}catch{fail(400,'INVALID_JSON','JSON 요청을 확인해주세요.');}}
 export class Workspace extends DurableObject {
- constructor(ctx,env){super(ctx,env);this.ctx=ctx;this.env=env;this.settings=configuration(env);this.store=new CloudStore(ctx);this.pendingLogins=0;this.flushing=null;}
+ constructor(ctx,env){super(ctx,env);assertWorkerEnvironment(env);this.ctx=ctx;this.env=env;this.settings=configuration(env);this.store=new CloudStore(ctx);this.pendingLogins=0;this.flushing=null;}
  auth(request,touch=true){const raw=rawCookie(request),session=raw?this.store.session(digest(raw),{idleMs:Number(this.env.SESSION_IDLE_MS||900000),touch}):null;if(!session)fail(401,'UNAUTHENTICATED','로그인이 필요합니다.');return {...session,csrf:digest('csrf:'+raw)};}
  valid(ws){const a=ws.deserializeAttachment();return a&&this.store.session(a.hash,{idleMs:Number(this.env.SESSION_IDLE_MS||900000),touch:false})&&this.store.member(a.roomId,a.userId)?a:null;}
  notify(roomId){for(const ws of this.ctx.getWebSockets()){const a=this.valid(ws);if(!a){ws.close(1008,'Access revoked');continue;}if(a.roomId===roomId)try{ws.send(JSON.stringify({type:'room.changed',roomId}));}catch{ws.close(1011,'Reconnect');}}}
  closeHash(hash){for(const ws of this.ctx.getWebSockets())if(ws.deserializeAttachment()?.hash===hash)ws.close(1008,'Session revoked');}
  options(){return {requests:this.settings.REQUEST_BUDGET,reads:this.settings.READ_BUDGET,writes:this.settings.WRITE_BUDGET,blocked:this.env.QUOTA_PAUSED==='true'};}
  async flush(){if(this.flushing)return this.flushing;this.flushing=(async()=>{try{if(this.env.D1_FAILURE==='true')throw new Error('injected');const rows=this.store.all('SELECT * FROM cf_outbox ORDER BY seq LIMIT 20');
-   await this.env.META.prepare('CREATE TABLE IF NOT EXISTS workspace_projection (workspace TEXT PRIMARY KEY,epoch INTEGER NOT NULL,revision INTEGER NOT NULL,payload TEXT NOT NULL)').run();
+   await this.env[BINDINGS.metadata].prepare('CREATE TABLE IF NOT EXISTS workspace_projection (workspace TEXT PRIMARY KEY,epoch INTEGER NOT NULL,revision INTEGER NOT NULL,payload TEXT NOT NULL)').run();
    const epoch=Number(this.store.get("SELECT value FROM cf_meta WHERE key='epoch'").value);
-   for(const row of rows){await this.env.META.prepare('INSERT INTO workspace_projection VALUES (?,?,?,?) ON CONFLICT(workspace) DO UPDATE SET epoch=excluded.epoch,revision=excluded.revision,payload=excluded.payload WHERE excluded.epoch>epoch OR (excluded.epoch=epoch AND excluded.revision>=revision)').bind(this.ctx.id.toString(),epoch,row.seq,row.payload).run();
-    const ack=await this.env.META.prepare('SELECT epoch,revision,payload FROM workspace_projection WHERE workspace=?').bind(this.ctx.id.toString()).first();
+   for(const row of rows){await this.env[BINDINGS.metadata].prepare('INSERT INTO workspace_projection VALUES (?,?,?,?) ON CONFLICT(workspace) DO UPDATE SET epoch=excluded.epoch,revision=excluded.revision,payload=excluded.payload WHERE excluded.epoch>epoch OR (excluded.epoch=epoch AND excluded.revision>=revision)').bind(this.ctx.id.toString(),epoch,row.seq,row.payload).run();
+    const ack=await this.env[BINDINGS.metadata].prepare('SELECT epoch,revision,payload FROM workspace_projection WHERE workspace=?').bind(this.ctx.id.toString()).first();
     if(!ack||ack.epoch!==epoch||ack.revision!==row.seq||ack.payload!==row.payload)throw new Error('Projection not acknowledged');
     this.store.run('DELETE FROM cf_outbox WHERE seq=?',row.seq);
    }
@@ -32,13 +33,13 @@ export class Workspace extends DurableObject {
     if(path==='/__backup'){await this.ctx.storage.sync();return Response.json(this.store.exportSnapshot());}
     if(path==='/__restore'&&method==='POST'){const value=this.store.restore(await request.json());return Response.json(value);}
     if(path==='/__flush'){return Response.json(await this.flush());}
-    if(path==='/__rebuild-meta'&&method==='POST'){await this.flush();await this.env.META.prepare('DELETE FROM workspace_projection WHERE workspace=?').bind(this.ctx.id.toString()).run();this.store.tx(()=>this.store.enqueue());return Response.json(await this.flush());}
+    if(path==='/__rebuild-meta'&&method==='POST'){await this.flush();await this.env[BINDINGS.metadata].prepare('DELETE FROM workspace_projection WHERE workspace=?').bind(this.ctx.id.toString()).run();this.store.tx(()=>this.store.enqueue());return Response.json(await this.flush());}
     if(path==='/__metrics'){return Response.json({usage:this.store.all('SELECT * FROM cf_usage'),pending:this.store.get('SELECT COUNT(*) AS n FROM cf_outbox').n,bytes:this.store.sql.databaseSize});}
     fail(404,'NOT_FOUND','허용되지 않은 검사입니다.');
    }
    if(!localOrigin(url,this.env))fail(400,'TRANSPORT_FORBIDDEN','허용된 주소를 사용해주세요.');
    if(request.headers.has('origin')&&request.headers.get('origin')!==url.origin)fail(403,'ORIGIN_FORBIDDEN','같은 앱에서 요청해주세요.');
-   if(ASSETS.has(path)&&method==='GET'&&!url.search){const asset=await this.env.ASSETS.fetch(request);return this.decorate(asset,url);}
+   if(ASSETS.has(path)&&method==='GET'&&!url.search){const asset=await this.env[BINDINGS.assets].fetch(request);return this.decorate(asset,url);}
    if(path==='/health'&&method==='GET')return this.json(200,{status:'ok',mode:'cloudflare-local-synthetic',schemaVersion:'cf-v1',externalApiEnabled:false},url);
    if(method!=='GET'&&request.headers.get('origin')!==url.origin)fail(403,'ORIGIN_FORBIDDEN','같은 앱에서 요청해주세요.');
    if(path==='/api/login'&&method==='POST'){

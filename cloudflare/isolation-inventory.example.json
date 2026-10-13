@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "accountId": "synthetic-account-not-live",
+  "capturedAt": "2026-10-13T14:53:48.467Z",
+  "source": "synthetic",
+  "paginationComplete": true,
+  "categoriesComplete": {
+    "workers": true,
+    "d1": true,
+    "durableObjects": true,
+    "r2": true,
+    "kv": true,
+    "queues": true,
+    "secrets": true,
+    "routes": true,
+    "domains": true,
+    "environmentVariables": true,
+    "migrations": true,
+    "backups": true,
+    "logs": true,
+    "permissions": true
+  },
+  "resources": {
+    "workers": [
+      {
+        "id": "synthetic:existing-app:workers",
+        "name": "existing-app-workers",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "d1": [
+      {
+        "id": "synthetic:existing-app:d1",
+        "name": "existing-app-d1",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "durableObjects": [
+      {
+        "id": "synthetic:existing-app:durableObjects",
+        "name": "existing-app-durableObjects",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "r2": [
+      {
+        "id": "synthetic:existing-app:r2",
+        "name": "existing-app-r2",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "kv": [
+      {
+        "id": "synthetic:existing-app:kv",
+        "name": "existing-app-kv",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "queues": [
+      {
+        "id": "synthetic:existing-app:queues",
+        "name": "existing-app-queues",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "secrets": [
+      {
+        "id": "synthetic:existing-app:secrets",
+        "name": "existing-app-secrets",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app",
+        "workerId": "synthetic:existing-app:workers"
+      }
+    ],
+    "routes": [
+      {
+        "id": "synthetic:existing-app:routes",
+        "name": "existing-app-routes",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "domains": [
+      {
+        "id": "synthetic:existing-app:domains",
+        "name": "existing-app-domains",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "environmentVariables": [
+      {
+        "id": "synthetic:existing-app:environmentVariables",
+        "name": "existing-app-environmentVariables",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app",
+        "workerId": "synthetic:existing-app:workers"
+      }
+    ],
+    "migrations": [
+      {
+        "id": "synthetic:existing-app:migrations",
+        "name": "existing-app-migrations",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "backups": [
+      {
+        "id": "synthetic:existing-app:backups",
+        "name": "existing-app-backups",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "logs": [
+      {
+        "id": "synthetic:existing-app:logs",
+        "name": "existing-app-logs",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ],
+    "permissions": [
+      {
+        "id": "synthetic:existing-app:permissions",
+        "name": "existing-app-permissions",
+        "owner": "synthetic:existing-app",
+        "namespace": "existing-app"
+      }
+    ]
+  }
+}

@@ -7,6 +7,8 @@
   },
   "scripts": {
     "test": "node --test tests/*.test.mjs",
+    "test:isolation": "node --test ../harness/cloudflare-isolation.test.mjs",
+    "preflight:deployment": "node ../harness/cloudflare-preflight.mjs",
     "start": "node local.mjs"
   },
   "devDependencies": {
