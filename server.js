@@ -10,7 +10,13 @@ const PORT = process.env.PORT || 3101;
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    }
+  }
+}));
 
 // 방별 데이터: { messages: [], members: Set<ws>, agreement: null }
 const rooms = new Map();
@@ -41,11 +47,23 @@ async function detectAgreement(messages) {
         model: llm.model,
         messages: [{
           role: 'system',
-          content: `당신은 메신저 대화에서 약속 합의를 감지하는 AI입니다.
-대화를 보고 모든 참가자가 날짜, 시간, 장소에 합의했는지 판단하세요.
-합의가 명확하면 JSON으로 응답: {"agreed": true, "date": "날짜", "time": "시간", "place": "장소", "summary": "한줄요약"}
-합의가 안 됐으면: {"agreed": false}
-날짜는 YYYY-MM-DD 형식으로 변환하세요. 오늘은 2026-10-13입니다.`
+          content: `당신은 메신저 대화에서 약속 합의를 감지하는 AI입니다. 매우 엄격하게 판단하세요.
+
+합의로 인정하는 경우 (모두 만족해야 함):
+1. 날짜, 시간, 장소가 대화에서 구체적으로 언급됨
+2. 최소 2명 이상의 참가자가 명시적으로 동의함 ("좋아", "응", "그래", "OK", "네" 등)
+3. 단순 제안이나 질문이 아님 ("어때?", "가능해?", "~~하자"는 제안일 뿐 합의 아님)
+4. 누구도 반대하거나 다른 안을 제시하지 않음
+
+합의가 아닌 경우:
+- 한 사람만 말하고 상대가 아직 답 안 함
+- "다음주에 보자" 같은 막연한 표현
+- 시간이나 장소 중 하나라도 불명확함
+- "생각해볼게", "확인해볼게" 같은 유보적 표현
+
+명확한 합의일 때만 JSON: {"agreed": true, "date": "날짜", "time": "시간", "place": "장소", "summary": "한줄요약"}
+조금이라도 애매하면: {"agreed": false}
+날짜는 YYYY-MM-DD 형식. 오늘은 2026-10-13입니다.`
         }, {
           role: 'user', content: convo
         }],
@@ -71,6 +89,23 @@ function broadcast(room, data, exclude = null) {
     }
   }
 }
+
+// 합의 취소 (오감지 시)
+app.post('/api/room/:room/unagree', (req, res) => {
+  const room = getRoom(req.params.room);
+  room.agreement = null;
+  broadcast(room, { type: 'unagree' });
+  res.json({ ok: true });
+});
+
+// 방 초기화 (새 대화)
+app.post('/api/room/:room/reset', (req, res) => {
+  const room = getRoom(req.params.room);
+  room.messages = [];
+  room.agreement = null;
+  broadcast(room, { type: 'reset' });
+  res.json({ ok: true });
+});
 
 // 메모/ICS 다운로드
 app.get('/api/memo/:room/ics', (req, res) => {
