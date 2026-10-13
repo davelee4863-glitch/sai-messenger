@@ -1,0 +1,1 @@
+{"dependencies":{"express":"^4.21.0","ws":"^8.18.0"},"description":"부드러운 메신저 + AI 옵저버","main":"server.js","name":"sai-messenger","scripts":{"start":"node server.js"},"version":"1.0.0"}
