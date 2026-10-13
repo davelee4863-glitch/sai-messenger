@@ -180,6 +180,11 @@ test('preflight detects case-varied sensitive Git paths', () => fixture(dir => {
  execFileSync('git',['add','--','.ENV.production'],{cwd:dir,stdio:'pipe'});
  blocked(run(dir,'harness/check.mjs'),/Tracked sensitive filename/);
 }));
+test('preflight detects uppercase JavaScript extensions', () => fixture(dir => {
+ writeFileSync(join(dir,'public/fresh.JS'),'const broken = ;');
+ execFileSync('git',['add','--','public/fresh.JS'],{cwd:dir,stdio:'pipe'});
+ blocked(run(dir,'harness/check.mjs'),/JavaScript syntax check failed/);
+}));
 test('preflight detects server, inline, external and harness JS syntax errors', () => {
  for (const [path,source] of [
   ['server.js','const = ;'],

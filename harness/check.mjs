@@ -105,7 +105,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const paths = execFileSync('git', ['ls-files', '-z'], {cwd: ROOT, encoding: 'utf8'}).split('\0').filter(Boolean);
   const secrets = paths.filter(sensitivePath);
   if (secrets.length) errors.push('Tracked sensitive filename(s): ' + secrets.join(', '));
-  for (const path of paths.filter(path => /\.(?:mjs|cjs|js)$/.test(path))) {
+  for (const path of paths.filter(path => /\.(?:mjs|cjs|js)$/i.test(path))) {
    try { execFileSync(process.execPath, ['--check', resolve(ROOT, path)], {stdio: 'pipe'}); }
    catch { errors.push('JavaScript syntax check failed: ' + path); }
   }
