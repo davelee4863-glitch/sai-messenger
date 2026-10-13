@@ -157,7 +157,7 @@
       "regressionTest": "tests/ui-browser-regression.test.mjs",
       "resolvedBy": "codex-root",
       "regressionResult": "PASS",
-      "regressionEvidence": "Root executed runBrowserRegression from tests/ui-browser-regression.test.mjs through Cua: 17/17 PASS, 0 FAIL, preserved in work/pm004/evidence/ui-browser-functional.json. Case change review shows year/end/place/notes captures 2027-01-03, end 13:45, synthetic changed cafe and new notes. Case backing out preserves original promise captures the unchanged 2026-10-18/12:30 seed document. Source assertions were not substituted for browser evidence.",
+      "regressionEvidence": "Browser-only runUIRegression through actual Cua Chrome tab: 22/22 PASS, zero console warnings/errors, including exact RSVP pills/pressed states, 2027 year/end/place/notes confirmation, backing out, and keyboard focus/Tab. Evidence ui-browser-functional-final.json. Responsive 7 viewports x 11 routes: 77/77 PASS in ui-browser-layout-final.json. These checks were actually executed in a browser and are excluded from the Node CI command.",
       "independentReviewResult": "NOT_RUN"
     },
     {
@@ -175,7 +175,7 @@
       "regressionTest": "tests/ui-browser-regression.test.mjs",
       "resolvedBy": "codex-root",
       "regressionResult": "PASS",
-      "regressionEvidence": "Root executed runBrowserRegression through Cua: 17/17 PASS, 0 FAIL in work/pm004/evidence/ui-browser-functional.json. Escape dismisses dialog and restores focus captures dialogs=0 and focus=추가 흐름 체험하기 after waitFor detached, fresh DOM and dialog[open] query.",
+      "regressionEvidence": "Browser-only runUIRegression through actual Cua Chrome tab: 22/22 PASS, zero console warnings/errors, including exact RSVP pills/pressed states, 2027 year/end/place/notes confirmation, backing out, and keyboard focus/Tab. Evidence ui-browser-functional-final.json. Responsive 7 viewports x 11 routes: 77/77 PASS in ui-browser-layout-final.json. These checks were actually executed in a browser and are excluded from the Node CI command.",
       "independentReviewResult": "NOT_RUN"
     },
     {
@@ -193,7 +193,7 @@
       "regressionTest": "tests/ui-browser-regression.test.mjs",
       "resolvedBy": "codex-root",
       "regressionResult": "PASS",
-      "regressionEvidence": "Root executed checkScreenLayout through Cua for 7 viewports x 11 routes: 77/77 PASS, 0 FAIL in work/pm004/evidence/ui-browser-layout-final.json. The 320x740 home case records documentWidth 305, viewport 320, no overflows, mobileNavLinks=4 and unnamedControls=0. Final guard checks four mobile anchors on each applicable route.",
+      "regressionEvidence": "Browser-only runUIRegression through actual Cua Chrome tab: 22/22 PASS, zero console warnings/errors, including exact RSVP pills/pressed states, 2027 year/end/place/notes confirmation, backing out, and keyboard focus/Tab. Evidence ui-browser-functional-final.json. Responsive 7 viewports x 11 routes: 77/77 PASS in ui-browser-layout-final.json. These checks were actually executed in a browser and are excluded from the Node CI command.",
       "independentReviewResult": "NOT_RUN"
     },
     {
@@ -210,8 +210,44 @@
       "regressionTest": "harness/check.test.mjs",
       "resolvedBy": "codex-root",
       "evidence": "Original failing validation is in root tool history; ui-journal-11-before.json preserves the damaged local journal. No damaged journal was committed or pushed. Baseline entries are restored and compared using deepStrictEqual before writing.",
-      "regressionResult": "NOT_RUN",
-      "regressionEvidence": "Pending actual structural validation and fresh review.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "node harness/check.mjs against repaired actual journal exit 0, ui-journal-11-retest.txt; deepStrictEqual confirms original five incident objects identical to Git HEAD. Existing harness strict timestamp regressions remain 76/76 PASS in the 166-test integration rerun.",
+      "independentReviewResult": "NOT_RUN"
+    },
+    {
+      "id": "SAI-INC-20261013-12",
+      "occurredAt": "2026-10-13T07:57:11.000Z",
+      "loggedAt": "2026-10-13T07:57:11.000Z",
+      "recordType": "REAL",
+      "status": "MITIGATING",
+      "severity": "MEDIUM",
+      "symptom": "Fresh Reviewer found that the browser RSVP regression could falsely pass an unselected state: participant-row text includes all RSVP button labels, so substring checks for attendance labels did not verify the selected status. Independent inspection confirmed the actual application RSVP states were correct.",
+      "rootCause": "The regression asserted broad participant text instead of the dedicated status pill and exact aria-pressed states, allowing unselected button labels to satisfy the assertion.",
+      "resolution": "Root replaced broad text matching with assertions on the dedicated .pill status and each RSVP button's exact pressed flag. Re-execution of the corrected browser regression and independent verification of the fix remain pending.",
+      "prevention": "Verify state through dedicated rendered status and exact accessibility attributes; never treat all-option button labels as proof that an option is selected. Require evidence for each group's independent RSVP selection.",
+      "evidence": "Fresh Reviewer examined candidate eb885a66d3b4be42b1cb01686e6173fd2449e6e1. work/pm004/evidence/fresh-ui-review-rsvp-independent.json preserves actual status pills and pressed flags: me pending/all false, minseo going/going true, hajun declined/declined true, yujin maybe/maybe true. It proves actual UI correctness while the original broad-text assertion was inadequate. occurredAt/loggedAt record registrar confirmation of this independent finding; the original JSON has no exact first-observation timestamp.",
+      "regressionTest": "tests/ui-browser-regression.test.mjs",
+      "resolvedBy": "codex-root",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Browser-only runUIRegression through actual Cua Chrome tab: 22/22 PASS, zero console warnings/errors, including exact RSVP pills/pressed states, 2027 year/end/place/notes confirmation, backing out, and keyboard focus/Tab. Evidence ui-browser-functional-final.json. Responsive 7 viewports x 11 routes: 77/77 PASS in ui-browser-layout-final.json. These checks were actually executed in a browser and are excluded from the Node CI command.",
+      "independentReviewResult": "NOT_RUN"
+    },
+    {
+      "id": "SAI-INC-20261013-13",
+      "occurredAt": "2026-10-13T07:57:11.000Z",
+      "loggedAt": "2026-10-13T07:57:11.000Z",
+      "recordType": "REAL",
+      "status": "MITIGATING",
+      "severity": "MEDIUM",
+      "symptom": "Fresh Reviewer reproduced a keyboard accessibility defect: pressing Space on the Minseo maybe RSVP button correctly changed its pill but moved activeElement to BODY. The next Tab jumped backward to the appointment-document link instead of continuing RSVP controls.",
+      "rootCause": "State changes replaced the main rendered controls without restoring keyboard focus to the corresponding newly rendered control. RSVP data changed correctly, but the focused DOM node was removed.",
+      "resolution": "Root added generic render focus capture for the focused main control using tag, id, aria label and text, then restores focus to the corresponding new node. Root is adding keyboard Space/Tab and friend/filter/calendar focus regressions. Execution and independent verification of the corrected behavior remain pending.",
+      "prevention": "Preserve the user's keyboard position across state-only renders. Test both successful state changes and subsequent keyboard navigation; include RSVP, friends/filter and calendar interactions rather than checking pointer operation alone.",
+      "evidence": "work/pm004/evidence/fresh-ui-review-keyboard-first-failure.json preserves an independent actual browser FAIL on candidate eb885a66d3b4be42b1cb01686e6173fd2449e6e1: Space on 민서 미정 yielded activeTag BODY, activeName null, minseoStatus 미정이에요; next Tab yielded activeTag A and activeText 약속 문서로. The before-fix evidence is distinct from pending fix execution. occurredAt/loggedAt record registrar confirmation of the saved finding because the JSON has no exact first-observation timestamp.",
+      "regressionTest": "tests/ui-browser-regression.test.mjs",
+      "resolvedBy": "codex-root",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Browser-only runUIRegression through actual Cua Chrome tab: 22/22 PASS, zero console warnings/errors, including exact RSVP pills/pressed states, 2027 year/end/place/notes confirmation, backing out, and keyboard focus/Tab. Evidence ui-browser-functional-final.json. Responsive 7 viewports x 11 routes: 77/77 PASS in ui-browser-layout-final.json. These checks were actually executed in a browser and are excluded from the Node CI command.",
       "independentReviewResult": "NOT_RUN"
     }
   ]

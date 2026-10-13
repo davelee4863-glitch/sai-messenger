@@ -307,11 +307,21 @@ function about() {
 function empty(title,text,to,label) {return h('section',{class:'empty-state panel'},icon('box'),h('h1',{id:'page-heading',tabindex:'-1'},title),h('p',{},text),link(label,to,'primary'));}
 function missing() {return empty('이 데모 화면을 찾을 수 없어요','화면을 처음부터 다시 확인해볼까요?','home','첫 화면으로');}
 function render() {
+ const previous=document.activeElement;
+ const controls='button,input,textarea,select';
+ const identity=main.contains(previous)&&previous.matches(controls)?{
+  tag:previous.tagName,id:previous.id,label:previous.getAttribute('aria-label'),text:previous.textContent
+ }:null;
  const [rawView,id]=location.hash.slice(1).split('/'),view=rawView||'home';
  chrome(view);
  const screens={home,chat:()=>chat(id||state.activeRoomId),candidate:()=>candidate(id||state.activeRoomId),promises,detail:()=>detail(id),attendees:()=>attendees(id),change:()=>change(id),calendar:()=>calendar(id),invite,about};
  const content=(screens[view]||missing)();
  main.replaceChildren(content);document.title='약속함 · '+(document.querySelector('#page-heading')?.textContent||'PROMISE BOX');
+ if(identity) {
+  const replacement=Array.from(main.querySelectorAll(controls)).find(node=>node.tagName===identity.tag&&
+   (identity.id?node.id===identity.id:identity.label?node.getAttribute('aria-label')===identity.label:node.textContent===identity.text));
+  (replacement||$('#page-heading'))?.focus({preventScroll:true});
+ }
 }
 window.addEventListener('hashchange',()=>{
  if(location.hash==='#main'){main.focus();return;}
