@@ -1276,6 +1276,44 @@
       "resolvedBy": "codex-root-pm011",
       "evidence": "security-after-first.tap tests1/10 FAIL; initial security-before.tap retained, with original qualified-header body expectation explicitly not used as vulnerability proof.",
       "verificationEvidence": "NOT_RUN until frozen-SHA independent review"
+    },
+    {
+      "recordType": "REAL",
+      "status": "OPEN",
+      "occurredAt": "2026-10-13T17:52:13.799Z",
+      "loggedAt": "2026-10-13T17:52:13.799Z",
+      "occurrenceAccuracy": "APPROXIMATE_EVIDENCE_CAPTURE",
+      "regressionTest": "cloudflare/tests/dependency-security.test.mjs",
+      "regressionResult": "NOT_RUN",
+      "regressionEvidence": "Frozen new candidate full regression and independent/remote validation pending.",
+      "resolvedBy": "codex-root-pm011",
+      "verificationEvidence": "NOT_RUN until new frozen candidate independent review",
+      "id": "SAI-INC-20261014-12",
+      "severity": "MEDIUM",
+      "symptom": "Independent reviewer blocks ea5a Push because its hardcoded Windows Worker fingerprint rejects a simulated LinuxLF SQL checkout.",
+      "rootCause": "esbuild text-loader preserves SQLCRLF/LF bytes; canonical cwd fixes comment paths but not native Git checkout line endings.",
+      "resolution": "Compare current versus baseline Git source bundles under the same checkout EOL, and separately exerciseLF andCRLF variants in memory. No Worker or product build code modification.",
+      "prevention": "Cross-platform byte evidence compares baseline/current with the same EOL; retain bothEOL regression and actualLinux CI. Never equate differing checkout formatting to dependency inclusion.",
+      "evidence": "Independent PM011-FRESH-EOL-001 FAIL at ea5a; root eol-fingerprint-initial.json Windows60781/1e915 vsLF60645/e90aae. No actualHostedLinux run yet."
+    },
+    {
+      "recordType": "REAL",
+      "status": "OPEN",
+      "occurredAt": "2026-10-13T17:52:13.799Z",
+      "loggedAt": "2026-10-13T17:52:13.799Z",
+      "occurrenceAccuracy": "APPROXIMATE_EVIDENCE_CAPTURE",
+      "regressionTest": "cloudflare/tests/dependency-security.test.mjs",
+      "regressionResult": "NOT_RUN",
+      "regressionEvidence": "Frozen new candidate full regression and independent/remote validation pending.",
+      "resolvedBy": "codex-root-pm011",
+      "verificationEvidence": "NOT_RUN until new frozen candidate independent review",
+      "id": "SAI-INC-20261014-13",
+      "severity": "HIGH",
+      "symptom": "Default Node22.23.2 embeds Undici6.28.0 and fails the security patch-floor test even after npm Undici7.29.1 is installed; old package engines allowed it.",
+      "rootCause": "npm overrides cannot patch Node bundled Undici, and the host emulator did not reject obsolete or unreviewed Node/embeddedUndici versions before persistence work.",
+      "resolution": "Keep the already available approved Node22.23.3 (embedded6.28.1); tighten project engine minimum and add host-only pre-persistence runtime guard. No global Node installation or other apps changed.",
+      "prevention": "Enforce approved host Node22.x patch floor and reviewed embeddedUndici branches before local persistence/Miniflare startup; reject unknown majors and verify CI Node version. Package audit0 is not host-runtime evidence.",
+      "evidence": "Fresh ea5a-independent-targeted.tap132PASS/1FAIL on default22.23.2; approved Node22.23.3 targeted133PASS. Default node primitive/product exploitation itselfNOT_RUN."
     }
   ]
 }

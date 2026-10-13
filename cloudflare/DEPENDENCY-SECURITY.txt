@@ -101,3 +101,7 @@ ISOLATION READINESS
 Fixed app namespace promise-box-sai-cf-dev-80f5fa37c2e8 and local-only plan are unchanged. No Cloudflare queries, tokens, resource creation/modification/deletion, Secret values, customer or other-app data.
 Actual account pagination, ownership/relationships, effective IAM, routing/backups/logging, quota and billing controls areUNVERIFIED. Need separate endpoint-limited metadata-only read authorization before inventory; no existing app DB/Secret values/user data or logs.
 Cloud resource creation, external access, realCloud rollback and paid activation require later separate approval. Preflight staysBLOCKED.
+
+PM011 pre-Push review corrections
+The Windows byte hash is descriptive only, not a cross-platform constant. Git SQL checkoutCRLF/LF changes60781/60645 bytes respectively; current/baseline comparisons use identical EOL and both variants are tested in memory. Incident12 preserves independent initialFAIL; actualLinux is still pending CI.
+Default systemNode22.23.2 embeds6.28.0. Approved task runtimeNode22.23.3 embeds6.28.1; the project now requires>=22.23.3 <23 and checks host runtime before persistence/Miniflare starts. The system default Node itself is unchanged. Incident13 tracks the rejected environment; this guard is host-only, not Worker bundle code.
