@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {resolve} from 'node:path';
+import {digest} from '../../mvp/security.mjs';
 import {fixture,login,room,request,sample,maintenance,runtime,passwordFor} from './helpers.mjs';
 async function saved(f){const a=await login(f),b=await login(f,1),c=await login(f,2),r=await room(f,[a,b,c]);const data={clientMessageId:crypto.randomUUID(),text:'재시작 후 보존되는 합성 메시지'};await request(f,`/api/rooms/${r.id}/messages`,{user:a,method:'POST',data});const pr=await request(f,`/api/rooms/${r.id}/proposals`,{user:a,method:'POST',data:sample});const cf=await request(f,`/api/proposals/${pr.body.proposal.id}/confirm`,{user:a,method:'POST',data:{expectedVersion:1,decision:'CONFIRM'}});assert.equal(cf.status,200);return {a,b,c,r,data,promise:cf.body.promise};}
 test('dispose/restart keeps messages, explicit promises, sessions and idempotency; encrypted HTTPS URLs set Secure cookie',async t=>{
@@ -21,6 +22,11 @@ test('checksummed logical backup restores all business rows into a new DO/D1 nam
 });
 test('tampered or malformed backups fail before business writes and preserve empty target',async t=>{
  const f=await fixture(t),backup=await (await maintenance(f.mf,'__backup')).json();const persist=await mkdtemp(resolve(tmpdir(),'promise-box-cf-')),mf=await runtime({persist});t.after(async()=>{await mf.dispose();if(!resolve(persist).startsWith(resolve(tmpdir(),'promise-box-cf-')))throw new Error('Cleanup rejected');await rm(persist,{recursive:true,force:true});});backup.tables.users[0].nickname='손상';assert.equal((await maintenance(mf,'__restore',backup)).status,422);assert.equal((await (await maintenance(mf,'__backup')).json()).tables.users.length,0);
+});
+test('correctly checksummed unsupported schema/epoch rejects before import and survives target recreation',async t=>{
+ const f=await fixture(t),backup=await (await maintenance(f.mf,'__backup')).json();const persist=await mkdtemp(resolve(tmpdir(),'promise-box-cf-'));let mf=await runtime({persist});t.after(async()=>{await mf.dispose();if(!resolve(persist).startsWith(resolve(tmpdir(),'promise-box-cf-')))throw new Error('Cleanup rejected');await rm(persist,{recursive:true,force:true});});
+ for(const [key,value]of [['schema','cf-v-invalid'],['epoch','NaN'],['epoch','0'],['epoch','9007199254740991']]){const bad=structuredClone(backup);bad.tables.cf_meta.find(r=>r.key===key).value=value;bad.checksum=digest(JSON.stringify({format:bad.format,createdAt:bad.createdAt,tables:bad.tables}));assert.equal((await maintenance(mf,'__restore',bad)).status,422);assert.equal((await (await maintenance(mf,'__backup')).json()).tables.users.length,0);}
+ await mf.dispose();mf=await runtime({persist});assert.equal((await mf.dispatchFetch('http://localhost:8787/health')).status,200);assert.equal((await maintenance(mf,'__restore',backup)).status,200);
 });
 test('D1 failure leaves durable outbox; retry/restart reconciles and untrusted metadata cannot authorize rooms',async t=>{
  const f=await fixture(t,{bindings:{D1_FAILURE:'true'}}),v=await saved(f);let met=await (await maintenance(f.mf,'__metrics')).json();assert.ok(met.pending>0);assert.equal((await (await maintenance(f.mf,'__flush')).json()).synced,false);

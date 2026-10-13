@@ -1,0 +1,3 @@
+export function configuration(env){const values={};for(const [key,fallback,max]of [['REQUEST_BUDGET',80000,80000],['READ_BUDGET',4000000,4000000],['WRITE_BUDGET',80000,80000],['SESSION_IDLE_MS',900000,900000],['SESSION_ABSOLUTE_MS',28800000,28800000]]){
+ const raw=env[key]??String(fallback);if(typeof raw!=='string'||!/^\d+$/.test(raw))throw new Error('Invalid local safety configuration');const number=Number(raw);if(!Number.isSafeInteger(number)||number<1||number>max)throw new Error('Invalid local safety configuration');values[key]=number;
+ }for(const key of ['QUOTA_PAUSED','D1_FAILURE'])if(env[key]!==undefined&&!['true','false'].includes(env[key]))throw new Error('Invalid local failure flag');return values;}

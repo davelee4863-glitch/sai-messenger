@@ -7,6 +7,7 @@ node --test harness/check.test.mjs tests/ui-state.test.mjs tests/ui-static.test.
 node --test --test-concurrency=1 cloudflare/tests/*.test.mjs
 node cloudflare/local.mjs [explicit isolated data directory] [local port, default8787]
 Listen127.0.0.1 only. Three random synthetic credentials are written privately in that data directory. Never commit, publish or log them. No public signup. Local stdin "stop" disposes the emulator. Restart with the same directory retains storage. Existing customer/demo databases are never imported automatically.
+Use a real terminal/PTY for stdin stop or Ctrl-C, await completed shutdown before restart. The local host runtime now acquires exclusive persistence ownership before launch and releases it after disposal; a second emulator is rejected. Same-host dead-local-owner recovery reuses the previously tested nonce/PID lock guard. Cloud DO ownership remains managed by the platform. Bundles are immutable in-memory strings; no shared partially-written bundle file.
 Miniflare4.20260730.0/workerd1.20260730.1, esbuild0.28.2 are pinned by lockfile. Only local DO/D1 bindings; cf metadata fetching disabled; outbound application fetch denied. No Cloudflare login/token/resource creation commands or deploy workflow.
 
 AUTHORITY AND ATOMICITY
@@ -52,3 +53,4 @@ https://developers.cloudflare.com/d1/platform/limits/
 https://developers.cloudflare.com/d1/reference/time-travel/
 https://developers.cloudflare.com/r2/get-started/
 https://developers.cloudflare.com/r2/pricing/
+All session/budget configuration values must be positive finite bounded integers; malformed values fail before storage opens. Do not relax defaults aboveFree safety budgets. Fresh Reviewer initially found invalid schema restores, NaN quota/idle limits and two-owner local synchronization defects; corrected versions have additional regressions. Preserve initial failed evidence.

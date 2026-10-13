@@ -1,4 +1,3 @@
 import {build} from 'esbuild';
 import {fileURLToPath} from 'node:url';
-import {mkdir} from 'node:fs/promises';
-export async function bundle(){const out=fileURLToPath(new URL('./.build/worker.mjs',import.meta.url));await mkdir(new URL('./.build/',import.meta.url),{recursive:true});await build({entryPoints:[fileURLToPath(new URL('./worker.mjs',import.meta.url))],outfile:out,bundle:true,format:'esm',platform:'neutral',target:'es2022',external:['node:*','cloudflare:*'],loader:{'.sql':'text'},logLevel:'silent'});return out;}
+export async function bundle(){const result=await build({entryPoints:[fileURLToPath(new URL('./worker.mjs',import.meta.url))],bundle:true,write:false,format:'esm',platform:'neutral',target:'es2022',external:['node:*','cloudflare:*'],loader:{'.sql':'text'},logLevel:'silent'});return result.outputFiles[0].text;}
