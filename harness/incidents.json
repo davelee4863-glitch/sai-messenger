@@ -6,7 +6,7 @@
       "occurredAt": "2026-10-13T05:49:27.274Z",
       "loggedAt": "2026-10-13T05:54:49.000Z",
       "recordType": "REAL",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "severity": "HIGH",
       "symptom": "Harness accepted invalid VERIFIED metadata and returned release PASS for a P0 risk using README as regressionTest and NOT_RUN as review evidence.",
       "rootCause": "Completion gate checked only path existence and truthy reviewer/evidence; it did not require a test file, actual PASS evidence or distinct reviewer.",
@@ -14,14 +14,20 @@
       "prevention": "Never mark VERIFIED without execution evidence and independent review; keep adversarial completion regressions.",
       "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; schema-probes-results.json: False VERIFIED P0 releases with NOT_RUN evidence (exit 0); README/directory/whitespace/NOT_RUN probes accepted.",
       "regressionTest": "harness/check.test.mjs",
-      "resolvedBy": "codex-root"
+      "resolvedBy": "codex-root",
+      "regressionResult": "PASS",
+      "regressionEvidence": "node --test harness/check.test.mjs at 8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1: 76/76 PASS, exit 0; independent rerun in fresh-review-mandatory-8d35.json; implementation run in review-fix-tests.tap.",
+      "reviewedBy": "codex-fresh-reviewer /root/fresh_reviewer",
+      "verificationEvidence": "Fresh Reviewer did not implement or modify repository files; original-to-candidate diff and real incident evidence checked; independent synthetic guards 59/59 PASS, self-tests 76/76 PASS, release blocked as expected. Earlier d25b review 54/59 with 5 failures preserved. Evidence: fresh-review-8d35.json and fresh-review-d25b.json in validation evidence bundle.",
+      "verifiedAt": "2026-10-13T06:07:27.000Z",
+      "verificationCommit": "8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1"
     },
     {
       "id": "SAI-INC-20261013-02",
       "occurredAt": "2026-10-13T05:49:27.274Z",
       "loggedAt": "2026-10-13T05:54:49.000Z",
       "recordType": "REAL",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "severity": "MEDIUM",
       "symptom": "Harness accepted incident records without occurrence time, resolution or REAL/SYNTHETIC distinction and accepted invalid loggedAt.",
       "rootCause": "Incident required-field list did not include occurrence time or resolution, and timestamps were only checked as nonblank strings.",
@@ -29,14 +35,20 @@
       "prevention": "Keep required-field and impossible-date regression cases; synthetic journals remain isolated.",
       "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; schema-probes-results.json: Missing incident solution metadata and Invalid incident date accepted were ACCEPTED.",
       "regressionTest": "harness/check.test.mjs",
-      "resolvedBy": "codex-root"
+      "resolvedBy": "codex-root",
+      "regressionResult": "PASS",
+      "regressionEvidence": "node --test harness/check.test.mjs at 8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1: 76/76 PASS, exit 0; independent rerun in fresh-review-mandatory-8d35.json; implementation run in review-fix-tests.tap.",
+      "reviewedBy": "codex-fresh-reviewer /root/fresh_reviewer",
+      "verificationEvidence": "Fresh Reviewer did not implement or modify repository files; original-to-candidate diff and real incident evidence checked; independent synthetic guards 59/59 PASS, self-tests 76/76 PASS, release blocked as expected. Earlier d25b review 54/59 with 5 failures preserved. Evidence: fresh-review-8d35.json and fresh-review-d25b.json in validation evidence bundle.",
+      "verifiedAt": "2026-10-13T06:07:27.000Z",
+      "verificationCommit": "8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1"
     },
     {
       "id": "SAI-INC-20261013-03",
       "occurredAt": "2026-10-13T05:49:27.274Z",
       "loggedAt": "2026-10-13T05:54:49.000Z",
       "recordType": "REAL",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "severity": "HIGH",
       "symptom": "Harness stored JSON-shaped synthetic credentials and accepted credentials inserted directly into the journal; initial patch still missed nested JSON text in three regression cases.",
       "rootCause": "Credential regex was CLI-only and did not handle quoted JSON keys or nested string escaping.",
@@ -44,14 +56,20 @@
       "prevention": "Redact before recording; test rejected inputs leave journal bytes unchanged; pattern scanning remains defense in depth.",
       "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; integration-probes-initial.json credential probes failed guards. First candidate self-tests: 72 total, 69 PASS, 3 FAIL; recursive string inspection added.",
       "regressionTest": "harness/check.test.mjs",
-      "resolvedBy": "codex-root"
+      "resolvedBy": "codex-root",
+      "regressionResult": "PASS",
+      "regressionEvidence": "node --test harness/check.test.mjs at 8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1: 76/76 PASS, exit 0; independent rerun in fresh-review-mandatory-8d35.json; implementation run in review-fix-tests.tap.",
+      "reviewedBy": "codex-fresh-reviewer /root/fresh_reviewer",
+      "verificationEvidence": "Fresh Reviewer did not implement or modify repository files; original-to-candidate diff and real incident evidence checked; independent synthetic guards 59/59 PASS, self-tests 76/76 PASS, release blocked as expected. Earlier d25b review 54/59 with 5 failures preserved. Evidence: fresh-review-8d35.json and fresh-review-d25b.json in validation evidence bundle.",
+      "verifiedAt": "2026-10-13T06:07:27.000Z",
+      "verificationCommit": "8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1"
     },
     {
       "id": "SAI-INC-20261013-04",
       "occurredAt": "2026-10-13T05:49:27.274Z",
       "loggedAt": "2026-10-13T05:54:49.000Z",
       "recordType": "REAL",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "severity": "HIGH",
       "symptom": "Preflight allowed case-varied environment/key paths, several SSH/service-account key names and invalid external browser JavaScript syntax. Fresh Reviewer also found uppercase .JS bypass in the first patch.",
       "rootCause": "Filename regex was case-sensitive and narrow; syntax checking covered only server.js and inline browser scripts. The first patch's tracked JS extension filter remained case-sensitive.",
@@ -59,7 +77,13 @@
       "prevention": "Keep tracked secret filename and external/harness syntax regression cases; no product code is executed.",
       "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; integration-probes-initial.json: five filename guards and external browser syntax guard failed. Fresh Reviewer d25b fixture public/fresh.JS with invalid syntax exited 0; preserved in fresh-review-d25b.json.",
       "regressionTest": "harness/check.test.mjs",
-      "resolvedBy": "codex-root"
+      "resolvedBy": "codex-root",
+      "regressionResult": "PASS",
+      "regressionEvidence": "node --test harness/check.test.mjs at 8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1: 76/76 PASS, exit 0; independent rerun in fresh-review-mandatory-8d35.json; implementation run in review-fix-tests.tap.",
+      "reviewedBy": "codex-fresh-reviewer /root/fresh_reviewer",
+      "verificationEvidence": "Fresh Reviewer did not implement or modify repository files; original-to-candidate diff and real incident evidence checked; independent synthetic guards 59/59 PASS, self-tests 76/76 PASS, release blocked as expected. Earlier d25b review 54/59 with 5 failures preserved. Evidence: fresh-review-8d35.json and fresh-review-d25b.json in validation evidence bundle.",
+      "verifiedAt": "2026-10-13T06:07:27.000Z",
+      "verificationCommit": "8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1"
     },
     {
       "id": "SAI-INC-20261013-05",
@@ -67,14 +91,20 @@
       "loggedAt": "2026-10-13T06:00:37.000Z",
       "recordType": "REAL",
       "severity": "HIGH",
-      "status": "MITIGATING",
+      "status": "VERIFIED",
       "symptom": "Fresh Reviewer found that array-valued IDs and verificationCommit could pass string regex checks; malformed blocker IDs could also crash release CLI.",
       "rootCause": "JavaScript regex coerced arrays into matching strings; release display assumed every blocker ID was a string.",
       "resolution": "Require primitive string IDs and verificationCommit; use safe labels for invalid blocker IDs and add schema plus CLI regressions.",
       "prevention": "Test wrong JSON value types with otherwise complete evidence and require structured FAIL instead of unhandled exceptions.",
       "regressionTest": "harness/check.test.mjs",
       "resolvedBy": "codex-root",
-      "evidence": "Fresh Reviewer independent counterexamples against local d25b44111ff80a9c3ce4555c5cd77950f3dec3c7; final fresh-review.json preserves first failures and rechecks."
+      "evidence": "Fresh Reviewer independent counterexamples against local d25b44111ff80a9c3ce4555c5cd77950f3dec3c7; final fresh-review.json preserves first failures and rechecks.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "node --test harness/check.test.mjs at 8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1: 76/76 PASS, exit 0; independent rerun in fresh-review-mandatory-8d35.json; implementation run in review-fix-tests.tap.",
+      "reviewedBy": "codex-fresh-reviewer /root/fresh_reviewer",
+      "verificationEvidence": "Fresh Reviewer did not implement or modify repository files; original-to-candidate diff and real incident evidence checked; independent synthetic guards 59/59 PASS, self-tests 76/76 PASS, release blocked as expected. Earlier d25b review 54/59 with 5 failures preserved. Evidence: fresh-review-8d35.json and fresh-review-d25b.json in validation evidence bundle.",
+      "verifiedAt": "2026-10-13T06:07:27.000Z",
+      "verificationCommit": "8d35f76a9e8613f3a63f4e3dd9f91f763bd48cb1"
     }
   ]
 }
