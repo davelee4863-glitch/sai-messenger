@@ -24,3 +24,11 @@ test('failed credentials destination leaves no users and can be retried safely',
 test('equivalent schema whitespace and checkout line endings remain recoverable',t=>{
  const dir=scratch(t),source=resolve(dir,'crlf.sqlite'),target=resolve(dir,'restored.sqlite'),db=new DatabaseSync(source);db.exec(readFileSync(new URL('../schema.sql',import.meta.url),'utf8').replace(/\r?\n/g,'\r\n'));db.close();const store=new Store(source);assert.equal(store.users().length,0);store.close();assert.equal(restoreBackup(source,target).restored,true);
 });
+test('existing empty files cannot be silently initialized as a successful backup',t=>{
+ const dir=scratch(t),source=resolve(dir,'empty.sqlite'),target=resolve(dir,'copy.sqlite');writeFileSync(source,'');
+ const before=readFileSync(source);const run=spawnSync(process.execPath,[fileURLToPath(new URL('../backup.mjs',import.meta.url)),'--db',source,'--output',target],{encoding:'utf8',windowsHide:true});assert.notEqual(run.status,0);assert.deepEqual(readFileSync(source),before);assert.equal(existsSync(target),false);
+});
+test('non-internal trigger names resembling sqlite prefixes cannot escape schema validation',t=>{
+ const dir=scratch(t),source=resolve(dir,'trigger.sqlite'),target=resolve(dir,'copy.sqlite'),store=new Store(source);store.run("CREATE TRIGGER sqlitex_review_probe AFTER INSERT ON history BEGIN SELECT 1; END");store.close();
+ assert.throws(()=>new Store(source),/schema/i);assert.throws(()=>restoreBackup(source,target),/schema/i);assert.equal(existsSync(target),false);
+});

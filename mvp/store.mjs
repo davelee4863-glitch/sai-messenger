@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {appointment,fail,text,uuid,version} from './security.mjs';
 const repo=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const schema=readFileSync(new URL('./schema.sql',import.meta.url),'utf8');
-const schemaRows=db=>db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%' ORDER BY type,name").all().map(row=>({...row,sql:row.sql?.replace(/\s+/g,' ').trim()}));
+const schemaRows=db=>db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT GLOB 'sqlite_*' ORDER BY type,name").all().map(row=>({...row,sql:row.sql?.replace(/\s+/g,' ').trim()}));
 const expectedSchema=(()=>{const db=new DatabaseSync(':memory:');try{db.exec(schema);return JSON.stringify(schemaRows(db));}finally{db.close();}})();
 export function validateDatabase(db){if(db.prepare('PRAGMA user_version').get().user_version!==1||JSON.stringify(schemaRows(db))!==expectedSchema)throw new Error('Unsupported or incomplete database schema; do not repair or overwrite it');if(db.prepare('PRAGMA integrity_check').get().integrity_check!=='ok'||db.prepare('PRAGMA foreign_key_check').all().length)throw new Error('Database integrity or foreign-key check failed');}
 export function safeDataPath(filename) {
@@ -18,10 +18,10 @@ export function safeDataPath(filename) {
 }
 export class Store {
  constructor(filename,{now=Date.now}={}) {
-  this.filename=safeDataPath(filename);this.now=now;mkdirSync(dirname(this.filename),{recursive:true,mode:0o700});
+  this.filename=safeDataPath(filename);this.now=now;const existed=existsSync(this.filename);mkdirSync(dirname(this.filename),{recursive:true,mode:0o700});
   this.db=new DatabaseSync(this.filename,{timeout:5000,allowExtension:false});
   try{const revision=this.db.prepare('PRAGMA user_version').get().user_version;
-   if(revision===0&&schemaRows(this.db).length===0)this.db.exec(schema);
+   if(!existed&&revision===0&&schemaRows(this.db).length===0)this.db.exec(schema);
    else validateDatabase(this.db);
    this.db.exec('PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA busy_timeout=5000;');chmodSync(this.filename,0o600);
   }catch(error){this.db.close();throw error;}

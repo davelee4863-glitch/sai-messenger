@@ -375,6 +375,24 @@
       "regressionResult": "PASS",
       "regressionEvidence": "core-tests-37-fixed.tap: 37/37 PASS, including all three recovery failures, platform-newline recovery, real crash/restart and backup restore. Original independent failure remains preserved; corrected exact-candidate independent review pending.",
       "independentReviewResult": "NOT_RUN"
+    },
+    {
+      "id": "SAI-INC-20261013-19",
+      "occurredAt": "2026-10-13T09:48:08.500Z",
+      "loggedAt": "2026-10-13T09:50:32.967Z",
+      "recordType": "REAL",
+      "severity": "MEDIUM",
+      "status": "MITIGATING",
+      "symptom": "The second independent candidate review found two recovery validation gaps: an existing empty source was silently initialized and backed up; a non-internal sqlitex-prefixed trigger escaped full-schema comparison. Root reproduction: four recovery checks PASS, two FAIL.",
+      "rootCause": "Store initialized revision-zero empty files without distinguishing a new file from an existing backup source. Schema introspection used SQL LIKE with an unescaped underscore, which excluded names beyond the literal internal sqlite_ prefix.",
+      "resolution": "Initialize schema only when the path did not exist before opening it; reject existing empty/revision-zero files before mutation. Use literal-prefix GLOB sqlite_* filtering so every non-internal trigger/table/index participates in full-schema comparison.",
+      "prevention": "Validate empty existing files and adversarial schema-object names, not only missing paths and malformed known tables. Do not use unescaped SQL LIKE to filter reserved literal prefixes.",
+      "regressionTest": "mvp/tests/recovery-safety.test.mjs",
+      "resolvedBy": "codex-root",
+      "evidence": "Fresh ff9baf4 follow-up evidence fresh-core-fixed-schema-prefix-probe.json and fixed recovery report; recovery-safety-second.tap preserves 4 PASS/2 FAIL before fixes.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Actual core-tests-39-fixed.tap: 39/39 PASS after both fixes; exact independent corrected-candidate review pending.",
+      "independentReviewResult": "NOT_RUN"
     }
   ]
 }
