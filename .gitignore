@@ -8,3 +8,7 @@
 **/*.db-wal
 **/*.db-shm
 **/test-credentials*.json
+**/*.writer.lock
+**/*.pem
+**/*.key
+**/deployment-private.json
