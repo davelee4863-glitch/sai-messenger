@@ -964,6 +964,24 @@
       "verificationCommit": "83b7856314d973afafdb232c694b899c5ad9381d",
       "verificationEvidence": "Fresh Reviewer implemented no fixes and independently reran exact83b source; first5bed reviewFAIL and final83b localPASS preserved. Existing27incidents/243tests/businessmethods/P0inventory preserved. Local migration/remediation only; cloudFree billing/CPU/PITR,publicTLS and physicalphonesNOT_RUN.",
       "initialRegressionEvidence": "fresh-concurrent-ownership-observation.json"
+    },
+    {
+      "id": "SAI-INC-20261013-43",
+      "recordType": "REAL",
+      "severity": "LOW",
+      "status": "MITIGATING",
+      "occurredAt": "2026-10-13T13:55:46.856Z",
+      "loggedAt": "2026-10-13T13:55:46.856Z",
+      "symptom": "First independent attack run from a sibling working directory failed to start workerd with a parent-directory escape error.",
+      "rootCause": "The file-backed emulator root depended on caller working directory; review invocation was outside the repository.",
+      "resolution": "Use immutable inline source and an explicit module-relative Miniflare root. Cross-directory child-process health and Static Assets now pass with separate persistence.",
+      "prevention": "Runtime module/assets paths must derive from source location, not task CWD; execute a real child runtime outside the repository.",
+      "regressionTest": "cloudflare/tests/config.test.mjs",
+      "evidence": "fresh-attacks-first.tap",
+      "resolvedBy": "codex-root",
+      "regressionResult": "PASS",
+      "regressionEvidence": "PM007 evidence: exactbase243; extracted243; cf20candidate + sourcepreflight2 pass. Final pinned Fresh Review pending.",
+      "independentReviewResult": "NOT_RUN"
     }
   ]
 }
