@@ -12,7 +12,7 @@
       "rootCause": "Completion gate checked only path existence and truthy reviewer/evidence; it did not require a test file, actual PASS evidence or distinct reviewer.",
       "resolution": "Require an internal regular test file, concrete regression/review metadata, normalized distinct implementer/reviewer, review timestamp and commit; fail closed for invalid release records.",
       "prevention": "Never mark VERIFIED without execution evidence and independent review; keep adversarial completion regressions.",
-      "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; schema-probes-results.json: Forged VERIFIED P0 release (exit 0); README/directory/whitespace/NOT_RUN probes accepted.",
+      "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; schema-probes-results.json: False VERIFIED P0 releases with NOT_RUN evidence (exit 0); README/directory/whitespace/NOT_RUN probes accepted.",
       "regressionTest": "harness/check.test.mjs",
       "resolvedBy": "codex-root"
     },
@@ -60,6 +60,21 @@
       "evidence": "Original 6d4b82145e606a25caabeed9fbfad6fe19e9554a; integration-probes-initial.json: five filename guards and external browser syntax guard failed.",
       "regressionTest": "harness/check.test.mjs",
       "resolvedBy": "codex-root"
+    },
+    {
+      "id": "SAI-INC-20261013-05",
+      "occurredAt": "2026-10-13T06:00:37.000Z",
+      "loggedAt": "2026-10-13T06:00:37.000Z",
+      "recordType": "REAL",
+      "severity": "HIGH",
+      "status": "MITIGATING",
+      "symptom": "Fresh Reviewer found that array-valued IDs and verificationCommit could pass string regex checks; malformed blocker IDs could also crash release CLI.",
+      "rootCause": "JavaScript regex coerced arrays into matching strings; release display assumed every blocker ID was a string.",
+      "resolution": "Require primitive string IDs and verificationCommit; use safe labels for invalid blocker IDs and add schema plus CLI regressions.",
+      "prevention": "Test wrong JSON value types with otherwise complete evidence and require structured FAIL instead of unhandled exceptions.",
+      "regressionTest": "harness/check.test.mjs",
+      "resolvedBy": "codex-root",
+      "evidence": "Fresh Reviewer independent counterexamples against local d25b44111ff80a9c3ce4555c5cd77950f3dec3c7; final fresh-review.json preserves first failures and rechecks."
     }
   ]
 }

@@ -40,7 +40,7 @@ const completionErrors = (record, label, root, errors) => {
  if (!testFile(record.regressionTest, root)) errors.push(label + ' requires a repository test file');
  if (record.regressionResult !== 'PASS' || !concrete(record.regressionEvidence)) errors.push(label + ' requires executed regression PASS evidence');
  if (!concrete(record.resolvedBy) || !concrete(record.reviewedBy) || identity(record.resolvedBy) === identity(record.reviewedBy)) errors.push(label + ' requires an independent reviewer');
- if (!concrete(record.verificationEvidence) || !timestamp(record.verifiedAt) || !/^[a-f0-9]{40}$/i.test(record.verificationCommit || '')) errors.push(label + ' requires review evidence, timestamp and commit');
+ if (!concrete(record.verificationEvidence) || !timestamp(record.verifiedAt) || typeof record.verificationCommit !== 'string' || !/^[a-f0-9]{40}$/i.test(record.verificationCommit)) errors.push(label + ' requires review evidence, timestamp and commit');
 };
 
 export const validate = (risks, incidents, {root = ROOT} = {}) => {
@@ -49,7 +49,7 @@ export const validate = (risks, incidents, {root = ROOT} = {}) => {
  if (!object(risks) || risks.schemaVersion !== 1 || !Array.isArray(risks.risks)) errors.push('Invalid risk inventory');
  else for (const [index, record] of risks.risks.entries()) {
   if (!object(record)) { errors.push('Invalid risk record #' + index); continue; }
-  const label = /^SAI-R[0-9]{3,}$/.test(record.id || '') ? record.id : 'risk #' + index;
+  const label = typeof record.id === 'string' && /^SAI-R[0-9]{3,}$/.test(record.id) ? record.id : 'risk #' + index;
   if (label !== record.id || ids.has(record.id)) errors.push('Bad or duplicate risk ID: ' + label);
   ids.add(record.id);
   if (!['P0', 'P1', 'P2'].includes(record.priority) || !['OPEN', 'MITIGATING', 'VERIFIED'].includes(record.status)) errors.push(label + ' invalid status or priority');
@@ -60,7 +60,7 @@ export const validate = (risks, incidents, {root = ROOT} = {}) => {
  if (!object(incidents) || incidents.schemaVersion !== 1 || !Array.isArray(incidents.incidents)) errors.push('Invalid incident inventory');
  else for (const [index, record] of incidents.incidents.entries()) {
   if (!object(record)) { errors.push('Invalid incident record #' + index); continue; }
-  const label = /^SAI-INC-[0-9]{8}-[0-9]{2,}$/.test(record.id || '') ? record.id : 'incident #' + index;
+  const label = typeof record.id === 'string' && /^SAI-INC-[0-9]{8}-[0-9]{2,}$/.test(record.id) ? record.id : 'incident #' + index;
   if (label !== record.id || ids.has(record.id)) errors.push('Bad or duplicate incident ID: ' + label);
   ids.add(record.id);
   if (!['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].includes(record.severity) || !['OPEN', 'MITIGATING', 'VERIFIED'].includes(record.status)) errors.push(label + ' invalid status or severity');
@@ -77,8 +77,8 @@ export const validate = (risks, incidents, {root = ROOT} = {}) => {
 
 export const blockers = (risks, incidents, options) => [
  ...validate(risks, incidents, options).map(error => 'INVALID RECORD: ' + error),
- ...(Array.isArray(risks?.risks) ? risks.risks : []).filter(x => x?.priority === 'P0' && x.status !== 'VERIFIED').map(x => x.id),
- ...(Array.isArray(incidents?.incidents) ? incidents.incidents : []).filter(x => ['CRITICAL', 'HIGH'].includes(x?.severity) && x.status !== 'VERIFIED').map(x => x.id)
+ ...(Array.isArray(risks?.risks) ? risks.risks : []).filter(x => x?.priority === 'P0' && x.status !== 'VERIFIED').map(x => typeof x.id === 'string' && /^SAI-R[0-9]{3,}$/.test(x.id) ? x.id : 'INVALID RISK ID'),
+ ...(Array.isArray(incidents?.incidents) ? incidents.incidents : []).filter(x => ['CRITICAL', 'HIGH'].includes(x?.severity) && x.status !== 'VERIFIED').map(x => typeof x.id === 'string' && /^SAI-INC-[0-9]{8}-[0-9]{2,}$/.test(x.id) ? x.id : 'INVALID INCIDENT ID')
 ];
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

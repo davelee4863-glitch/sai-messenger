@@ -24,6 +24,14 @@ test('premature VERIFIED rejected', () => assert.ok(validate(r([{...risk,status:
 test('P0 and HIGH block release', () => assert.deepEqual(blockers(r([risk]), i([incident])), [risk.id,incident.id]));
 test('unresolved P1 is tracked but does not alone block', () => assert.deepEqual(blockers(r([{...risk,priority:'P1'}]), i([])), []));
 test('complete synthetic evidence satisfies structural schema', () => assert.deepEqual(validate(r([doneRisk]), i([doneIncident])), []));
+test('array IDs cannot bypass record identity validation', () => {
+ assert.match(validate(r([{...risk,id:[risk.id]}]), i([])).join(' '), /Bad or duplicate risk ID/);
+ assert.match(validate(r([]), i([{...incident,id:[incident.id]}])).join(' '), /Bad or duplicate incident ID/);
+});
+test('array commit cannot masquerade as a verified SHA', () => {
+ assert.match(validate(r([{...doneRisk,verificationCommit:['a'.repeat(40)]}]), i([])).join(' '), /review evidence/);
+ assert.match(validate(r([]), i([{...doneIncident,verificationCommit:['a'.repeat(40)]}])).join(' '), /review evidence/);
+});
 
 for (const field of ['loggedAt','occurredAt','recordType','symptom','rootCause','resolution','prevention','regressionTest','evidence']) {
  test('missing incident field rejected: '+field, () => {
@@ -150,6 +158,13 @@ test('release CLI blocks unresolved P0 and forged verification', () => fixture(d
  blocked(run(dir,'harness/check.mjs',['--release']),/RELEASE BLOCKED: SAI-R999/);
  writeFileSync(join(dir,'harness/known-risks.json'),JSON.stringify(r([{...risk,status:'VERIFIED',regressionTest:'harness/README.md',reviewedBy:'same',verificationEvidence:'NOT_RUN'}])));
  blocked(run(dir,'harness/check.mjs',['--release']),/requires.*(?:test file|reviewer|evidence)/);
+}));
+test('release CLI rejects array IDs without an unhandled crash', () => fixture(dir => {
+ writeFileSync(join(dir,'harness/known-risks.json'),JSON.stringify(r([{...risk,id:[risk.id]}])));
+ blocked(run(dir,'harness/check.mjs',['--release']),/Bad or duplicate risk ID/);
+ writeFileSync(join(dir,'harness/known-risks.json'),JSON.stringify(r([risk])));
+ writeFileSync(join(dir,'harness/incidents.json'),JSON.stringify(i([{...incident,id:[incident.id]}])));
+ blocked(run(dir,'harness/check.mjs',['--release']),/Bad or duplicate incident ID/);
 }));
 test('preflight rejects a directly edited credential inventory', () => fixture(dir => {
  writeFileSync(join(dir,'harness/incidents.json'),JSON.stringify(i([{...incident,symptom:credentialCases[3][1]}])));
