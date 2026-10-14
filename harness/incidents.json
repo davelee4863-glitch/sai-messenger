@@ -1400,14 +1400,23 @@
       "occurredAt": "2026-10-14T15:47:09.331Z",
       "recordType": "REAL",
       "severity": "HIGH",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "PM019 Fresh review discovered that later registered cases lacked a count/source preservation guard; implementer reproduced a passing-case removal bypass in a bounded synthetic fixture.",
       "rootCause": "The CI manifest enforced only the original 401 aggregate cases; the later 41 cases were discovered but had no immutable source or per-file count contract.",
       "resolution": "Freeze all 31 prior files and 442 counts against commit 0a35dc0; verify normalized source hashes, baseline ancestry, completeness and per-file TAP totals.",
       "prevention": "CI-FROZEN-442: later regressions cannot be dropped, reclassified or replaced with fewer passing cases.",
       "regressionTest": "harness/frozen-coverage.test.mjs",
       "evidence": "Reviewer discovery is separate from implementer-authored initial fixture: work/pm019/evidence/frozen-coverage-before.tap 0PASS/1FAIL. targeted-after.tap21PASS after fix. No production CI case loss is claimed; independent post-fix verification pending.",
-      "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT"
+      "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Functional bb5b1ef9c204fc6d978005c58af18b6bd62f904a: full33 suites465PASS/0FAIL/0automaticNOT_RUN, frozen442 retained plus23PM019. Initial missing-case0PASS/1FAIL and first full462PASS/1FAIL preserved outside Git. registration-after.tap39PASS.",
+      "resolvedBy": "codex-root-pm019",
+      "reviewedBy": "/root/fresh_pm019_review",
+      "verificationCommit": "bb5b1ef9c204fc6d978005c58af18b6bd62f904a",
+      "verifiedAt": "2026-10-14T16:18:37.213Z",
+      "verificationEvidence": "work/pm019/fresh-review/final-review.json, full-suite-validation.json, independent-final.tap9PASS, coverage-before-after.json; source review and all33 TAP independently checked. Reviewer initial asset expectation error retained separately and corrected; no product bypass claimed.",
+      "independentReviewResult": "PASS_LOCAL_PM019_IMPLEMENTATION_AND_EVIDENCE",
+      "remainingVerificationLimits": "Only named local coverage/registration remediation. Remote CI not yet executed at this attestation. Physical Android/iPhone and live Cloudflare HTTPS/WSS NOT_RUN; actualCloud inventory/IAM UNVERIFIED; deploymentBLOCKED. Incident14 and five legacy Railway P0 remain unchanged."
     },
     {
       "id": "SAI-INC-20261015-02",
@@ -1416,13 +1425,22 @@
       "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "First PM019 full suite returned462PASS/1FAIL: existing CI policy expected12 legacy Node MVP test files but new Cloudflare presentation tests were registered there as a thirteenth file.",
       "rootCause": "A Cloudflare mutual-consent UI regression suite was placed in the legacy Node suite directory, conflicting with the preserved suite boundary.",
       "resolution": "Move only the new tests to cloudflare/tests and retain automatic discovery. Preserve every existing442 test source and assertion unchanged.",
       "prevention": "Register Cloudflare-specific presentation regressions in cloudflare/tests; run the immutable baseline suite boundary and complete discovery checks before remote CI.",
       "regressionTest": "harness/frozen-coverage.test.mjs",
-      "evidence": "work/pm019/evidence/full-first/12.tap and full-ci-first.log preserve initial FAIL. New real-checkout regression checks both legacy12 suite boundary and discovered Cloudflare presentation suite. Independent post-fix and full-suite results pending."
+      "evidence": "work/pm019/evidence/full-first/12.tap and full-ci-first.log preserve initial FAIL. New real-checkout regression checks both legacy12 suite boundary and discovered Cloudflare presentation suite. Independent post-fix and full-suite results pending.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Functional bb5b1ef9c204fc6d978005c58af18b6bd62f904a: full33 suites465PASS/0FAIL/0automaticNOT_RUN, frozen442 retained plus23PM019. Initial missing-case0PASS/1FAIL and first full462PASS/1FAIL preserved outside Git. registration-after.tap39PASS.",
+      "resolvedBy": "codex-root-pm019",
+      "reviewedBy": "/root/fresh_pm019_review",
+      "verificationCommit": "bb5b1ef9c204fc6d978005c58af18b6bd62f904a",
+      "verifiedAt": "2026-10-14T16:18:37.216Z",
+      "verificationEvidence": "work/pm019/fresh-review/final-review.json, full-suite-validation.json, independent-final.tap9PASS, coverage-before-after.json; source review and all33 TAP independently checked. Reviewer initial asset expectation error retained separately and corrected; no product bypass claimed.",
+      "independentReviewResult": "PASS_LOCAL_PM019_IMPLEMENTATION_AND_EVIDENCE",
+      "remainingVerificationLimits": "Only named local coverage/registration remediation. Remote CI not yet executed at this attestation. Physical Android/iPhone and live Cloudflare HTTPS/WSS NOT_RUN; actualCloud inventory/IAM UNVERIFIED; deploymentBLOCKED. Incident14 and five legacy Railway P0 remain unchanged."
     }
   ]
 }
