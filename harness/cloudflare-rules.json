@@ -125,6 +125,11 @@
       "id": "CF-DEPENDENCY-PATCHES",
       "rule": "Scope exact patched overrides to the pinned Miniflare; verify installed/locked leaf versions and loaded native patch floors, retain full401 regression coverage, audit failures blockCI. Host dependency patches never constitute actualCloud IAM/deployment approval.",
       "test": "cloudflare/tests/dependency-security.test.mjs"
+    },
+    {
+      "id": "CF-CI-FROZEN-442",
+      "rule": "Preserve all 442 registered cases in 31 baseline files at 0a35dc0 using immutable normalized source hashes, baseline ancestry, complete file discovery and exact per-file executed TAP counts. Never classify reduced, skipped or failed tests as PASS.",
+      "test": "harness/frozen-coverage.test.mjs"
     }
   ]
 }

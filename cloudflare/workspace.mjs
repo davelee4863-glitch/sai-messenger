@@ -5,7 +5,7 @@ import {configuration} from './config.mjs';
 import {BINDINGS,assertWorkerEnvironment} from './isolation-identity.mjs';
 import {Fault,fail,keys,text,uuid,digest,token,equal,passwordMatches} from '../mvp/security.mjs';
 const COOKIE='pb_cf_local_session';
-const ASSETS=new Set(['/','/index.html','/app.mjs','/styles.css','/icon.svg','/socket-url.mjs']);
+const ASSETS=new Set(['/','/index.html','/app.mjs','/styles.css','/icon.svg','/socket-url.mjs','/presentation.mjs']);
 function rawCookie(request){const values=(request.headers.get('cookie')||'').split(';').map(v=>v.trim()).filter(v=>v.startsWith(COOKIE+'='));return values.length===1&&/^[a-f0-9]{64}$/.test(values[0].slice(COOKIE.length+1))?values[0].slice(COOKIE.length+1):null;}
 async function body(request){if(request.headers.get('content-type')?.split(';')[0].trim()!=='application/json')fail(415,'JSON_REQUIRED','JSON 요청만 허용합니다.');const reader=request.body?.getReader();let size=0,parts=[];if(!reader)fail(400,'INVALID_JSON','JSON 요청을 확인해주세요.');while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>16384){await reader.cancel();fail(413,'BODY_TOO_LARGE','요청 크기가 너무 큽니다.');}parts.push(value);}const data=new Uint8Array(size);let offset=0;for(const p of parts){data.set(p,offset);offset+=p.length;}try{return JSON.parse(new TextDecoder().decode(data));}catch{fail(400,'INVALID_JSON','JSON 요청을 확인해주세요.');}}
 export class Workspace extends DurableObject {

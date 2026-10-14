@@ -84,3 +84,9 @@ remain. New tests are discovered by the unchanged strict CI harness.
 
 Real phones, public HTTPS/WSS, live account IAM/resource isolation and remote
 deployment remain separate, unverified gates. Local test PASS never unblocks them.
+# PM019 UI integration
+
+The isolated client keeps exactly three primary destinations: 채팅, 약속함, 일정. The schedule is a read-only view of existing confirmed records; pending changes, stale consent, unanswered pairs and cancelled records are excluded. Group schedule confirmation is distinct from each person's attendance. Display decisions never grant access or write consent; authenticated Durable Object operations remain authoritative.
+
+The new presentation module is explicitly served by the local Cloudflare and legacy Node static-asset allowlists. Legacy Node APIs and data schemas are unchanged. Public Pages assets and workflows are unchanged. `consent-ui.yml` only installs pinned development dependencies, runs the full frozen 442-case baseline plus newly discovered suites, audits dependencies, and uploads CI evidence. It holds no cloud credentials or deployment permission.
+

@@ -43,8 +43,28 @@ export function validateCoverage(root, manifest, requested) {
   }
   const files = discovered.filter(path=>!manual.has(path));
   for (const path of baseline) if (!files.includes(path)) errors.push('Missing baseline test: '+path);
+  const frozen = manifest.frozenBaseline;
+  const protectedCheckout=manifest.baselineSha==='c44018ff40c898a9c4da295e50ad31564136cd2c'&&existsSync(resolve(root,'.git'));
+  if (protectedCheckout && (!frozen || frozen.baselineSha!=='0a35dc0f6cbf71c7a4711d015762c08821c3e65b' || frozen.expectedCases!==442)) throw Error('Required 442-case frozen baseline missing or weakened');
+  if (frozen !== undefined) {
+    if (!frozen || !/^[a-f0-9]{40}$/.test(frozen.baselineSha) || !Number.isSafeInteger(frozen.expectedCases) || frozen.expectedCases < manifest.baselineExpectedCases || !Array.isArray(frozen.files) || !frozen.files.length || frozen.files.some(item=>!item || !safePath(item.path) || !testName.test(item.path) || !/^[a-f0-9]{64}$/.test(item.sha256) || !Number.isSafeInteger(item.cases) || item.cases<1) || new Set(frozen.files.map(item=>item.path)).size!==frozen.files.length || frozen.files.reduce((sum,item)=>sum+item.cases,0)!==frozen.expectedCases || baseline.some(path=>!frozen.files.some(item=>item.path===path))) throw Error('Invalid frozen baseline contract');
+    for (const item of frozen.files) {
+      if (!files.includes(item.path)) { errors.push('Missing frozen test: '+item.path);continue; }
+      const hash=createHash('sha256').update(readFileSync(resolve(root,item.path),'utf8').replace(/\r\n/g,'\n')).digest('hex');
+      if (hash!==item.sha256) errors.push('Frozen test changed: '+item.path);
+      if (existsSync(resolve(root,'.git'))) {
+        const original=execFileSync('git',['show',frozen.baselineSha+':'+item.path],{cwd:root,encoding:'utf8'});
+        if (createHash('sha256').update(original.replace(/\r\n/g,'\n')).digest('hex')!==item.sha256) errors.push('Frozen test hash differs from baseline commit: '+item.path);
+      }
+    }
+    if (existsSync(resolve(root,'.git'))) {
+      execFileSync('git',['merge-base','--is-ancestor',frozen.baselineSha,'HEAD'],{cwd:root});
+      const originalFiles=execFileSync('git',['ls-tree','-r','--name-only',frozen.baselineSha],{cwd:root,encoding:'utf8'}).split(/\r?\n/).filter(path=>testName.test(path)&&!manual.has(path));
+      if(originalFiles.length!==frozen.files.length||originalFiles.some(path=>!frozen.files.some(item=>item.path===path))) errors.push('Frozen baseline omits or adds original test files');
+    }
+  }
   if (requested !== undefined && (!Array.isArray(requested) || new Set(requested).size !== requested.length || requested.length !== files.length || files.some(path=>!requested.includes(path)))) errors.push('Requested execution omits or adds test files');
-  return {files,baselineFiles:baseline,manualSuites:manifest.manualSuites,errors};
+  return {files,baselineFiles:baseline,manualSuites:manifest.manualSuites,frozen,errors};
 }
 export function parseResult(result, {file}={}) {
   if (result.error || result.signal || !Number.isInteger(result.status)) return {status:'FAIL',pass:0,fail:0,notRun:1,reason:'Execution error or incomplete process'};
@@ -71,6 +91,8 @@ export function runSuite(root, {manifest,output,execute}={}) {
   for (const [index,file] of contract.files.entries()) {
     const run = execute ? execute(file) : spawnSync(process.execPath,['--test','--test-reporter=tap','--test-concurrency=1',file],{cwd:root,env:childEnvironment(),encoding:'utf8',timeout:180000,maxBuffer:8*1024*1024,windowsHide:true});
     const result = {...parseResult(run,{file}),file,group:contract.baselineFiles.includes(file)?'existing':'new'};
+    const protectedFile=contract.frozen?.files.find(item=>item.path===file);
+    if (protectedFile && result.tests!==protectedFile.cases) { result.status='FAIL';result.reason='Frozen per-file test count mismatch'; }
     results.push(result);
     const group = result.group==='existing'?baseline:added;
     for (const key of ['pass','fail','notRun']) group[key] += result[key];
@@ -78,7 +100,9 @@ export function runSuite(root, {manifest,output,execute}={}) {
     console.log(JSON.stringify(result));
   }
   const baselineCountMatches = baseline.pass+baseline.fail+baseline.notRun === manifest.baselineExpectedCases;
-  const summary = {scope:'automated Node tests only',status:results.every(r=>r.status==='PASS')&&baselineCountMatches?'PASS':'FAIL',baselineCountMatches,existing:baseline,new:added,filesDiscovered:contract.files.length,filesExecuted:results.length,manualSuites:contract.manualSuites,results,cloudDeploymentAuthorized:false,liveInventoryVerified:false};
+  const frozenResults=results.filter(result=>contract.frozen?.files.some(item=>item.path===result.file));
+  const frozenBaseline=contract.frozen?{sha:contract.frozen.baselineSha,expectedCases:contract.frozen.expectedCases,pass:frozenResults.reduce((sum,r)=>sum+r.pass,0),fail:frozenResults.reduce((sum,r)=>sum+r.fail,0),notRun:frozenResults.reduce((sum,r)=>sum+r.notRun,0),status:frozenResults.every(r=>r.status==='PASS')?'PASS':'FAIL'}:null;
+  const summary = {scope:'automated Node tests only',status:results.every(r=>r.status==='PASS')&&baselineCountMatches?'PASS':'FAIL',baselineCountMatches,frozenBaseline,existing:baseline,new:added,filesDiscovered:contract.files.length,filesExecuted:results.length,manualSuites:contract.manualSuites,results,cloudDeploymentAuthorized:false,liveInventoryVerified:false};
   if (output) writeFileSync(resolve(output,'summary.json'),JSON.stringify(summary,null,2)+'\n');
   return summary;
 }
