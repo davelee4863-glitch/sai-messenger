@@ -11,7 +11,7 @@ import {Store} from './store.mjs';
 import {Fault,fail,keys,text,uuid,digest,token,equal,passwordMatches,Limiter} from './security.mjs';
 export const COOKIE='pb_mvp_session';
 const aliases=['127.0.0.1','localhost','a.localhost','b.localhost','c.localhost'];
-const assets=new Map([['/','index.html'],['/index.html','index.html'],['/app.mjs','app.mjs'],['/styles.css','styles.css'],['/icon.svg','icon.svg'],['/socket-url.mjs','socket-url.mjs']]);
+const assets=new Map([['/','index.html'],['/index.html','index.html'],['/app.mjs','app.mjs'],['/styles.css','styles.css'],['/icon.svg','icon.svg'],['/socket-url.mjs','socket-url.mjs'],['/presentation.mjs','presentation.mjs']]);
 const mime={html:'text/html; charset=utf-8',mjs:'text/javascript; charset=utf-8',css:'text/css; charset=utf-8',svg:'image/svg+xml'};
 function cookieToken(req,name=COOKIE){const parts=(req.headers.cookie||'').split(';').map(part=>part.trim()).filter(part=>part.startsWith(name+'='));if(parts.length!==1)return null;const value=parts[0].slice(name.length+1);return /^[a-f0-9]{64}$/.test(value)?value:null;}
 function body(req){return new Promise((resolve,reject)=>{let size=0,chunks=[],failed=false;req.on('data',chunk=>{if(failed)return;size+=chunk.length;if(size>16384){failed=true;chunks=[];reject(new Fault(413,'BODY_TOO_LARGE','요청 크기가 너무 큽니다.'));}else chunks.push(chunk);});req.on('end',()=>{if(failed)return;try{resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')));}catch{reject(new Fault(400,'INVALID_JSON','JSON 요청을 확인해주세요.'));}});req.on('error',()=>reject(new Fault(400,'REQUEST_ABORTED','요청이 중단됐습니다.')));});}

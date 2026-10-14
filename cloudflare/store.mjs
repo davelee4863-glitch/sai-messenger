@@ -1,9 +1,9 @@
 import schema from '../mvp/schema.sql';
-import {BusinessStore} from '../mvp/business.mjs';
+import {ConsentStore,CONSENT_TABLES,CONSENT_SCHEMA} from './consent.mjs';
 import {fail,digest} from '../mvp/security.mjs';
 import {OWNERSHIP,ownedIdentity} from './isolation-identity.mjs';
-export const TABLES=['users','auth_credentials','sessions','rooms','room_members','messages','message_receipts','proposals','promises','promise_attendees','approval_reviews','history','cf_invites','cf_outbox','cf_rate','cf_usage','cf_meta'];
-export class CloudStore extends BusinessStore {
+export const TABLES=['users','auth_credentials','sessions','rooms','room_members','messages','message_receipts','proposals','promises','promise_attendees','approval_reviews','history',...CONSENT_TABLES,'cf_invites','cf_outbox','cf_rate','cf_usage','cf_meta'];
+export class CloudStore extends ConsentStore {
  constructor(ctx){super();this.ctx=ctx;this.sql=ctx.storage.sql;this.meter=null;
   ctx.storage.transactionSync(()=>{this.sql.exec('CREATE TABLE IF NOT EXISTS cf_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL) STRICT');
    const rev=this.sql.exec("SELECT value FROM cf_meta WHERE key='schema'").toArray()[0];
@@ -14,6 +14,7 @@ export class CloudStore extends BusinessStore {
      CREATE TABLE cf_usage(day TEXT PRIMARY KEY,requests INTEGER NOT NULL,reads INTEGER NOT NULL,writes INTEGER NOT NULL) STRICT;`);
     this.sql.exec("INSERT INTO cf_meta VALUES ('schema','cf-v1'),('epoch','1')");
    }else if(rev.value!=='cf-v1')throw new Error('Unsupported Cloudflare schema');
+   this.sql.exec(CONSENT_SCHEMA);
   });
  }
  exec(sql,args){const c=this.sql.exec(sql,...args),rows=c.toArray();if(this.meter){this.meter.reads+=c.rowsRead;this.meter.writes+=c.rowsWritten;}return rows;}
@@ -31,17 +32,20 @@ export class CloudStore extends BusinessStore {
    this.run('INSERT INTO cf_usage VALUES (?,?,?,?) ON CONFLICT(day) DO UPDATE SET requests=requests+1,reads=reads+excluded.reads,writes=writes+excluded.writes',day,1,met.reads+10,met.writes+10);return result;
   }finally{this.meter=null;}});
  }
- enqueue(){const payload={users:this.users(),invites:this.all('SELECT issuer_id,COUNT(*) AS issued FROM cf_invites GROUP BY issuer_id'),promises:this.all('SELECT id,room_id,host_id,status,version FROM promises ORDER BY id')};this.run('INSERT INTO cf_outbox(payload) VALUES (?)',JSON.stringify(payload));}
+ enqueue(){const payload={users:this.users(),invites:this.all('SELECT issuer_id,COUNT(*) AS issued FROM cf_invites GROUP BY issuer_id'),promises:this.all('SELECT * FROM promises ORDER BY id').map(row=>({id:row.id,room_id:row.room_id,host_id:row.host_id,status:this.effectiveStatus(row),version:row.version}))};this.run('INSERT INTO cf_outbox(payload) VALUES (?)',JSON.stringify(payload));}
  invite(userId,id){return this.tx(()=>{const old=this.get('SELECT * FROM cf_invites WHERE id=?',id);if(old){if(old.issuer_id!==userId)fail(409,'IDEMPOTENCY_CONFLICT','초대 요청 ID가 다릅니다.');return old;}if(this.get('SELECT COUNT(*) AS n FROM cf_invites WHERE issuer_id=?',userId).n>=5)fail(409,'INVITE_LIMIT','가입 초대권은 5장입니다.');this.run('INSERT INTO cf_invites VALUES (?,?,?)',id,userId,this.now());return this.get('SELECT * FROM cf_invites WHERE id=?',id);});}
  exportSnapshot(){const data={format:'promise-box-cf-v1',owner:OWNERSHIP,createdAt:this.now(),tables:Object.fromEntries(TABLES.map(table=>[table,this.all('SELECT * FROM '+table)]))};return {...data,checksum:digest(JSON.stringify(data))};}
- restore(snapshot){if(snapshot?.format!=='promise-box-cf-v1'||!ownedIdentity(snapshot.owner)||!snapshot.tables||snapshot.checksum!==digest(JSON.stringify({format:snapshot.format,owner:snapshot.owner,createdAt:snapshot.createdAt,tables:snapshot.tables}))||JSON.stringify(Object.keys(snapshot.tables).sort())!==JSON.stringify([...TABLES].sort()))fail(422,'INVALID_BACKUP','지원되는 격리 앱 백업만 복구합니다.');
-  const meta=snapshot.tables.cf_meta;if(!Array.isArray(meta)||meta.length!==2||meta.some(row=>!row||JSON.stringify(Object.keys(row).sort())!==JSON.stringify(['key','value']))||new Set(meta.map(row=>row.key)).size!==2||meta.find(row=>row.key==='schema')?.value!=='cf-v1')fail(422,'INVALID_BACKUP','백업 스키마 표시를 확인해주세요.');
+ restore(snapshot){const tableNames=JSON.stringify(Object.keys(snapshot?.tables||{}).sort()),legacy=tableNames===JSON.stringify(TABLES.filter(t=>!CONSENT_TABLES.includes(t)).sort());if(snapshot?.format!=='promise-box-cf-v1'||!ownedIdentity(snapshot.owner)||!snapshot.tables||snapshot.checksum!==digest(JSON.stringify({format:snapshot.format,owner:snapshot.owner,createdAt:snapshot.createdAt,tables:snapshot.tables}))||(!legacy&&tableNames!==JSON.stringify([...TABLES].sort())))fail(422,'INVALID_BACKUP','지원되는 격리 앱 백업만 복구합니다.');
+  // Old owned backups have no mutual-approval proof. Preserve their business rows,
+  // add empty consent tables and expose direct promises as legacy_unverified.
+  const tables=legacy?{...snapshot.tables,...Object.fromEntries(CONSENT_TABLES.map(t=>[t,[]]))}:snapshot.tables;
+  const meta=tables.cf_meta;if(!Array.isArray(meta)||meta.length!==2||meta.some(row=>!row||JSON.stringify(Object.keys(row).sort())!==JSON.stringify(['key','value']))||new Set(meta.map(row=>row.key)).size!==2||meta.find(row=>row.key==='schema')?.value!=='cf-v1')fail(422,'INVALID_BACKUP','백업 스키마 표시를 확인해주세요.');
   const epoch=meta.find(row=>row.key==='epoch')?.value;if(typeof epoch!=='string'||!/^\d+$/.test(epoch)||!Number.isSafeInteger(Number(epoch))||Number(epoch)<1||Number(epoch)>=Number.MAX_SAFE_INTEGER)fail(422,'INVALID_BACKUP','백업 복구 세대를 확인해주세요.');
   if(TABLES.filter(table=>table!=='cf_meta').some(table=>this.get('SELECT COUNT(*) AS n FROM '+table).n)||this.get("SELECT value FROM cf_meta WHERE key='epoch'")?.value!=='1')fail(409,'RESTORE_TARGET_NOT_EMPTY','새로운 격리 저장소에만 복구합니다.');
   this.tx(()=>{for(const table of [...TABLES].reverse())this.run('DELETE FROM '+table);
    for(const table of TABLES){if(['sessions','approval_reviews','cf_outbox','cf_rate','cf_usage'].includes(table))continue;const columns=this.all('PRAGMA table_info('+table+')').map(r=>r.name);
-    if(!Array.isArray(snapshot.tables[table]))fail(422,'INVALID_BACKUP','백업 테이블을 확인해주세요.');
-    for(const row of snapshot.tables[table]){if(JSON.stringify(Object.keys(row).sort())!==JSON.stringify([...columns].sort()))fail(422,'INVALID_BACKUP','백업 열이 다릅니다.');this.run('INSERT INTO '+table+' ('+columns.join(',')+') VALUES ('+columns.map(()=>'?').join(',')+')',...columns.map(c=>row[c]));}
+    if(!Array.isArray(tables[table]))fail(422,'INVALID_BACKUP','백업 테이블을 확인해주세요.');
+    for(const row of tables[table]){if(JSON.stringify(Object.keys(row).sort())!==JSON.stringify([...columns].sort()))fail(422,'INVALID_BACKUP','백업 열이 다릅니다.');this.run('INSERT INTO '+table+' ('+columns.join(',')+') VALUES ('+columns.map(()=>'?').join(',')+')',...columns.map(c=>row[c]));}
    }
    if(this.all('PRAGMA foreign_key_check').length)fail(422,'INVALID_BACKUP','백업 참조가 잘못되었습니다.');
    this.run("UPDATE cf_meta SET value=CAST(value AS INTEGER)+1 WHERE key='epoch'");this.enqueue();
