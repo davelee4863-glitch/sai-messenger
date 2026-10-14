@@ -1354,13 +1354,22 @@
       "occurredAt": "2026-10-14T14:37:50.023Z",
       "recordType": "REAL",
       "severity": "HIGH",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "PM018 actual baseline execution failed all three direct mutual-confirmation regressions: one actor created a final promise, partner approval was denied, and negotiation was unavailable.",
       "rootCause": "The shared pre-PM018 business policy treated direct promises like host-confirmed group schedules; there was no versioned pair consent state.",
       "resolution": "Add Cloudflare-only DO consent rounds and approvals; final insert requires both authenticated members at the same revision. Stage changes separately, preserve approval history, and keep D1 non-authoritative.",
       "prevention": "CF-DIRECT-MUTUAL, CF-CHANGE-RECONSENT, CF-CONSENT-RECOVERY; no response or repeated own approval must remain unconfirmed.",
       "regressionTest": "cloudflare/tests/mutual-consent.test.mjs",
-      "evidence": "Initial local fixture: evidence/initial-mutual-consent.tap 0PASS/3FAIL; first fix 3PASS; expanded tests 23PASS. Detection timestamp is the completed failure receipt. Fresh and full final results pending."
+      "evidence": "Initial local fixture: evidence/initial-mutual-consent.tap 0PASS/3FAIL; first fix 3PASS; expanded tests 23PASS. Detection timestamp is the completed failure receipt. Fresh and full final results pending.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Functional candidate 8be6b865ba0f923268ab464392b3c6644864a148: strict CI 442PASS (previous417 plus PM01825),0FAIL/0automaticNOT_RUN. Initial 3FAIL and independent stale RSVP1FAIL evidence retained.",
+      "resolvedBy": "codex-root-pm018",
+      "reviewedBy": "/root/fresh_pm018_review",
+      "verificationCommit": "8be6b865ba0f923268ab464392b3c6644864a148",
+      "verifiedAt": "2026-10-14T15:13:52.158Z",
+      "verificationEvidence": "work/pm018/fresh-review/final-review.json and independent-final.tap:8PASS/0FAIL, independent full-suite evidence validation and focused browser evidence review.",
+      "independentReviewResult": "PASS_LOCAL_PM018_IMPLEMENTATION_AND_EVIDENCE",
+      "remainingVerificationLimits": "Local synthetic mutual consent and RSVP remediation only. Live Cloudflare inventory/IAM UNVERIFIED; physical Android/iPhone and public HTTPS/WSS/remote CI NOT_RUN; deployment BLOCKED. Incident14 and existing P0 records unchanged."
     },
     {
       "id": "SAI-INC-20261014-19",
@@ -1368,13 +1377,22 @@
       "occurredAt": "2026-10-14T14:50:36.984Z",
       "recordType": "REAL",
       "severity": "HIGH",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "Fresh PM018 reviewer reproduced a stale group RSVP approving the changed schedule without reading or explicitly accepting its new version.",
       "rootCause": "Cloudflare RSVP accepted only response and did not bind the attendance decision to the canonical schedule version.",
       "resolution": "Require expectedVersion on Cloudflare RSVP and check it before idempotent response handling; the CF client submits the displayed version. Node legacy API contract unchanged.",
       "prevention": "CF-RSVP-VERSION: stale and missing schedule versions fail even when response matches an earlier own choice. A group schedule change resets responses.",
       "regressionTest": "cloudflare/tests/mutual-consent.test.mjs",
-      "evidence": "Fresh group-stale-rsvp-before.tap: 0PASS/1FAIL. Actual synthetic v1 packet applied to changed v2. Version-bound regression added; full rerun and independent remediation evidence pending."
+      "evidence": "Fresh group-stale-rsvp-before.tap: 0PASS/1FAIL. Actual synthetic v1 packet applied to changed v2. Version-bound regression added; full rerun and independent remediation evidence pending.",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Functional candidate 8be6b865ba0f923268ab464392b3c6644864a148: strict CI 442PASS (previous417 plus PM01825),0FAIL/0automaticNOT_RUN. Initial 3FAIL and independent stale RSVP1FAIL evidence retained.",
+      "resolvedBy": "codex-root-pm018",
+      "reviewedBy": "/root/fresh_pm018_review",
+      "verificationCommit": "8be6b865ba0f923268ab464392b3c6644864a148",
+      "verifiedAt": "2026-10-14T15:13:52.158Z",
+      "verificationEvidence": "work/pm018/fresh-review/final-review.json and independent-final.tap:8PASS/0FAIL, independent full-suite evidence validation and focused browser evidence review.",
+      "independentReviewResult": "PASS_LOCAL_PM018_IMPLEMENTATION_AND_EVIDENCE",
+      "remainingVerificationLimits": "Local synthetic mutual consent and RSVP remediation only. Live Cloudflare inventory/IAM UNVERIFIED; physical Android/iPhone and public HTTPS/WSS/remote CI NOT_RUN; deployment BLOCKED. Incident14 and existing P0 records unchanged."
     }
   ]
 }
