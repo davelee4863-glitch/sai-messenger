@@ -71,7 +71,7 @@ export class Workspace extends DurableObject {
     else if(path==='/api/rooms'&&method==='POST'){keys(data,['kind','title','memberIds']);value={room:s.createRoom(userId,data)};status=201;}
     else if(path==='/api/promises'&&method==='GET')value={promises:s.promises(userId)};
     else if(path==='/api/invites'&&method==='POST'){keys(data,['requestId']);value={invite:s.invite(userId,uuid(data.requestId))};status=201;}
-    else{const rm=path.match(/^\/api\/rooms\/([^/]+)(?:\/(members|messages|receipts|proposals|reset))?$/),pr=path.match(/^\/api\/proposals\/([^/]+)\/(edit|ignore|confirm)$/),pm=path.match(/^\/api\/promises\/([^/]+)(?:\/(rsvp|review|apply))?$/);
+    else{const rm=path.match(/^\/api\/rooms\/([^/]+)(?:\/(members|messages|receipts|proposals|reset))?$/),pr=path.match(/^\/api\/proposals\/([^/]+)\/(edit|ignore|confirm|request-change)$/),pm=path.match(/^\/api\/promises\/([^/]+)(?:\/(rsvp|review|apply|change-confirm|change-request))?$/);
      if(rm){const id=uuid(rm[1]),action=rm[2];s.requireMember(id,userId);
       if(!action&&method==='GET')value=s.snapshot(id,userId);
       else if(action==='messages'&&method==='GET'){const after=url.searchParams.get('after')||'0';if(!/^\d+$/.test(after))fail(422,'INVALID_CURSOR','조회 위치를 확인해주세요.');value={messages:s.messages(id,userId,{after:Number(after)})};}
@@ -83,13 +83,16 @@ export class Workspace extends DurableObject {
      }else if(pr&&method==='POST'){const id=uuid(pr[1]),action=pr[2];
       if(action==='edit'){keys(data,['expectedVersion','payload']);value={proposal:s.editProposal(id,userId,data.expectedVersion,data.payload)};}
       else if(action==='ignore'){keys(data,['expectedVersion']);value={proposal:s.ignoreProposal(id,userId,data.expectedVersion)};}
-      else{keys(data,['expectedVersion','decision']);value={promise:s.confirm(id,userId,data.expectedVersion,data.decision)};}notifyRoom=s.proposal(id,userId).room_id;
+      else if(action==='request-change'){keys(data,['expectedVersion','note'],['expectedVersion']);value={proposal:s.requestProposalChange(id,userId,data.expectedVersion,data.note)};}
+      else{keys(data,['expectedVersion','decision']);value=s.confirmProposal(id,userId,data.expectedVersion,data.decision);}notifyRoom=s.proposal(id,userId).room_id;
      }else if(pm){const id=uuid(pm[1]),action=pm[2],promise=s.promise(id,userId);
       if(!action&&method==='GET')value={promise:s.promiseView(promise,userId)};
       else if(method==='POST'){
-       if(action==='rsvp'){keys(data,['response']);value={promise:s.rsvp(id,userId,data.response)};}
+       if(action==='rsvp'){keys(data,['response','expectedVersion']);value={promise:s.rsvp(id,userId,data.response,data.expectedVersion)};}
        else if(action==='review'){keys(data,['kind','expectedVersion','payload'],['kind','expectedVersion']);if(data.kind==='cancel'&&Object.hasOwn(data,'payload'))fail(422,'INVALID_FIELDS','취소에 변경을 넣을 수 없습니다.');value={review:s.review(id,userId,data.kind,data.expectedVersion,data.payload)};}
-       else if(action==='apply'){keys(data,['reviewId','decision']);value={promise:s.apply(id,userId,data.reviewId,data.decision)};}notifyRoom=promise.room_id;
+       else if(action==='apply'){keys(data,['reviewId','decision']);value={promise:s.apply(id,userId,data.reviewId,data.decision)};}
+       else if(action==='change-confirm'){keys(data,['changeId','expectedVersion','expectedChangeVersion','decision']);value={promise:s.confirmChange(id,userId,data.changeId,data.expectedVersion,data.expectedChangeVersion,data.decision)};}
+       else if(action==='change-request'){keys(data,['changeId','expectedVersion','expectedChangeVersion','note'],['changeId','expectedVersion','expectedChangeVersion']);value={promise:s.requestChangeNegotiation(id,userId,data.changeId,data.expectedVersion,data.expectedChangeVersion,data.note)};}notifyRoom=promise.room_id;
       }
      }
     }
