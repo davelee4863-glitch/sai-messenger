@@ -1496,13 +1496,23 @@
       "occurredAt": "2026-10-15T01:26:36.375Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "New local Pages controller preflight initially returned1PASS/6FAIL, then6PASS/1FAIL before any publish or remotePush.",
       "rootCause": "Job inventory parser accidentally included the top-level push event; approved image Git blob comparison exceeded the default1MB child-process buffer.",
       "resolution": "Scope job inspection to the jobs section and explicitly bound approved image comparison buffers to8MB. Do not change any approved UI source or old publisher.",
       "prevention": "PBX-PAGES-PIN: verify the reviewed workflow separately from the pinned UI source, exclude event names from job inventory, and compare full original asset bytes with bounded sufficient capacity.",
       "regressionTest": "tests/ui-v2-pages.test.mjs",
-      "evidence": "work/pm021/evidence/publisher-tests.tap1PASS/6FAIL, publisher-tests-fixed.tap6PASS/1FAIL and publisher-tests-after.tap7PASS/0FAIL. Local controller-only failures; no published-site failure. Independent review pending."
+      "evidence": "work/pm021/evidence/publisher-tests.tap1PASS/6FAIL, publisher-tests-fixed.tap6PASS/1FAIL and publisher-tests-after.tap7PASS/0FAIL. Local controller-only failures; no published-site failure. Independent review pending.",
+      "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT",
+      "regressionResult": "PASS",
+      "regressionEvidence": "work/pm021/evidence/publisher-tests-final-12.tap12PASS/0FAIL. Initial publisher1PASS/6FAIL then6PASS/1FAIL preserved; independent mutation before0PASS/6FAIL and after6PASS/0FAIL. UI code558689d unchanged, no actual incorrect publication.",
+      "resolvedBy": "codex-root-pm021",
+      "reviewedBy": "/root/fresh_pm020_review",
+      "verificationCommit": "441b3965f0fa17989a2689cbc7f0a51417875438",
+      "verifiedAt": "2026-10-15T01:31:52.806Z",
+      "verificationEvidence": "work/pm021/fresh-review/controller-review.json and publisher-bypass-after.tap/publisher-scope-after.tap. Fresh independently checked fixed workflow fingerprint, actual source pin/dependencies/permissions/14-file builder and preserved V1.",
+      "independentReviewResult": "PASS_LOCAL_REVIEWED_PAGES_CONTROLLER",
+      "remainingVerificationLimits": "Only named local Pages controller remediation; actual publication/remote CI/live asset identity not executed at this attestation. Exact-reviewed workflow guard is not a general YAML validator. Physical phones NOT_RUN, strict modal focus wrap UNVERIFIED. Existing14OPEN and five Railway P0 unchanged; Cloudflare deploymentBLOCKED."
     },
     {
       "id": "SAI-INC-20261015-06",
@@ -1510,13 +1520,23 @@
       "occurredAt": "2026-10-15T01:29:06.978Z",
       "recordType": "REAL",
       "severity": "HIGH",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "Fresh Reviewer independently reproduced3 Pages validator bypasses: removing guard dependency, suppressing checkout identity failure, adding a backend file after static inspection.",
       "rootCause": "Substring-based checks did not fully enforce YAML command/dependency semantics or prohibit unreviewed extra steps.",
       "resolution": "Pin normalized bytes of the exact independently reviewed one-candidate Pages workflow bySHA256 after semantic checks. Reject every different controller workflow; keep approved UI source558689d unchanged.",
       "prevention": "PBX-PAGES-FINGERPRINT: controller policy is an exact-reviewed workflow guard, not a general YAML security parser. Any workflow change needs explicit renewed review. Verify actual live artifact files independently after publication.",
       "regressionTest": "tests/ui-v2-pages.test.mjs",
-      "evidence": "work/pm021/fresh-review/publisher-bypass-before.tap0PASS/3FAIL; root publisher-tests-final.tap10PASS/0FAIL includes dependency, failure suppression, postinspection additions and fake comment pin regressions. Synthetic mutated workflow strings reveal real validator defects; no incorrect deployment occurred. Fresh post-fix pending."
+      "evidence": "work/pm021/fresh-review/publisher-bypass-before.tap0PASS/3FAIL; root publisher-tests-final.tap10PASS/0FAIL includes dependency, failure suppression, postinspection additions and fake comment pin regressions. Synthetic mutated workflow strings reveal real validator defects; no incorrect deployment occurred. Fresh post-fix pending.",
+      "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT",
+      "regressionResult": "PASS",
+      "regressionEvidence": "work/pm021/evidence/publisher-tests-final-12.tap12PASS/0FAIL. Initial publisher1PASS/6FAIL then6PASS/1FAIL preserved; independent mutation before0PASS/6FAIL and after6PASS/0FAIL. UI code558689d unchanged, no actual incorrect publication.",
+      "resolvedBy": "codex-root-pm021",
+      "reviewedBy": "/root/fresh_pm020_review",
+      "verificationCommit": "441b3965f0fa17989a2689cbc7f0a51417875438",
+      "verifiedAt": "2026-10-15T01:31:52.806Z",
+      "verificationEvidence": "work/pm021/fresh-review/controller-review.json and publisher-bypass-after.tap/publisher-scope-after.tap. Fresh independently checked fixed workflow fingerprint, actual source pin/dependencies/permissions/14-file builder and preserved V1.",
+      "independentReviewResult": "PASS_LOCAL_REVIEWED_PAGES_CONTROLLER",
+      "remainingVerificationLimits": "Only named local Pages controller remediation; actual publication/remote CI/live asset identity not executed at this attestation. Exact-reviewed workflow guard is not a general YAML validator. Physical phones NOT_RUN, strict modal focus wrap UNVERIFIED. Existing14OPEN and five Railway P0 unchanged; Cloudflare deploymentBLOCKED."
     }
   ]
 }
