@@ -1441,6 +1441,35 @@
       "verificationEvidence": "work/pm019/fresh-review/final-review.json, full-suite-validation.json, independent-final.tap9PASS, coverage-before-after.json; source review and all33 TAP independently checked. Reviewer initial asset expectation error retained separately and corrected; no product bypass claimed.",
       "independentReviewResult": "PASS_LOCAL_PM019_IMPLEMENTATION_AND_EVIDENCE",
       "remainingVerificationLimits": "Only named local coverage/registration remediation. Remote CI not yet executed at this attestation. Physical Android/iPhone and live Cloudflare HTTPS/WSS NOT_RUN; actualCloud inventory/IAM UNVERIFIED; deploymentBLOCKED. Incident14 and five legacy Railway P0 remain unchanged."
+    },
+    {
+      "id": "SAI-INC-20261015-03",
+      "loggedAt": "2026-10-15T00:43:04.636Z",
+      "occurredAt": "2026-10-15T00:33:44.247Z",
+      "recordType": "REAL",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "symptom": "PM020 V2 starting static demo inferred final direct agreement after only one role approved; both unanswered-partner regressions failed.",
+      "rootCause": "The legacy static UI used the earlier host-confirmation model for both direct and group rooms and did not represent versioned pair consent.",
+      "resolution": "In the separate V2 static demo require two independent simulated role approvals at the same revision, retain old confirmed payload during pending changes, and keep group RSVP separate. Public V1 and real backend remain unchanged.",
+      "prevention": "PBX-V2-MUTUAL: one-sided or repeated own approval never creates final pair agreement; simulation roles are explicitly labeled and no real identity or server is involved.",
+      "regressionTest": "tests/ui-v2-consent.test.mjs",
+      "evidence": "work/pm020/evidence/static-mutual-before.tap actually0PASS/2FAIL; first repair2PASS, expanded21PASS and targeted45PASS. Synthetic fixture demonstrates a real static-model gap; no actual server consent bypass claimed. Independent final review pending.",
+      "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT"
+    },
+    {
+      "id": "SAI-INC-20261015-04",
+      "loggedAt": "2026-10-15T00:50:41.590Z",
+      "occurredAt": "2026-10-15T00:49:31.097Z",
+      "recordType": "REAL",
+      "severity": "MEDIUM",
+      "status": "OPEN",
+      "symptom": "Static V2 browser audit measured the chat candidate button at38px and desktop RSVP chips at32px, below the44px project touch target.",
+      "rootCause": "Legacy two-class CSS selectors outranked the generic V2 button minimum; earlier narrow-screen overrides did not cover every control or desktop.",
+      "resolution": "Added final global overrides for the actual legacy selectors in the isolated V2 stylesheet; retained existing published V1 bytes.",
+      "prevention": "PBX-V2-TOUCH: retain specific-selector44px protection and measure rendered targets across320-1440px with subpixel tolerance.",
+      "regressionTest": "tests/ui-v2-publication.test.mjs",
+      "evidence": "Local PM020 evidence: layout-before.json actual25 browser samples; touch-before.tap0PASS/1FAIL; touch-after.tap19PASS. Full regression and Fresh review pending."
     }
   ]
 }

@@ -1,0 +1,8 @@
+{
+  "source": "Existing user-approved PROMISE BOX project illustrations; copied without modification",
+  "metadataPolicy": "Original PNG provenance metadata retained; no claim of metadata removal",
+  "assets": [
+    {"path":"assets/family-logo.png","originalName":"사랑을 담은 약속함 가족 로고.png","sha256":"5db13a8f296d5d944550b267ee3a19d6da462cabf6d8c297e6ace8e548693401","width":1254,"height":1254},
+    {"path":"assets/family-story.png","originalName":"다섯 약속, 이어지는 가족의 사랑.png","sha256":"5f7e4c9317f8264f18e54a2fbe2c00a2ba1e3608e1d986586c3f09c06e511206","width":1672,"height":941}
+  ]
+}

@@ -1,0 +1,36 @@
+name: PROMISE BOX emotional UI V2 (tests only)
+on:
+  push:
+    branches: [ui/promise-box-emotional-v2-20261015]
+  pull_request:
+    branches: [feat/promise-box-consent-ui-20261015]
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - run: npm ci --prefix mvp --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix cloudflare --ignore-scripts --no-audit --no-fund
+      - run: npm audit --prefix cloudflare
+      - run: node harness/check.mjs
+      - run: node harness/ui-v2-ci.mjs
+      - name: Prepare static candidate only
+        run: node scripts/build-ui-v2.mjs "$RUNNER_TEMP/promise-box-ui-v2"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: emotional-ui-v2-evidence
+          path: |
+            cloudflare/.local/v2-ci/
+            ${{ runner.temp }}/promise-box-ui-v2/
+          if-no-files-found: error
+      # Static candidate and test evidence only. Publication requires separate user approval.
