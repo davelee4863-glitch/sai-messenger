@@ -1489,6 +1489,34 @@
       "verificationEvidence": "work/pm020/fresh-review/final-review.json; independent15 probesPASS, original images/exact14-file build and all36TAP checked; actual independent browser pair reapproval and separated group RSVP. Root contrast122PASS; reviewer groupcontrast28PASS.",
       "independentReviewResult": "PASS_LOCAL_STATIC_UI_V2_CANDIDATE",
       "remainingVerificationLimits": "Local named static-demo remediation only. Remote CI not run at attestation; strict native dialog first/last wrapping UNVERIFIED, actual Android/iPhone/publicV2HTTPS and full legacy manual suite NOT_RUN. Static reload resets examples. Live Cloudflare inventory/IAM UNVERIFIED, cloud deploymentBLOCKED, Pages publication requires explicit user approval. Incident14 and legacy five Railway P0 remain OPEN unchanged."
+    },
+    {
+      "id": "SAI-INC-20261015-05",
+      "loggedAt": "2026-10-15T01:27:33.435Z",
+      "occurredAt": "2026-10-15T01:26:36.375Z",
+      "recordType": "REAL",
+      "severity": "MEDIUM",
+      "status": "OPEN",
+      "symptom": "New local Pages controller preflight initially returned1PASS/6FAIL, then6PASS/1FAIL before any publish or remotePush.",
+      "rootCause": "Job inventory parser accidentally included the top-level push event; approved image Git blob comparison exceeded the default1MB child-process buffer.",
+      "resolution": "Scope job inspection to the jobs section and explicitly bound approved image comparison buffers to8MB. Do not change any approved UI source or old publisher.",
+      "prevention": "PBX-PAGES-PIN: verify the reviewed workflow separately from the pinned UI source, exclude event names from job inventory, and compare full original asset bytes with bounded sufficient capacity.",
+      "regressionTest": "tests/ui-v2-pages.test.mjs",
+      "evidence": "work/pm021/evidence/publisher-tests.tap1PASS/6FAIL, publisher-tests-fixed.tap6PASS/1FAIL and publisher-tests-after.tap7PASS/0FAIL. Local controller-only failures; no published-site failure. Independent review pending."
+    },
+    {
+      "id": "SAI-INC-20261015-06",
+      "loggedAt": "2026-10-15T01:30:19.891Z",
+      "occurredAt": "2026-10-15T01:29:06.978Z",
+      "recordType": "REAL",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "symptom": "Fresh Reviewer independently reproduced3 Pages validator bypasses: removing guard dependency, suppressing checkout identity failure, adding a backend file after static inspection.",
+      "rootCause": "Substring-based checks did not fully enforce YAML command/dependency semantics or prohibit unreviewed extra steps.",
+      "resolution": "Pin normalized bytes of the exact independently reviewed one-candidate Pages workflow bySHA256 after semantic checks. Reject every different controller workflow; keep approved UI source558689d unchanged.",
+      "prevention": "PBX-PAGES-FINGERPRINT: controller policy is an exact-reviewed workflow guard, not a general YAML security parser. Any workflow change needs explicit renewed review. Verify actual live artifact files independently after publication.",
+      "regressionTest": "tests/ui-v2-pages.test.mjs",
+      "evidence": "work/pm021/fresh-review/publisher-bypass-before.tap0PASS/3FAIL; root publisher-tests-final.tap10PASS/0FAIL includes dependency, failure suppression, postinspection additions and fake comment pin regressions. Synthetic mutated workflow strings reveal real validator defects; no incorrect deployment occurred. Fresh post-fix pending."
     }
   ]
 }

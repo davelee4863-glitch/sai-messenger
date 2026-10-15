@@ -1,0 +1,62 @@
+name: PROMISE BOX approved UI V2 (Pages only)
+on:
+  push:
+    branches: [ui/promise-box-emotional-v2-20261015]
+    paths: [.github/workflows/ui-v2-pages.yml]
+permissions:
+  contents: read
+concurrency:
+  group: promise-box-ui-pages
+  cancel-in-progress: false
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - run: node --test tests/ui-v2-pages.test.mjs
+      - run: node scripts/check-ui-v2-pages.mjs
+  build:
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Controller changes never become published UI source.
+      - uses: actions/checkout@v4
+        with:
+          ref: 558689d426f87ae7e9c92bf28a5e810b64b6a1b5
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - name: Verify exact owner-approved UI source
+        run: test "$(git rev-parse HEAD)" = "558689d426f87ae7e9c92bf28a5e810b64b6a1b5"
+      - name: Build only the approved fourteen static files
+        run: node scripts/build-ui-v2.mjs "$RUNNER_TEMP/approved-ui" "558689d426f87ae7e9c92bf28a5e810b64b6a1b5"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/approved-ui
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/ui/promise-box-emotional-v2-20261015'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish approved static demo
+        id: deployment
+        uses: actions/deploy-pages@v4
+      # PM021 approval is only for source558689d, not this controller commit.
