@@ -1567,7 +1567,7 @@
       "occurredAt": "2026-10-15T02:26:02.950Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "Published V2 modal allows final Tab focus to BODY and reverse Tab to dialog instead of wrapping between controls.",
       "rootCause": "Native showModal focus containment does not enforce strict first-to-last keyboard wrapping; openDialog has no explicit Tab boundary handler.",
       "resolution": "Added only a modal keydown handler using current visible enabled controls. Existing Escape handling and opener restoration are preserved; public558 remains unchanged.",
@@ -1576,8 +1576,15 @@
       "evidence": "work/pm022/evidence/modal-before.json and fresh-review/public-modal-before.json: actual forward/reverse FAIL, initial and Escape/close restoration PASS. a11y-before.tap5PASS/7FAIL; a11y-after.tap25PASS/0FAIL including publisher13. Fresh post-fix pending.",
       "occurrenceAccuracy": "APPROXIMATE_FIRST_EVIDENCE_CAPTURE",
       "regressionResult": "PASS",
-      "regressionEvidence": "work/pm022/evidence/modal-before.json and a11y-before.tap5PASS/7FAIL; final a11y-final.tap29PASS/0FAIL and full-local-summary.json38files/540PASS/0FAIL/0automaticNOT_RUN. Actual local modal-after.json5modal variants and render-focus-after.jsonH1 fallback. Independent final review pending; no public redeploy.",
-      "resolvedBy": "codex-root-pm022"
+      "regressionEvidence": "work/pm022/evidence/modal-before.json and a11y-before.tap5PASS/7FAIL; final a11y-final.tap29PASS/0FAIL and full-local-summary.json38files/540PASS/0FAIL/0automaticNOT_RUN. Actual local modal-after.json5modal variants and render-focus-after.jsonH1 fallback. Independent final review PASS_LOCAL_NAMED_REMEDIATIONS at83f76d07d9edd63b78d5fb0cf3b29b58e4c41864; no public redeploy.",
+      "resolvedBy": "codex-root-pm022",
+      "reviewedBy": "/root/fresh_pm022_review",
+      "verificationCommit": "83f76d07d9edd63b78d5fb0cf3b29b58e4c41864",
+      "verifiedAt": "2026-10-15T02:37:49.666Z",
+      "verificationEvidence": "work/pm022/fresh-review/review-final.json: independently executed50 testsPASS, actual four modal variants20checksPASS, disabled-action heading fallbackPASS; all38 full-suite TAP/counts540PASS reviewed; exact handler hash and duplicate/extra-code rejection checked.",
+      "independentReviewResult": "PASS_LOCAL_NAMED_REMEDIATIONS",
+      "publicFixState": "NOT_DEPLOYED",
+      "remainingVerificationLimits": "Only named local candidate fixes verified. Public558 still has modal wrap and disabled-action focus defects. Actual iPhone/Android, VoiceOver/TalkBack and full WCAG NOT_RUN. Remote candidate CI not run at attestation. Public re-publication requires a new explicit SHA approval. Cloudflare inventory/IAM UNVERIFIED and deploymentBLOCKED; incident14 and five legacy RailwayP0 unchanged."
     },
     {
       "id": "SAI-INC-20261015-09",
@@ -1585,7 +1592,7 @@
       "occurredAt": "2026-10-15T02:32:17.998Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "Published V2 loses keyboard focus to BODY after the first role confirms a promise candidate.",
       "rootCause": "Rerender restoration tries to focus its replacement confirmation button even when that button has become disabled.",
       "resolution": "Fallback to existing page heading if the matched action is disabled. No consent policy or visual changes.",
@@ -1594,8 +1601,15 @@
       "evidence": "work/pm022/evidence/render-focus-before.json actual BODY, render-before.tap14PASS/1FAIL; minimal fallback fix. Fresh post-fix pending.",
       "occurrenceAccuracy": "APPROXIMATE_FIRST_EVIDENCE_CAPTURE",
       "regressionResult": "PASS",
-      "regressionEvidence": "work/pm022/evidence/render-focus-before.json and render-before.tap14PASS/1FAIL; final a11y-final.tap29PASS/0FAIL and full-local-summary.json38files/540PASS/0FAIL/0automaticNOT_RUN. Actual local modal-after.json5modal variants and render-focus-after.jsonH1 fallback. Independent final review pending; no public redeploy.",
-      "resolvedBy": "codex-root-pm022"
+      "regressionEvidence": "work/pm022/evidence/render-focus-before.json and render-before.tap14PASS/1FAIL; final a11y-final.tap29PASS/0FAIL and full-local-summary.json38files/540PASS/0FAIL/0automaticNOT_RUN. Actual local modal-after.json5modal variants and render-focus-after.jsonH1 fallback. Independent final review PASS_LOCAL_NAMED_REMEDIATIONS at83f76d07d9edd63b78d5fb0cf3b29b58e4c41864; no public redeploy.",
+      "resolvedBy": "codex-root-pm022",
+      "reviewedBy": "/root/fresh_pm022_review",
+      "verificationCommit": "83f76d07d9edd63b78d5fb0cf3b29b58e4c41864",
+      "verifiedAt": "2026-10-15T02:37:49.666Z",
+      "verificationEvidence": "work/pm022/fresh-review/review-final.json: independently executed50 testsPASS, actual four modal variants20checksPASS, disabled-action heading fallbackPASS; all38 full-suite TAP/counts540PASS reviewed; exact handler hash and duplicate/extra-code rejection checked.",
+      "independentReviewResult": "PASS_LOCAL_NAMED_REMEDIATIONS",
+      "publicFixState": "NOT_DEPLOYED",
+      "remainingVerificationLimits": "Only named local candidate fixes verified. Public558 still has modal wrap and disabled-action focus defects. Actual iPhone/Android, VoiceOver/TalkBack and full WCAG NOT_RUN. Remote candidate CI not run at attestation. Public re-publication requires a new explicit SHA approval. Cloudflare inventory/IAM UNVERIFIED and deploymentBLOCKED; incident14 and five legacy RailwayP0 unchanged."
     },
     {
       "id": "SAI-INC-20261015-10",
@@ -1603,7 +1617,7 @@
       "occurredAt": "2026-10-15T02:33:13.592Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "Fresh review found a local candidate source-preservation exception could hide additional code inside the marked modal fix.",
       "rootCause": "Initial test normalization removed the whole marker block without checking exact reviewed bytes or duplicate blocks.",
       "resolution": "Require one exact SHA256-pinned handler block before applying local source equivalence. Existing published558 controller remains unchanged.",
@@ -1612,8 +1626,15 @@
       "evidence": "work/pm022/evidence/preservation-before.tap13PASS/1FAIL; inserted harmless extra code and duplicate block were accepted before pinning. a11y-final.tap29PASS/0FAIL after fix. No incorrect publication.",
       "occurrenceAccuracy": "APPROXIMATE_FIRST_EVIDENCE_CAPTURE",
       "regressionResult": "PASS",
-      "regressionEvidence": "work/pm022/evidence/preservation-before.tap13PASS/1FAIL; final a11y-final.tap29PASS/0FAIL and full-local-summary.json38files/540PASS/0FAIL/0automaticNOT_RUN. Actual local modal-after.json5modal variants and render-focus-after.jsonH1 fallback. Independent final review pending; no public redeploy.",
-      "resolvedBy": "codex-root-pm022"
+      "regressionEvidence": "work/pm022/evidence/preservation-before.tap13PASS/1FAIL; final a11y-final.tap29PASS/0FAIL and full-local-summary.json38files/540PASS/0FAIL/0automaticNOT_RUN. Actual local modal-after.json5modal variants and render-focus-after.jsonH1 fallback. Independent final review PASS_LOCAL_NAMED_REMEDIATIONS at83f76d07d9edd63b78d5fb0cf3b29b58e4c41864; no public redeploy.",
+      "resolvedBy": "codex-root-pm022",
+      "reviewedBy": "/root/fresh_pm022_review",
+      "verificationCommit": "83f76d07d9edd63b78d5fb0cf3b29b58e4c41864",
+      "verifiedAt": "2026-10-15T02:37:49.666Z",
+      "verificationEvidence": "work/pm022/fresh-review/review-final.json: independently executed50 testsPASS, actual four modal variants20checksPASS, disabled-action heading fallbackPASS; all38 full-suite TAP/counts540PASS reviewed; exact handler hash and duplicate/extra-code rejection checked.",
+      "independentReviewResult": "PASS_LOCAL_NAMED_REMEDIATIONS",
+      "publicFixState": "NOT_DEPLOYED",
+      "remainingVerificationLimits": "Only named local candidate fixes verified. Public558 still has modal wrap and disabled-action focus defects. Actual iPhone/Android, VoiceOver/TalkBack and full WCAG NOT_RUN. Remote candidate CI not run at attestation. Public re-publication requires a new explicit SHA approval. Cloudflare inventory/IAM UNVERIFIED and deploymentBLOCKED; incident14 and five legacy RailwayP0 unchanged."
     }
   ]
 }
