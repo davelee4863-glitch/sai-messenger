@@ -6,7 +6,7 @@ export const APPROVED_UI='558689d426f87ae7e9c92bf28a5e810b64b6a1b5';
 export const UI_BRANCH='ui/promise-box-emotional-v2-20261015';
 // This is a one-candidate publisher, not a general YAML/security parser.
 // Any workflow byte change needs a new explicit review before this pin changes.
-export const REVIEWED_WORKFLOW_SHA256='ff5af71a6e1f00b993563884c264df1b6ea878299c7afb06889c1b18756f47ae';
+export const REVIEWED_WORKFLOW_SHA256='aca5292c0b1e6912052e8684e828defcb4b66f15c1632d24e5d39e7a9b0ba28f';
 export function checkWorkflow(source){
  source=source.replaceAll('\r\n','\n');
  const fail=reason=>{throw Error(reason);};
@@ -20,6 +20,7 @@ export function checkWorkflow(source){
  if(names.join(',')!=='guard,build,publish')fail('Unexpected job inventory');
  const start=source.indexOf('jobs:'),buildStart=source.indexOf('  build:'),publishStart=source.indexOf('  publish:');
  const global=source.slice(0,start),build=source.slice(buildStart,publishStart),publish=source.slice(publishStart);
+ if(!source.slice(start,buildStart).includes('fetch-depth: 0'))fail('Guard requires historical Git blobs');
  if(!global.includes('permissions:\n  contents: read')||/pages:|id-token:/.test(global))fail('Global write permission forbidden');
  if(source.includes('secrets.')||/wrangler\s+(?:deploy|publish)|railway\s+(?:up|deploy)|git\s+(?:push|merge)/.test(source))fail('Non-Pages credentials or deployment');
  if(build.match(/uses: actions\/checkout@v4/g)?.length!==1||!build.includes('ref: '+APPROVED_UI))fail('Build checkout must pin approved UI');

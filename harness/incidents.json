@@ -1537,6 +1537,20 @@
       "verificationEvidence": "work/pm021/fresh-review/controller-review.json and publisher-bypass-after.tap/publisher-scope-after.tap. Fresh independently checked fixed workflow fingerprint, actual source pin/dependencies/permissions/14-file builder and preserved V1.",
       "independentReviewResult": "PASS_LOCAL_REVIEWED_PAGES_CONTROLLER",
       "remainingVerificationLimits": "Only named local Pages controller remediation; actual publication/remote CI/live asset identity not executed at this attestation. Exact-reviewed workflow guard is not a general YAML validator. Physical phones NOT_RUN, strict modal focus wrap UNVERIFIED. Existing14OPEN and five Railway P0 unchanged; Cloudflare deploymentBLOCKED."
+    },
+    {
+      "id": "SAI-INC-20261015-07",
+      "loggedAt": "2026-10-15T01:35:51.815Z",
+      "occurredAt": "2026-10-15T01:34:25.992Z",
+      "recordType": "REAL",
+      "severity": "MEDIUM",
+      "status": "OPEN",
+      "symptom": "First remote Pages guard returned11PASS/1FAIL; build and publish were correctly skipped, existing V1 remained unchanged.",
+      "rootCause": "Default shallow Actions checkout omitted historical approved558689d Git blobs needed by the source-preservation assertion; local full checkout had not exposed this.",
+      "resolution": "Fetch full history in the guard checkout; require that setting in guard policy and add a specific regression. Repin the minimally changed reviewed workflow fingerprint; no approved UI bytes change.",
+      "prevention": "PBX-PAGES-HISTORY: any CI proof comparing approved historical source must fetch that source explicitly or fetch full Git history before testing.",
+      "regressionTest": "tests/ui-v2-pages.test.mjs",
+      "evidence": "Actual failed Pages run38666374236/job116199151993 decoded in work/pm021/evidence/pages-first-guard.log:11PASS/1FAIL, build/publishNOT_RUN. Corrected local publisher-tests-shallow-fix.tap13PASS/0FAIL. Fresh and remote retry pending."
     }
   ]
 }
