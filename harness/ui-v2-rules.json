@@ -1,0 +1,31 @@
+{
+  "scope": "UI V2 static synthetic preview; no publication permission",
+  "baselineCommit": "2c3653d2a490ed7666723ba42c96e3c0236f64d6",
+  "rules": [
+    {
+      "id": "PBX-V2-MUTUAL",
+      "requirement": "Two independent simulated roles must approve the same revision; waiting and changed schedules are not final.",
+      "test": "tests/ui-v2-consent.test.mjs"
+    },
+    {
+      "id": "PBX-V2-STATIC",
+      "requirement": "No real authentication, network API, persistence or unsafe HTML; build only exact reviewed files and unchanged original image hashes.",
+      "test": "tests/ui-v2-publication.test.mjs"
+    },
+    {
+      "id": "PBX-V2-465",
+      "requirement": "Preserve every prior465 case/source in33 files and separately report new V2 cases; never treat skipped or absent cases as PASS.",
+      "test": "tests/ui-v2-preservation.test.mjs"
+    },
+    {
+      "id": "PBX-V2-TOUCH",
+      "requirement": "Specific legacy selectors must retain a global44px target. Confirm actual rendered controls at320-1440px; static CSS assertions alone do not prove layout.",
+      "test": "tests/ui-v2-publication.test.mjs"
+    },
+    {
+      "id": "PBX-V2-APPROVAL",
+      "requirement": "Test-only developer branch and Draft PR; public Pages publication requires explicit user approval after independent review.",
+      "test": "tests/ui-v2-publication.test.mjs"
+    }
+  ]
+}

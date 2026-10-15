@@ -1,0 +1,171 @@
+{
+  "baselineSha": "2c3653d2a490ed7666723ba42c96e3c0236f64d6",
+  "expectedCases": 465,
+  "files": [
+    {
+      "path": "cloudflare/tests/config.test.mjs",
+      "cases": 4,
+      "sha256": "3503a2b718a98e79b3b9be6fc12e78682f8baa8bb6129f14e54f2c065a41c99a"
+    },
+    {
+      "path": "cloudflare/tests/consent-presentation.test.mjs",
+      "cases": 15,
+      "sha256": "0da53194529ea61d5935ac5688011e705c159594e68a6313ee6cf394018d9965"
+    },
+    {
+      "path": "cloudflare/tests/core.test.mjs",
+      "cases": 3,
+      "sha256": "3536f40ff28e46ceeeae1d8bc916b46525dfc85333c76ac849feeda478a0afdc"
+    },
+    {
+      "path": "cloudflare/tests/dependency-security.test.mjs",
+      "cases": 16,
+      "sha256": "cec029739fc5cfd0436be7c42fe439fe71e24f6d4b15aa72f5f82212d4bee4b1"
+    },
+    {
+      "path": "cloudflare/tests/local-isolation.test.mjs",
+      "cases": 10,
+      "sha256": "76a300c3105e06d6a12a4d5431f6f8c53a1ca0ee91aee9840dc98dfedb48227f"
+    },
+    {
+      "path": "cloudflare/tests/mutual-consent.test.mjs",
+      "cases": 25,
+      "sha256": "026c618983fa383e50804e1d6556eaa4339359c057b585b9d0563ff419a80697"
+    },
+    {
+      "path": "cloudflare/tests/projection.test.mjs",
+      "cases": 1,
+      "sha256": "be1d1c185f2b8f49f95748af2cf2c5151459aeb0d77b39eb390c2efad6ff4af6"
+    },
+    {
+      "path": "cloudflare/tests/recovery.test.mjs",
+      "cases": 6,
+      "sha256": "e2ae97a7aeac660cce97d4639312c8c7ca42008b09b4d678454285ee159ff109"
+    },
+    {
+      "path": "cloudflare/tests/security.test.mjs",
+      "cases": 6,
+      "sha256": "07d7109a43927efc9f48cbe54f97db5d3efaf4ff2af5ea3ca7e79548d39ba8db"
+    },
+    {
+      "path": "cloudflare/tests/source.test.mjs",
+      "cases": 2,
+      "sha256": "3eae356ee672dc9f2d310bb450cb0a047399b9c6e035eaae0078c1eff28821dd"
+    },
+    {
+      "path": "cloudflare/tests/transport.test.mjs",
+      "cases": 5,
+      "sha256": "cee0ed9ed5d83f0bd6154128751e8810c1cdafc06cc01bd982fcb2e38cfac648"
+    },
+    {
+      "path": "harness/check.test.mjs",
+      "cases": 78,
+      "sha256": "21e49c2edecc999dea23c85c5552e46f26c00d4392afdec9e3518e6082f596df"
+    },
+    {
+      "path": "harness/cloudflare-ci.test.mjs",
+      "cases": 16,
+      "sha256": "69ba93029078e6ff5693c4d0d5defdcb86e19fe2ff8d379f0d7b95949fe2330a"
+    },
+    {
+      "path": "harness/cloudflare-isolation-policy.test.mjs",
+      "cases": 37,
+      "sha256": "7cd2d2f7c5a40e421ffd6ee5cbcb1b2ce87601c0d03a3ba430cc3a636f48ff1c"
+    },
+    {
+      "path": "harness/cloudflare-isolation.test.mjs",
+      "cases": 66,
+      "sha256": "16189d9272ee85e00f559bc59b8c5dbff2f03fec682eebc25a23c948b3b57ed2"
+    },
+    {
+      "path": "harness/frozen-coverage.test.mjs",
+      "cases": 8,
+      "sha256": "0a5d51e9354fabcb7ddb72fa9983bf504999187550632073e9d6b6ab5054a959"
+    },
+    {
+      "path": "mvp/tests/browser-assertions.test.mjs",
+      "cases": 5,
+      "sha256": "77fe695c0e93e3e60d37880136e49ed1be7f110f1f3e8dd38aa8d75e4200b5ad"
+    },
+    {
+      "path": "mvp/tests/core.test.mjs",
+      "cases": 7,
+      "sha256": "a5d561d746ba5ad7d6a1e3a3739491887b0c2e16b90b8c1d91edc71a51200f40"
+    },
+    {
+      "path": "mvp/tests/hardening.test.mjs",
+      "cases": 6,
+      "sha256": "141f73a8f689d10fdcc526e3af810341faa16b7a0ebeb73f252d4d3673127a8c"
+    },
+    {
+      "path": "mvp/tests/history-policy.test.mjs",
+      "cases": 4,
+      "sha256": "ecd4c1b2487c3a3e551ed20f20addd792d12325e6944dc2fe59b66afc77868b9"
+    },
+    {
+      "path": "mvp/tests/https.test.mjs",
+      "cases": 5,
+      "sha256": "d78a151b4d4a1d2827e518fffb340117150c4e1ace8840ed23aa1ad38544a143"
+    },
+    {
+      "path": "mvp/tests/policy.test.mjs",
+      "cases": 6,
+      "sha256": "6283d13b550b16f2db933128c7e9f991223b4086aad70b21d08a32f4e7bad5aa"
+    },
+    {
+      "path": "mvp/tests/recovery-safety.test.mjs",
+      "cases": 6,
+      "sha256": "d9d67a938933e9a636da6a1fa3109f0080bd7ff19883507db15552bd999ee859"
+    },
+    {
+      "path": "mvp/tests/recovery.test.mjs",
+      "cases": 2,
+      "sha256": "4ce1b2b1c6166e503f666b55a09b694b6c72c139764272929a0032fac67ea546"
+    },
+    {
+      "path": "mvp/tests/security.test.mjs",
+      "cases": 12,
+      "sha256": "e2915f50577228f8a1f5069d03217caa73962151e2276773c3671fb3ce81bf27"
+    },
+    {
+      "path": "mvp/tests/staging-bypass.test.mjs",
+      "cases": 5,
+      "sha256": "88e1373724bb9164420a53ad6252c2da9c6f84107a9dba574ad4d755dce23c35"
+    },
+    {
+      "path": "mvp/tests/staging-policy.test.mjs",
+      "cases": 6,
+      "sha256": "ad221673b8a9ebfc2e8039eb0828e8ce26b383a471c8304d19ecb55e87515f2c"
+    },
+    {
+      "path": "mvp/tests/staging-storage.test.mjs",
+      "cases": 5,
+      "sha256": "bcd1e783ad851b8c38d0261b6e3e4b2e9430d0ca56313255e07793fe7a354f97"
+    },
+    {
+      "path": "tests/ui-build.test.mjs",
+      "cases": 13,
+      "sha256": "fdc2b1b7d88cb123745ef1225185f7d33dffb8cdb7d1b8e77ab3ef1be6a5fbf9"
+    },
+    {
+      "path": "tests/ui-pages-environment.test.mjs",
+      "cases": 8,
+      "sha256": "97f6d7bad83c1b74a2837b549d1ef3d2a83f42c8f67ca08c15512256889a6d4f"
+    },
+    {
+      "path": "tests/ui-qr.test.mjs",
+      "cases": 10,
+      "sha256": "44cc458dac79ae48b3f4cdf607d8d037a708c40737afab67960b5bc0196aba44"
+    },
+    {
+      "path": "tests/ui-state.test.mjs",
+      "cases": 44,
+      "sha256": "72abb4f7c9bc064c875d8e027c884b5a4a60ad86b7b3a78830fbb4fdb4fc6ea8"
+    },
+    {
+      "path": "tests/ui-static.test.mjs",
+      "cases": 23,
+      "sha256": "3a9b5ad378503c669fad2831814758ee195b5854acfd40f58aa5afb544a2c348"
+    }
+  ]
+}

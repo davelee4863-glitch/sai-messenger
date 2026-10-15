@@ -1,0 +1,18 @@
+{
+  "name": "약속함 · PROMISE BOX 미리보기",
+  "short_name": "약속함",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#f7f3eb",
+  "background_color": "#fffdf8",
+  "icons": [
+    {
+      "src": "./assets/family-logo.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

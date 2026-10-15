@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {preserve465,classify465} from '../harness/ui-v2-ci.mjs';
+const root=fileURLToPath(new URL('../',import.meta.url)),contract=JSON.parse(readFileSync(resolve(root,'harness/ui-v2-baseline.json'))),summary=()=>({status:'PASS',results:contract.files.map(f=>({file:f.path,tests:f.cases,pass:f.cases,fail:0,notRun:0,status:'PASS'}))});
+test('V2: all prior465 cases in33 unchanged files are present',()=>assert.equal(preserve465(root,contract).expectedCases,465));
+test('V2: lower count, changed baseline, duplicate or omitted path cannot weaken465 gate',()=>{for(const mutate of [c=>c.expectedCases=464,c=>c.baselineSha='0'.repeat(40),c=>c.files.pop(),c=>c.files[0]=c.files[1]]){const c=structuredClone(contract);mutate(c);assert.throws(()=>preserve465(root,c),/465/);}});
+test('V2: replacement hash cannot redefine a prior registered case',()=>{const c=structuredClone(contract);c.files[0].sha256='0'.repeat(64);assert.throws(()=>preserve465(root,c),/source changed/);});
+test('V2: dropped per-file case fails even if every reported case passes',()=>{const s=summary();s.results[0].tests--;s.results[0].pass--;assert.equal(classify465(s,contract).status,'FAIL');});
+test('V2: prior and new counts remain separately reported',()=>{const s=summary();s.results.push({file:'tests/new-v2.test.mjs',tests:2,pass:2,fail:0,notRun:0,status:'PASS'});const r=classify465(s,contract);assert.equal(r.prior465.pass,465);assert.equal(r.uiV2.pass,2);assert.equal(r.status,'PASS');});
+test('V2: underlying suite failure never becomes a passing publication gate',()=>{const s=summary();s.status='FAIL';s.results[0].status='FAIL';assert.equal(classify465(s,contract).status,'FAIL');});
