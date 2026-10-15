@@ -1448,14 +1448,23 @@
       "occurredAt": "2026-10-15T00:33:44.247Z",
       "recordType": "REAL",
       "severity": "HIGH",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "PM020 V2 starting static demo inferred final direct agreement after only one role approved; both unanswered-partner regressions failed.",
       "rootCause": "The legacy static UI used the earlier host-confirmation model for both direct and group rooms and did not represent versioned pair consent.",
       "resolution": "In the separate V2 static demo require two independent simulated role approvals at the same revision, retain old confirmed payload during pending changes, and keep group RSVP separate. Public V1 and real backend remain unchanged.",
       "prevention": "PBX-V2-MUTUAL: one-sided or repeated own approval never creates final pair agreement; simulation roles are explicitly labeled and no real identity or server is involved.",
       "regressionTest": "tests/ui-v2-consent.test.mjs",
       "evidence": "work/pm020/evidence/static-mutual-before.tap actually0PASS/2FAIL; first repair2PASS, expanded21PASS and targeted45PASS. Synthetic fixture demonstrates a real static-model gap; no actual server consent bypass claimed. Independent final review pending.",
-      "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT"
+      "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Functional c536e938: full-v2-first36 TAP independently checked:511PASS/0FAIL/0automaticNOT_RUN=prior465+new46. Incident03 initial0PASS/2FAIL ->21 consentPASS; incident04 touch-before0PASS/1FAIL ->19 publicationPASS; final72 rendered layout samples0 geometryFAIL (44px subpixel tolerance0.5).",
+      "resolvedBy": "codex-root-pm020",
+      "reviewedBy": "/root/fresh_pm020_review",
+      "verificationCommit": "c536e93807a121431f3e1759c3a233246db64425",
+      "verifiedAt": "2026-10-15T01:00:15.702Z",
+      "verificationEvidence": "work/pm020/fresh-review/final-review.json; independent15 probesPASS, original images/exact14-file build and all36TAP checked; actual independent browser pair reapproval and separated group RSVP. Root contrast122PASS; reviewer groupcontrast28PASS.",
+      "independentReviewResult": "PASS_LOCAL_STATIC_UI_V2_CANDIDATE",
+      "remainingVerificationLimits": "Local named static-demo remediation only. Remote CI not run at attestation; strict native dialog first/last wrapping UNVERIFIED, actual Android/iPhone/publicV2HTTPS and full legacy manual suite NOT_RUN. Static reload resets examples. Live Cloudflare inventory/IAM UNVERIFIED, cloud deploymentBLOCKED, Pages publication requires explicit user approval. Incident14 and legacy five Railway P0 remain OPEN unchanged."
     },
     {
       "id": "SAI-INC-20261015-04",
@@ -1463,13 +1472,23 @@
       "occurredAt": "2026-10-15T00:49:31.097Z",
       "recordType": "REAL",
       "severity": "MEDIUM",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "symptom": "Static V2 browser audit measured the chat candidate button at38px and desktop RSVP chips at32px, below the44px project touch target.",
       "rootCause": "Legacy two-class CSS selectors outranked the generic V2 button minimum; earlier narrow-screen overrides did not cover every control or desktop.",
       "resolution": "Added final global overrides for the actual legacy selectors in the isolated V2 stylesheet; retained existing published V1 bytes.",
       "prevention": "PBX-V2-TOUCH: retain specific-selector44px protection and measure rendered targets across320-1440px with subpixel tolerance.",
       "regressionTest": "tests/ui-v2-publication.test.mjs",
-      "evidence": "Local PM020 evidence: layout-before.json actual25 browser samples; touch-before.tap0PASS/1FAIL; touch-after.tap19PASS. Full regression and Fresh review pending."
+      "evidence": "Local PM020 evidence: layout-before.json actual25 browser samples; touch-before.tap0PASS/1FAIL; touch-after.tap19PASS. Full regression and Fresh review pending.",
+      "occurrenceAccuracy": "APPROXIMATE_COMPLETED_EVIDENCE_RECEIPT",
+      "regressionResult": "PASS",
+      "regressionEvidence": "Functional c536e938: full-v2-first36 TAP independently checked:511PASS/0FAIL/0automaticNOT_RUN=prior465+new46. Incident03 initial0PASS/2FAIL ->21 consentPASS; incident04 touch-before0PASS/1FAIL ->19 publicationPASS; final72 rendered layout samples0 geometryFAIL (44px subpixel tolerance0.5).",
+      "resolvedBy": "codex-root-pm020",
+      "reviewedBy": "/root/fresh_pm020_review",
+      "verificationCommit": "c536e93807a121431f3e1759c3a233246db64425",
+      "verifiedAt": "2026-10-15T01:00:15.702Z",
+      "verificationEvidence": "work/pm020/fresh-review/final-review.json; independent15 probesPASS, original images/exact14-file build and all36TAP checked; actual independent browser pair reapproval and separated group RSVP. Root contrast122PASS; reviewer groupcontrast28PASS.",
+      "independentReviewResult": "PASS_LOCAL_STATIC_UI_V2_CANDIDATE",
+      "remainingVerificationLimits": "Local named static-demo remediation only. Remote CI not run at attestation; strict native dialog first/last wrapping UNVERIFIED, actual Android/iPhone/publicV2HTTPS and full legacy manual suite NOT_RUN. Static reload resets examples. Live Cloudflare inventory/IAM UNVERIFIED, cloud deploymentBLOCKED, Pages publication requires explicit user approval. Incident14 and legacy five Railway P0 remain OPEN unchanged."
     }
   ]
 }
