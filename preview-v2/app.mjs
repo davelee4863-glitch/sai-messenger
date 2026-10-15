@@ -221,6 +221,18 @@ function appointmentForm(item,submit,label) {
 function openDialog(title,content) {
  const previous=document.activeElement;
  const dialog=h('dialog',{'aria-label':title},h('div',{class:'dialog-content'},h('div',{class:'dialog-heading'},h('h2',{},title),btn(icon('close'),()=>dialog.close(),'icon-only subtle','닫기')),content));
+ // PM022 modal keyboard boundary
+ dialog.addEventListener('keydown',event=>{
+  if(event.key!=='Tab'||event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey)return;
+  const controls=Array.from(dialog.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled):not([type="hidden"]),textarea:not(:disabled),select:not(:disabled),[tabindex]:not([tabindex="-1"])'))
+   .filter(node=>node.tabIndex>=0&&!node.closest('[hidden],[inert]')&&node.getClientRects().length>0);
+  const first=controls[0],last=controls.at(-1),active=document.activeElement;
+  if(!first){event.preventDefault();dialog.focus();return;}
+  if(!dialog.contains(active)||active===dialog||(event.shiftKey?active===first:active===last)){
+   event.preventDefault();(event.shiftKey?last:first).focus();
+  }
+ });
+ // PM022 end modal keyboard boundary
  dialog.addEventListener('close',()=>{dialog.remove();if(previous?.isConnected)previous.focus();});
  document.body.append(dialog);dialog.showModal();return dialog;
 }
@@ -292,7 +304,7 @@ function render() {
  if(identity) {
   const replacement=Array.from(main.querySelectorAll(controls)).find(node=>node.tagName===identity.tag&&
    (identity.id?node.id===identity.id:identity.label?node.getAttribute('aria-label')===identity.label:node.textContent===identity.text));
-  (replacement||$('#page-heading'))?.focus({preventScroll:true});
+  (replacement&&!replacement.disabled?replacement:$('#page-heading'))?.focus({preventScroll:true});
  }
 }
 window.addEventListener('hashchange',()=>{
