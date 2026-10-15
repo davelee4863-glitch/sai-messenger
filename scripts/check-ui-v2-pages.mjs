@@ -2,11 +2,11 @@ import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
-export const APPROVED_UI='558689d426f87ae7e9c92bf28a5e810b64b6a1b5';
+export const APPROVED_UI='6c1e0429c7265f82c8756454a8c04b3eb9f7425b';
 export const UI_BRANCH='ui/promise-box-emotional-v2-20261015';
 // This is a one-candidate publisher, not a general YAML/security parser.
 // Any workflow byte change needs a new explicit review before this pin changes.
-export const REVIEWED_WORKFLOW_SHA256='aca5292c0b1e6912052e8684e828defcb4b66f15c1632d24e5d39e7a9b0ba28f';
+export const REVIEWED_WORKFLOW_SHA256='a14d2f171f3999f6e4ec51667800e9070b48320fa1a0d2cf30ba891d5012e81b';
 export function checkWorkflow(source){
  source=source.replaceAll('\r\n','\n');
  const fail=reason=>{throw Error(reason);};
